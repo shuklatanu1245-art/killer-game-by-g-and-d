@@ -40,7 +40,7 @@ function App() {
             </div>
 
             {/* Play Button */}
-            <div className="w-full mt-auto mb-12">
+            <div className="w-full mt-auto mb-8">
               <button 
                 onClick={() => setCurrentScreen('offlineLobby')}
                 className="w-full group relative flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white font-black text-lg py-5 px-6 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_10px_40px_-10px_rgba(225,29,72,0.5)] border border-red-500/30 overflow-hidden"
@@ -50,6 +50,11 @@ function App() {
                 <span className="relative z-10 tracking-wider">TAP TO PLAY</span>
               </button>
               <p className="text-xs text-gray-500 mt-6 font-medium">Pass & Play Mode</p>
+            </div>
+
+            {/* Developer Credit */}
+            <div className="w-full text-center mt-auto pb-4">
+               <p className="text-gray-600 text-[10px] tracking-widest font-bold uppercase">Developed by Dev Shukla</p>
             </div>
 
           </div>
