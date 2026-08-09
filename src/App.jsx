@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play } from 'lucide-react';
 import OfflineLobby from './components/OfflineLobby';
 import OfflineGame from './components/OfflineGame';
@@ -7,6 +7,26 @@ import './index.css';
 function App() {
   const [currentScreen, setCurrentScreen] = useState('home'); // 'home', 'offlineLobby', 'game'
   const [players, setPlayers] = useState([]);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleDownloadApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center relative overflow-hidden font-sans">
@@ -49,6 +69,16 @@ function App() {
                 <Play size={24} className="relative z-10 fill-current" />
                 <span className="relative z-10 tracking-wider">TAP TO PLAY</span>
               </button>
+              
+              {deferredPrompt && (
+                <button 
+                  onClick={handleDownloadApp}
+                  className="w-full mt-4 bg-surface border border-primary text-primary font-bold py-3 px-6 rounded-xl hover:bg-primary hover:text-white transition-colors shadow-lg"
+                >
+                  DOWNLOAD THE APP NOW
+                </button>
+              )}
+              
               <p className="text-xs text-gray-500 mt-6 font-medium">Pass & Play Mode</p>
             </div>
 
