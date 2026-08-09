@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { WifiOff, Wifi, Play, Users } from 'lucide-react';
 import OfflineLobby from './components/OfflineLobby';
+import OfflineGame from './components/OfflineGame';
 import './index.css';
 
 function App() {
@@ -85,16 +86,10 @@ function App() {
       )}
 
       {currentScreen === 'game' && (
-        <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
-          <h2 className="text-3xl font-bold text-white mb-4">Game Started!</h2>
-          <p className="text-gray-400">Players: {players.join(', ')}</p>
-          <button 
-            onClick={() => setCurrentScreen('home')}
-            className="mt-6 text-primary hover:text-white transition-colors"
-          >
-            End Game
-          </button>
-        </div>
+        <OfflineGame 
+          playerNames={players} 
+          onEndGame={() => setCurrentScreen('home')} 
+        />
       )}
     </div>
   );
