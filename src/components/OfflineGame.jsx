@@ -12,9 +12,6 @@ export default function OfflineGame({ playerNames, onEndGame }) {
   const [deadThisNight, setDeadThisNight] = useState(null);
   const [winner, setWinner] = useState(null);
 
-  // Active roles during night that require actions
-  const nightRolesSequence = [ROLES.KILLER, ROLES.DOCTOR, ROLES.DETECTIVE];
-
   useEffect(() => {
     if (phase === 'setup') {
       setPlayers(distributeRoles(playerNames));
@@ -32,42 +29,23 @@ export default function OfflineGame({ playerNames, onEndGame }) {
     }
   };
 
-  const handleNightAction = (targetId) => {
-    const currentRole = nightRolesSequence[turnIndex];
-    
-    setNightActions(prev => ({
-      ...prev,
-      [currentRole]: targetId
-    }));
+  const handleNightAction = (targetId, actingRole) => {
+    // Record action if it's from a role that actually acts
+    const newActions = { ...nightActions };
+    if (actingRole === ROLES.KILLER || actingRole === ROLES.DOCTOR) {
+       newActions[actingRole] = targetId;
+    }
+    setNightActions(newActions);
 
-    if (turnIndex + 1 < nightRolesSequence.length) {
-      // Find if the next role actually exists and is alive
-      let nextIndex = turnIndex + 1;
-      let nextRoleAlive = false;
-      
-      while (nextIndex < nightRolesSequence.length) {
-        const roleToCheck = nightRolesSequence[nextIndex];
-        const playerWithRole = players.find(p => p.role === roleToCheck && p.isAlive);
-        if (playerWithRole) {
-          nextRoleAlive = true;
-          break;
-        }
-        nextIndex++;
-      }
-
-      if (nextRoleAlive) {
-        setTurnIndex(nextIndex);
-      } else {
-        processNightEnd(nightActions, targetId, nextIndex);
-      }
+    const alivePlayers = players.filter(p => p.isAlive);
+    if (turnIndex + 1 < alivePlayers.length) {
+      setTurnIndex(turnIndex + 1);
     } else {
-      processNightEnd(nightActions, targetId, turnIndex);
+      processNightEnd(newActions);
     }
   };
 
-  const processNightEnd = (prevActions, lastTargetId, lastRoleIndex) => {
-    const finalActions = { ...prevActions, [nightRolesSequence[lastRoleIndex]]: lastTargetId };
-    
+  const processNightEnd = (finalActions) => {
     let killedId = finalActions[ROLES.KILLER];
     const healedId = finalActions[ROLES.DOCTOR];
 
@@ -88,8 +66,7 @@ export default function OfflineGame({ playerNames, onEndGame }) {
       setPlayers(prev => prev.map(p => p.id === votedId ? { ...p, isAlive: false } : p));
     }
 
-    // Check Win Condition
-    // Note: State updates are async, so we evaluate with new data
+    // Check Win Condition with new data
     const updatedPlayers = players.map(p => p.id === votedId ? { ...p, isAlive: false } : p);
     const winTeam = checkWinCondition(updatedPlayers, votedId);
 
@@ -109,14 +86,14 @@ export default function OfflineGame({ playerNames, onEndGame }) {
   }
 
   if (phase === 'night') {
-    const currentRole = nightRolesSequence[turnIndex];
-    const playerWithRole = players.find(p => p.role === currentRole && p.isAlive);
+    const alivePlayers = players.filter(p => p.isAlive);
+    const currentPlayer = alivePlayers[turnIndex];
     
-    if (playerWithRole) {
+    if (currentPlayer) {
       return (
         <NightAction 
-          role={currentRole} 
-          player={playerWithRole} 
+          role={currentPlayer.role} 
+          player={currentPlayer} 
           allPlayers={players} 
           onAction={handleNightAction} 
         />
@@ -127,7 +104,6 @@ export default function OfflineGame({ playerNames, onEndGame }) {
   if (phase === 'day') {
     return (
       <div className="flex flex-col items-center justify-center w-full">
-        {/* Day Announcement */}
         <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl mb-6">
           <h2 className="text-4xl font-black text-white mb-4">Sun Rises</h2>
           {deadThisNight ? (
@@ -136,7 +112,6 @@ export default function OfflineGame({ playerNames, onEndGame }) {
             <p className="text-xl text-accent font-bold">The night was peaceful. No one died.</p>
           )}
         </div>
-        
         <VotingScreen players={players} onVoteComplete={handleVoteComplete} />
       </div>
     );

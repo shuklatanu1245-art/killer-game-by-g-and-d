@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Target, Heart, Search, ShieldQuestion, ArrowRight } from 'lucide-react';
+import { Target, Heart, Search, ShieldQuestion, Moon } from 'lucide-react';
 
 export default function NightAction({ role, player, allPlayers, onAction }) {
   const [hasSeen, setHasSeen] = useState(false);
@@ -8,38 +8,40 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
 
   const getRoleConfig = () => {
     switch(role) {
-      case 'Killer': return { icon: <Target />, color: 'text-primary', action: 'Kill' };
-      case 'Doctor': return { icon: <Heart />, color: 'text-accent', action: 'Heal' };
-      case 'Detective': return { icon: <Search />, color: 'text-blue-500', action: 'Investigate' };
-      default: return { icon: <ShieldQuestion />, color: 'text-gray-400', action: 'Wait' };
+      case 'Killer': return { icon: <Target />, color: 'text-primary', action: 'Kill', hasTarget: true };
+      case 'Doctor': return { icon: <Heart />, color: 'text-accent', action: 'Heal', hasTarget: true };
+      case 'Detective': return { icon: <Search />, color: 'text-blue-500', action: 'Investigate', hasTarget: true };
+      default: return { icon: <Moon />, color: 'text-gray-400', action: 'Sleep', hasTarget: false };
     }
   };
 
   const config = getRoleConfig();
-  // Filter out dead players, and depending on role, maybe filter self (Killer shouldn't kill self)
+  // Filter valid targets for action roles
   const validTargets = allPlayers.filter(p => p.isAlive && (role === 'Killer' ? p.id !== player.id : true));
 
   const handleAction = () => {
-    if (!selectedTarget) return;
+    if (config.hasTarget && !selectedTarget) return;
+    
     setActionCompleted(true);
     
-    // Detective gets immediate feedback
+    // Detective gets immediate feedback, others just wait a tiny bit for UX
     if (role === 'Detective') {
       const isKiller = validTargets.find(p => p.id === selectedTarget)?.role === 'Killer';
       setTimeout(() => {
         alert(isKiller ? "Right guess, it's a killer!" : "Wrong guess, it's not a killer.");
-        onAction(selectedTarget);
-      }, 500);
+        onAction(selectedTarget, role);
+      }, 300);
     } else {
-      onAction(selectedTarget);
+      onAction(selectedTarget, role);
     }
   };
 
+  // PASS PHONE SCREEN (NO ROLE NAME SHOWN TO PREVENT METAGAMING)
   if (!hasSeen) {
     return (
       <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
-        <h2 className="text-3xl font-bold text-white mb-2">Pass the Phone to the</h2>
-        <h1 className={`text-5xl font-extrabold mb-10 ${config.color}`}>{role} ({player.name})</h1>
+        <h2 className="text-3xl font-bold text-white mb-2">Pass the Phone to</h2>
+        <h1 className="text-5xl font-extrabold mb-10 text-white">{player.name}</h1>
         <button 
           onClick={() => setHasSeen(true)}
           className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-4 px-6 rounded-xl"
@@ -50,24 +52,46 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
     );
   }
 
+  // COMPLETED SCREEN
   if (actionCompleted) {
     return (
       <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
         <h2 className="text-3xl font-bold text-white mb-6">Action Completed.</h2>
         <button 
-          onClick={() => onAction(selectedTarget)} // Trigger moving to next turn
+          onClick={() => onAction(selectedTarget, role)} // Trigger moving to next turn
           className="w-full bg-surface text-white font-bold py-4 px-6 rounded-xl border border-white/10 hover:bg-surface/80"
         >
-          NEXT PLAYER
+          PASS TO NEXT PLAYER
         </button>
       </div>
     );
   }
 
+  // FAKE SCREEN FOR CIVILIANS AND JOKERS
+  if (!config.hasTarget) {
+    return (
+      <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
+        <div className="mb-8">
+          <Moon size={48} className="mx-auto text-gray-500 mb-4" />
+          <h2 className={`text-3xl font-bold mb-2 ${config.color}`}>You are a {role}</h2>
+          <p className="text-gray-400">You have no actions tonight. Pretend to do something to fool the others!</p>
+        </div>
+        <button 
+          onClick={() => setActionCompleted(true)}
+          className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-4 px-6 rounded-xl border border-white/10"
+        >
+          END TURN
+        </button>
+      </div>
+    );
+  }
+
+  // REAL ACTION SCREEN FOR KILLER, DOCTOR, DETECTIVE
   return (
     <div className="glass rounded-3xl p-6 max-w-md w-full relative z-10 shadow-2xl border border-white/5 flex flex-col h-[80vh]">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-white">Select a player to {config.action}</h2>
+        <h2 className={`text-xl font-bold ${config.color} mb-1`}>You are the {role}</h2>
+        <p className="text-white">Select a player to {config.action}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 mb-6">
