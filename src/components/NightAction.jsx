@@ -36,11 +36,26 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
     }
   };
 
+  const getRoleInfo = (role) => {
+    switch (role) {
+      case 'Killer': return { color: 'text-red-500', emoji: '🔪' };
+      case 'Doctor': return { color: 'text-green-500', emoji: '🩺' };
+      case 'Detective': return { color: 'text-blue-500', emoji: '🕵️' };
+      case 'Joker': return { color: 'text-purple-500', emoji: '🃏' };
+      default: return { color: 'text-gray-400', emoji: '😴' };
+    }
+  };
+
+  const roleInfo = getRoleInfo(role);
+
   // PASS PHONE SCREEN (NO ROLE NAME SHOWN TO PREVENT METAGAMING)
   if (!hasSeen) {
     return (
       <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
-        <h2 className="text-3xl font-bold text-white mb-2">Pass the Phone to</h2>
+        <h2 className={`text-3xl font-black ${roleInfo.color} mb-2`}>
+          {role} {roleInfo.emoji}
+        </h2>
+        <p className="text-gray-300">Choose your target</p>
         <h1 className="text-5xl font-extrabold mb-10 text-white">{player.name}</h1>
         <button 
           onClick={() => setHasSeen(true)}
@@ -73,8 +88,12 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
       <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
         <div className="mb-8">
           <Moon size={48} className="mx-auto text-gray-500 mb-4" />
-          <h2 className={`text-3xl font-bold mb-2 ${config.color}`}>You are a {role}</h2>
-          <p className="text-gray-400">You have no actions tonight. Pretend to do something to fool the others!</p>
+          <h2 className="text-3xl font-black text-gray-400 mb-2">
+            Shh... {roleInfo.emoji}
+          </h2>
+          <p className="text-gray-500 text-sm mb-6">
+            You have no action tonight. Pretend to do something to confuse the others.
+          </p>
         </div>
         <button 
           onClick={() => setActionCompleted(true)}

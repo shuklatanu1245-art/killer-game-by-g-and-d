@@ -4,6 +4,18 @@ import { Eye, ShieldQuestion, ArrowRight } from 'lucide-react';
 export default function PassPhone({ player, onNext }) {
   const [hasSeen, setHasSeen] = useState(false);
 
+  const getRoleInfo = (role) => {
+    switch (role) {
+      case 'Killer': return { color: 'text-red-500', emoji: '🔪' };
+      case 'Doctor': return { color: 'text-green-500', emoji: '🩺' };
+      case 'Detective': return { color: 'text-blue-500', emoji: '🕵️' };
+      case 'Joker': return { color: 'text-purple-500', emoji: '🃏' };
+      default: return { color: 'text-gray-400', emoji: '👤' };
+    }
+  };
+
+  const roleInfo = getRoleInfo(player.role);
+
   return (
     <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
       <h2 className="text-3xl font-bold text-white mb-2">Pass the Phone to</h2>
@@ -19,9 +31,11 @@ export default function PassPhone({ player, onNext }) {
         </button>
       ) : (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="p-6 rounded-2xl bg-gray-800/50 border border-gray-700">
-            <p className="text-gray-400 text-sm mb-1">Your secret role is</p>
-            <h3 className="text-4xl font-black text-white">{player.role}</h3>
+          <div className="bg-surface/50 p-6 rounded-2xl border border-white/5 shadow-inner mt-4">
+            <p className="text-gray-400 mb-2">Your secret role is</p>
+            <h2 className={`text-4xl font-black ${roleInfo.color} drop-shadow-md`}>
+              {player.role} {roleInfo.emoji}
+            </h2>
           </div>
           
           <button 
