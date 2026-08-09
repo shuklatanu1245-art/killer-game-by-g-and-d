@@ -38,8 +38,8 @@ function App() {
       </div>
 
       <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl border border-white/5">
-        <h1 className="text-5xl font-extrabold tracking-tight mb-2 bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent">
-          NIGHTFALL
+        <h1 className="text-5xl font-extrabold tracking-tight mb-2 bg-gradient-to-br from-white to-primary bg-clip-text text-transparent">
+          RedRole
         </h1>
         <p className="text-gray-400 text-sm mb-10 font-medium">A Game of Deception & Deduction</p>
 
