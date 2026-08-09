@@ -70,14 +70,13 @@ function App() {
                 <span className="relative z-10 tracking-wider">TAP TO PLAY</span>
               </button>
               
-              {deferredPrompt && (
-                <button 
-                  onClick={handleDownloadApp}
-                  className="w-full mt-4 bg-surface border border-primary text-primary font-bold py-3 px-6 rounded-xl hover:bg-primary hover:text-white transition-colors shadow-lg"
-                >
-                  DOWNLOAD THE APP NOW
-                </button>
-              )}
+              <a 
+                href="/RedRole.apk"
+                download="RedRole.apk"
+                className="w-full mt-4 bg-surface border border-primary text-primary font-bold py-3 px-6 rounded-xl hover:bg-primary hover:text-white transition-colors shadow-lg flex items-center justify-center"
+              >
+                DOWNLOAD THE APP NOW
+              </a>
               
               <p className="text-xs text-gray-500 mt-6 font-medium">Pass & Play Mode</p>
             </div>
