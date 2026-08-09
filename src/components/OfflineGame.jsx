@@ -82,7 +82,7 @@ export default function OfflineGame({ playerNames, onEndGame }) {
   };
 
   if (phase === 'reveal' && players.length > 0) {
-    return <PassPhone player={players[turnIndex]} onNext={handleNextReveal} />;
+    return <PassPhone key={`reveal-${turnIndex}`} player={players[turnIndex]} onNext={handleNextReveal} />;
   }
 
   if (phase === 'night') {
@@ -92,6 +92,7 @@ export default function OfflineGame({ playerNames, onEndGame }) {
     if (currentPlayer) {
       return (
         <NightAction 
+          key={`night-${turnIndex}-${currentPlayer.id}`}
           role={currentPlayer.role} 
           player={currentPlayer} 
           allPlayers={players} 
