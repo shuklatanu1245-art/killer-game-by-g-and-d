@@ -5,9 +5,16 @@ import OfflineGame from './components/OfflineGame';
 import './index.css';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('home'); // 'home', 'offlineLobby', 'game'
+  const [currentScreen, setCurrentScreen] = useState('loading'); // 'loading', 'home', 'offlineLobby', 'game'
   const [players, setPlayers] = useState([]);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    if (currentScreen === 'loading') {
+      const timer = setTimeout(() => setCurrentScreen('home'), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentScreen]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
@@ -38,6 +45,25 @@ function App() {
       {/* Mobile Container Wrapper */}
       <div className="w-full max-w-md h-full min-h-[100dvh] flex flex-col relative z-10 sm:border-x sm:border-white/5 bg-background/50 backdrop-blur-3xl shadow-2xl">
         
+        {currentScreen === 'loading' && (
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500 bg-background z-50">
+            <div className="mb-8 relative">
+              <div className="absolute inset-0 bg-primary filter blur-3xl opacity-40 rounded-full animate-pulse"></div>
+              <img 
+                src="/logo.jpg" 
+                alt="RedRole Logo" 
+                className="w-48 h-48 object-cover rounded-[2rem] shadow-2xl relative z-10 border border-white/10"
+              />
+            </div>
+            <h1 className="text-4xl font-black text-white tracking-widest animate-pulse">LOADING...</h1>
+            
+            <div className="mt-auto pb-8">
+               <p className="text-gray-500 text-sm tracking-[0.3em] font-bold uppercase">Developed by</p>
+               <p className="text-white text-lg font-black tracking-widest mt-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">DEV SHUKLA</p>
+            </div>
+          </div>
+        )}
+
         {currentScreen === 'home' && (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-700">
             
