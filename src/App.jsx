@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Play, Download } from 'lucide-react';
+import { Play, Download, Info } from 'lucide-react';
 import OfflineLobby from './components/OfflineLobby';
 import OfflineGame from './components/OfflineGame';
+import Instructions from './components/Instructions';
 import './index.css';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('loading'); // 'loading', 'home', 'offlineLobby', 'game'
+  const [currentScreen, setCurrentScreen] = useState('loading'); // 'loading', 'home', 'instructions', 'offlineLobby', 'game'
   const [players, setPlayers] = useState([]);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
@@ -94,6 +95,14 @@ function App() {
                 <Play size={24} className="relative z-10 fill-current" />
                 <span className="relative z-10">TAP TO PLAY</span>
               </button>
+
+              <button 
+                onClick={() => setCurrentScreen('instructions')}
+                className="w-full flex items-center justify-center gap-3 metallic-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
+              >
+                <Info size={20} className="relative z-10" />
+                <span className="relative z-10 tracking-widest uppercase">How to Play</span>
+              </button>
               
               <a 
                 href="/RedRole_Creovate.apk" 
@@ -112,6 +121,15 @@ function App() {
                <p className="text-gray-600 text-[10px] tracking-widest font-bold uppercase">Developed by Creovate Studio</p>
             </div>
 
+          </div>
+        )}
+
+        {currentScreen === 'instructions' && (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 animate-in slide-in-from-right-8 duration-300">
+            <Instructions 
+              onBack={() => setCurrentScreen('home')}
+              onComplete={() => setCurrentScreen('offlineLobby')} 
+            />
           </div>
         )}
 
