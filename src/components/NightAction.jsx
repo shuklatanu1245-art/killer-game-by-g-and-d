@@ -52,10 +52,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
   if (!hasSeen) {
     return (
       <div className="metallic-panel p-8 max-w-md w-full text-center relative z-10">
-        <h2 className={`text-4xl font-black ${roleInfo.color} mb-2 drop-shadow-[0_0_15px_currentColor]`}>
-          {role} {roleInfo.emoji}
-        </h2>
-        <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-8">Choose your target</p>
+        <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-8">Pass the phone to</p>
         <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{player.name}</h1>
         <button 
           onClick={() => setHasSeen(true)}
