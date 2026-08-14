@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Play, Download, Info } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import OfflineLobby from './components/OfflineLobby';
 import OfflineGame from './components/OfflineGame';
 import Instructions from './components/Instructions';
@@ -9,6 +10,8 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState('loading'); // 'loading', 'home', 'instructions', 'offlineLobby', 'game'
   const [players, setPlayers] = useState([]);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  
+  const isNative = Capacitor.isNativePlatform();
 
   useEffect(() => {
     if (currentScreen === 'loading') {
@@ -104,14 +107,16 @@ function App() {
                 <span className="relative z-10 tracking-widest uppercase">How to Play</span>
               </button>
               
-              <a 
-                href="/RedRole_Creovate.apk" 
-                download="RedRole_Creovate.apk"
-                className="w-full flex items-center justify-center gap-3 metallic-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
-              >
-                <Download size={20} className="relative z-10" />
-                <span className="relative z-10 tracking-widest uppercase">Download App (APK)</span>
-              </a>
+              {!isNative && (
+                <a 
+                  href="/RedRole_Creovate.apk" 
+                  download="RedRole_Creovate.apk"
+                  className="w-full flex items-center justify-center gap-3 metallic-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
+                >
+                  <Download size={20} className="relative z-10" />
+                  <span className="relative z-10 tracking-widest uppercase">Download App (APK)</span>
+                </a>
+              )}
 
               <p className="text-xs text-gray-500 mt-6 font-medium">Pass & Play Mode</p>
             </div>
