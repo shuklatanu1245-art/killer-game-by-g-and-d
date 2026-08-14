@@ -15,11 +15,11 @@ export default function VotingScreen({ players, onVoteComplete }) {
 
   if (hasVoted) {
     return (
-      <div className="glass rounded-3xl p-8 max-w-md w-full text-center relative z-10 shadow-2xl">
-        <h2 className="text-3xl font-bold text-white mb-6">Vote Cast!</h2>
+      <div className="metallic-panel p-8 max-w-md w-full text-center relative z-10">
+        <h2 className="text-3xl font-black text-white mb-8 tracking-widest uppercase">Vote Cast!</h2>
         <button 
           onClick={() => onVoteComplete(votes.consensus)}
-          className="w-full bg-surface text-white font-bold py-4 px-6 rounded-xl border border-white/10 hover:bg-surface/80"
+          className="w-full metallic-btn py-4 px-6 rounded-xl"
         >
           SEE RESULTS
         </button>
@@ -28,10 +28,10 @@ export default function VotingScreen({ players, onVoteComplete }) {
   }
 
   return (
-    <div className="glass rounded-3xl p-6 max-w-md w-full relative z-10 shadow-2xl flex flex-col h-[80vh]">
+    <div className="metallic-panel p-6 max-w-md w-full relative z-10 flex flex-col h-[80vh]">
       <div className="text-center mb-6">
-        <h2 className="text-3xl font-extrabold text-primary mb-2">Day Phase</h2>
-        <p className="text-gray-400">Discuss for 30s, then agree who to vote out.</p>
+        <h2 className="text-3xl font-black text-primary mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_currentColor]">Day Phase</h2>
+        <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Discuss for 30s, then agree who to vote out.</p>
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 mb-6">
@@ -39,16 +39,16 @@ export default function VotingScreen({ players, onVoteComplete }) {
           <button
             key={p.id}
             onClick={() => handleVote(p.id)}
-            className="w-full flex items-center p-4 rounded-xl bg-surface border border-transparent hover:border-primary transition-all group"
+            className="w-full flex items-center p-4 rounded-xl bg-[#0B0F19] border border-white/5 hover:border-primary hover:shadow-[inset_0_0_20px_rgba(225,29,72,0.1)] transition-all group"
           >
-            <div className="flex-1 text-left text-lg font-bold text-white">{p.name}</div>
+            <div className="flex-1 text-left text-lg font-black text-white tracking-wider">{p.name}</div>
             <Gavel className="text-gray-600 group-hover:text-primary transition-colors" />
           </button>
         ))}
         
         <button
           onClick={() => handleVote(null)} // Skip vote
-          className="w-full flex items-center justify-center p-4 rounded-xl bg-gray-800 border border-gray-700 hover:border-gray-500 text-gray-400 font-bold transition-all mt-4"
+          className="w-full flex items-center justify-center p-4 rounded-xl bg-[#05070A] border border-white/10 hover:border-white/30 text-gray-500 font-black tracking-widest transition-all mt-4 uppercase"
         >
           SKIP VOTE
         </button>

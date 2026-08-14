@@ -31,7 +31,7 @@ export default function OfflineLobby({ onBack, onStartGame }) {
   const canStart = playerNames.every(name => name.trim().length > 0);
 
   return (
-    <div className="glass rounded-3xl p-8 max-w-md w-full relative z-10 shadow-2xl border border-white/5">
+    <div className="metallic-panel p-8 max-w-md w-full relative z-10">
       <button 
         onClick={onBack}
         className="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors"
@@ -40,24 +40,24 @@ export default function OfflineLobby({ onBack, onStartGame }) {
       </button>
 
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-extrabold text-white mb-2">Offline Setup</h2>
-        <p className="text-gray-400 text-sm">Pass & Play Mode</p>
+        <h2 className="text-3xl font-black text-white mb-2 tracking-wide uppercase">Offline Setup</h2>
+        <p className="text-primary text-xs tracking-widest font-bold uppercase">Pass & Play Mode</p>
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-xs font-bold text-gray-400 mb-2 tracking-widest uppercase">
           Number of Players (4-10)
         </label>
-        <div className="flex items-center bg-surface border border-gray-700 rounded-xl overflow-hidden">
+        <div className="flex items-center bg-[#0B0F19] border border-white/10 rounded-xl overflow-hidden shadow-inner">
           <input 
             type="range" 
             min="4" 
             max="10" 
             value={playerCount}
             onChange={handleCountChange}
-            className="w-full h-2 bg-gray-700 appearance-none cursor-pointer mx-4 accent-primary"
+            className="w-full h-2 bg-gray-800 appearance-none cursor-pointer mx-4 accent-primary"
           />
-          <div className="bg-primary text-white font-bold px-4 py-3 min-w-[3rem] text-center">
+          <div className="bg-primary text-white font-black px-4 py-3 min-w-[3rem] text-center border-l border-white/10">
             {playerCount}
           </div>
         </div>
@@ -71,10 +71,10 @@ export default function OfflineLobby({ onBack, onStartGame }) {
             </div>
             <input
               type="text"
-              placeholder={`Player ${index + 1} Name`}
+              placeholder={`PLAYER ${index + 1} NAME`}
               value={name}
               onChange={(e) => handleNameChange(index, e.target.value)}
-              className="block w-full pl-10 pr-3 py-3 bg-surface border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              className="block w-full pl-10 pr-3 py-3 bg-[#0B0F19] border border-white/10 rounded-xl text-white placeholder-gray-600 font-bold focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner uppercase text-sm"
             />
           </div>
         ))}
@@ -83,13 +83,13 @@ export default function OfflineLobby({ onBack, onStartGame }) {
       <button 
         disabled={!canStart}
         onClick={() => onStartGame(playerNames)}
-        className={`w-full group flex items-center justify-center gap-3 font-bold py-4 px-6 rounded-xl transition-all duration-300 ${
+        className={`w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl transition-all duration-300 ${
           canStart 
-            ? 'bg-accent hover:bg-accent/90 text-white hover:scale-[1.02] active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)]' 
-            : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+            ? 'metallic-btn metallic-btn-red' 
+            : 'bg-[#0B0F19] border border-white/5 text-gray-600 cursor-not-allowed font-black tracking-widest'
         }`}
       >
-        <Play size={20} className={canStart ? 'group-hover:scale-110 transition-transform' : ''} />
+        <Play size={20} />
         START GAME
       </button>
     </div>
