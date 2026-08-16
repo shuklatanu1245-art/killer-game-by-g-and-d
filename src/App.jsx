@@ -1,46 +1,102 @@
 import { useState, useEffect } from 'react';
-import { Play, Download, Info } from 'lucide-react';
+import { Play, Download, Home as HomeIcon, Users, MessageSquare, Settings as SettingsIcon, Gamepad2 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
-import OfflineLobby from './components/OfflineLobby';
+import Home from './components/Home';
+import Profiles from './components/Profiles';
 import OfflineGame from './components/OfflineGame';
 import Instructions from './components/Instructions';
 import './index.css';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('loading'); // 'loading', 'home', 'instructions', 'offlineLobby', 'game'
-  const [players, setPlayers] = useState([]);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [currentScreen, setCurrentScreen] = useState('loading'); // 'loading', 'hub', 'game', 'instructions'
+  const [activeTab, setActiveTab] = useState('home'); // 'home', 'active', 'profiles', 'messages', 'settings'
+  
+  const [globalPlayers, setGlobalPlayers] = useState(() => {
+    const saved = localStorage.getItem('creovate_global_players');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return Array(4).fill('');
+      }
+    }
+    return Array(4).fill('');
+  });
+
+  const [activeGame, setActiveGame] = useState(null); // 'redrole', etc
   
   const isNative = Capacitor.isNativePlatform();
 
   useEffect(() => {
     if (currentScreen === 'loading') {
-      const timer = setTimeout(() => setCurrentScreen('home'), 2500);
+      const timer = setTimeout(() => setCurrentScreen('hub'), 2500);
       return () => clearTimeout(timer);
     }
   }, [currentScreen]);
 
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-  }, []);
+  const handlePlayGame = (gameId) => {
+    // Validate players before launching
+    const validPlayers = globalPlayers.filter(p => p.trim().length > 0);
+    if (validPlayers.length < 4) {
+      alert("You need at least 4 valid players in Profiles to start this game.");
+      setActiveTab('profiles');
+      return;
+    }
+    setActiveGame(gameId);
+    setCurrentScreen('game');
+  };
 
-  const handleDownloadApp = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-      }
+  const handleShowInstructions = (gameId) => {
+    setCurrentScreen('instructions');
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return <Home onPlayGame={handlePlayGame} onShowInstructions={handleShowInstructions} />;
+      case 'profiles':
+        return <Profiles globalPlayers={globalPlayers} setGlobalPlayers={setGlobalPlayers} />;
+      case 'active':
+        return (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <Gamepad2 size={48} className="text-gray-600 mb-4" />
+            <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">No Active Game</h2>
+            <p className="text-gray-500 text-sm font-bold tracking-widest uppercase">Start a game from the Home tab.</p>
+          </div>
+        );
+      case 'messages':
+        return (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <MessageSquare size={48} className="text-gray-600 mb-4" />
+            <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">Messages</h2>
+            <p className="text-gray-500 text-sm font-bold tracking-widest uppercase">No new messages from Creovate Studio.</p>
+          </div>
+        );
+      case 'settings':
+        return (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <SettingsIcon size={48} className="text-gray-600 mb-4" />
+            <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">Settings</h2>
+            <p className="text-gray-500 text-sm font-bold tracking-widest uppercase">Coming soon.</p>
+            {!isNative && (
+              <a 
+                href="/RedRole_Creovate.apk" 
+                download="RedRole_Creovate.apk"
+                className="mt-8 flex items-center justify-center gap-3 glass-btn py-4 px-6 rounded-2xl overflow-hidden text-sm w-full max-w-[250px]"
+              >
+                <Download size={20} className="relative z-10" />
+                <span className="relative z-10 tracking-widest uppercase font-bold">Download App</span>
+              </a>
+            )}
+          </div>
+        );
+      default:
+        return <Home onPlayGame={handlePlayGame} onShowInstructions={handleShowInstructions} />;
     }
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center relative overflow-hidden font-sans">
+    <div className="min-h-[100dvh] bg-black flex flex-col items-center justify-center relative overflow-hidden font-sans">
       
       {/* Background Decor (Professional & Subtle) */}
       <div className="absolute top-[-10%] left-[-20%] w-[300px] h-[300px] bg-primary rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse-slow pointer-events-none"></div>
@@ -55,11 +111,11 @@ function App() {
               <div className="absolute inset-0 bg-primary filter blur-3xl opacity-40 rounded-full animate-pulse"></div>
               <img 
                 src="/logo.jpg" 
-                alt="RedRole Logo" 
+                alt="Creovate Logo" 
                 className="w-48 h-48 object-cover rounded-[2rem] shadow-[0_0_40px_rgba(225,29,72,0.3)] relative z-10 border border-white/10"
               />
             </div>
-            <h1 className="text-4xl font-black text-white tracking-widest animate-pulse">LOADING...</h1>
+            <h1 className="text-3xl font-black text-white tracking-widest animate-pulse uppercase">Creovate Games</h1>
             
             <div className="mt-auto pb-8">
                <p className="text-gray-500 text-sm tracking-[0.3em] font-bold uppercase">Developed by</p>
@@ -68,85 +124,51 @@ function App() {
           </div>
         )}
 
-        {currentScreen === 'home' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-700 bg-black">
+        {currentScreen === 'hub' && (
+          <div className="flex-1 flex flex-col h-full overflow-hidden relative">
             
-            {/* Logo Area */}
-            <div className="mb-12 relative">
-              <div className="absolute inset-0 bg-primary filter blur-3xl opacity-30 rounded-full"></div>
-              <div className="w-32 h-32 mx-auto glass-panel flex items-center justify-center relative z-10 rotate-3">
-                <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400 -rotate-3">RR</span>
-              </div>
+            {/* Tab Content Area */}
+            <div className="flex-1 overflow-hidden">
+              {renderTabContent()}
             </div>
 
-            {/* Title */}
-            <div className="mb-16">
-              <h1 className="text-5xl font-black tracking-tighter mb-3 text-white drop-shadow-lg">
-                RedRole
-              </h1>
-              <p className="text-gray-400 text-sm font-medium tracking-wide uppercase letter-spacing-2">
-                Deception & Deduction
-              </p>
-            </div>
-
-            {/* Play Button */}
-            <div className="w-full mt-auto mb-8 space-y-4">
-              <button 
-                onClick={() => setCurrentScreen('offlineLobby')}
-                className="w-full flex items-center justify-center gap-3 glass-btn glass-btn-red py-5 px-6 rounded-2xl overflow-hidden"
-              >
-                <Play size={24} className="relative z-10 fill-current" />
-                <span className="relative z-10">TAP TO PLAY</span>
-              </button>
-
-              <button 
-                onClick={() => setCurrentScreen('instructions')}
-                className="w-full flex items-center justify-center gap-3 glass-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
-              >
-                <Info size={20} className="relative z-10" />
-                <span className="relative z-10 tracking-widest uppercase">How to Play</span>
+            {/* Bottom Tab Bar */}
+            <div className="glass-panel rounded-none rounded-t-3xl border-b-0 border-x-0 border-t border-white/10 p-4 pb-6 sm:pb-4 flex justify-between items-center relative z-20">
+              
+              <button onClick={() => setActiveTab('home')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'home' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
+                <HomeIcon size={24} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Home</span>
               </button>
               
-              {!isNative && (
-                <a 
-                  href="/RedRole_Creovate.apk" 
-                  download="RedRole_Creovate.apk"
-                  className="w-full flex items-center justify-center gap-3 glass-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
-                >
-                  <Download size={20} className="relative z-10" />
-                  <span className="relative z-10 tracking-widest uppercase">Download App (APK)</span>
-                </a>
-              )}
+              <button onClick={() => setActiveTab('active')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'active' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
+                <Gamepad2 size={24} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Active</span>
+              </button>
+              
+              <button onClick={() => setActiveTab('profiles')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'profiles' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
+                <Users size={24} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Profiles</span>
+              </button>
+              
+              <button onClick={() => setActiveTab('messages')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'messages' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
+                <MessageSquare size={24} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Chat</span>
+              </button>
+              
+              <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'settings' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
+                <SettingsIcon size={24} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Settings</span>
+              </button>
 
-              <p className="text-xs text-gray-500 mt-6 font-medium">Pass & Play Mode</p>
             </div>
-
-            {/* Developer Credit */}
-            <div className="w-full text-center mt-auto pb-4">
-               <p className="text-gray-600 text-[10px] tracking-widest font-bold uppercase">Developed by Creovate Studio</p>
-            </div>
-
           </div>
         )}
 
         {currentScreen === 'instructions' && (
           <div className="flex-1 flex flex-col items-center justify-center p-6 animate-in slide-in-from-right-8 duration-300">
             <Instructions 
-              onBack={() => setCurrentScreen('home')}
-              onComplete={() => setCurrentScreen('offlineLobby')} 
-            />
-          </div>
-        )}
-
-        {currentScreen === 'offlineLobby' && (
-          <div className="flex-1 flex flex-col p-6 animate-in slide-in-from-right-8 duration-300">
-            <OfflineLobby 
-              initialPlayers={players}
-              onBack={() => setCurrentScreen('home')} 
-              onStartGame={(names) => {
-                setPlayers(names);
-                setCurrentScreen('game');
-              }} 
+              onBack={() => setCurrentScreen('hub')}
+              onComplete={() => setCurrentScreen('hub')} 
             />
           </div>
         )}
@@ -154,8 +176,8 @@ function App() {
         {currentScreen === 'game' && (
           <div className="flex-1 flex flex-col p-6 animate-in fade-in duration-500">
             <OfflineGame 
-              playerNames={players} 
-              onEndGame={() => setCurrentScreen('home')} 
+              playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
+              onEndGame={() => setCurrentScreen('hub')} 
             />
           </div>
         )}
