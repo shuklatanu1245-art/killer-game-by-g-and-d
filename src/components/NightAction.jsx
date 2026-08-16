@@ -5,6 +5,8 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
   const [hasSeen, setHasSeen] = useState(false);
   const [selectedTarget, setSelectedTarget] = useState(null);
   const [actionCompleted, setActionCompleted] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [detectiveResult, setDetectiveResult] = useState(null);
 
   const getRoleConfig = () => {
     switch(role) {
@@ -22,16 +24,17 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
   const handleAction = () => {
     if (config.hasTarget && !selectedTarget) return;
     
-    setActionCompleted(true);
-    
-    // Detective gets immediate feedback, others just wait a tiny bit for UX
+    // Detective gets a specialized delay and UI
     if (role === 'Detective') {
+      setIsDetecting(true);
       const isKiller = validTargets.find(p => p.id === selectedTarget)?.role === 'Killer';
+      
       setTimeout(() => {
-        alert(isKiller ? "Right guess, it's a killer!" : "Wrong guess, it's not a killer.");
-        onAction(selectedTarget, role);
-      }, 300);
+        setIsDetecting(false);
+        setDetectiveResult({ isKiller });
+      }, 2500);
     } else {
+      setActionCompleted(true);
       onAction(selectedTarget, role);
     }
   };
@@ -56,9 +59,53 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
         <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{player.name}</h1>
         <button 
           onClick={() => setHasSeen(true)}
-          className="w-full glass-btn glass-btn glass-btn-red py-4 px-6 rounded-xl"
+          className="w-full glass-btn glass-btn-red py-4 px-6 rounded-xl"
         >
           I AM READY
+        </button>
+      </div>
+    );
+  }
+
+  // DETECTION LOADING SCREEN
+  if (isDetecting) {
+    return (
+      <div className="glass-panel p-12 max-w-md w-full text-center relative z-10 flex flex-col items-center justify-center">
+        <Search size={64} className="text-blue-500 animate-pulse mb-8 drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]" />
+        <h2 className="text-2xl font-black text-white mb-2 tracking-widest uppercase animate-pulse">Detecting...</h2>
+        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Investigating target</p>
+      </div>
+    );
+  }
+
+  // DETECTIVE RESULT SCREEN
+  if (detectiveResult) {
+    return (
+      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
+        <div className="mb-10">
+          {detectiveResult.isKiller ? (
+            <>
+              <Target size={64} className="mx-auto text-primary mb-6 drop-shadow-[0_0_30px_rgba(255,90,74,0.8)]" />
+              <h2 className="text-3xl font-black text-white mb-2 tracking-widest uppercase">Target is the Killer!</h2>
+              <p className="text-primary text-sm font-bold tracking-widest uppercase">Your suspicion was correct.</p>
+            </>
+          ) : (
+            <>
+              <ShieldQuestion size={64} className="mx-auto text-accent mb-6 drop-shadow-[0_0_30px_rgba(16,185,129,0.8)]" />
+              <h2 className="text-3xl font-black text-white mb-2 tracking-widest uppercase">Target is Clean.</h2>
+              <p className="text-accent text-sm font-bold tracking-widest uppercase">They are not the killer.</p>
+            </>
+          )}
+        </div>
+        <button 
+          onClick={() => {
+            setDetectiveResult(null);
+            setActionCompleted(true);
+            onAction(selectedTarget, role);
+          }}
+          className="w-full glass-btn py-4 px-6 rounded-xl"
+        >
+          ACKNOWLEDGE & PASS
         </button>
       </div>
     );
@@ -111,17 +158,27 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 mb-6">
-        {validTargets.map(t => (
+        {validTargets.map((t, index) => (
           <button
             key={t.id}
             onClick={() => setSelectedTarget(t.id)}
-            className={`w-full flex items-center p-4 rounded-xl border transition-all ${
+            className={`w-full flex items-center p-3 rounded-2xl transition-all group ${
               selectedTarget === t.id 
-                ? 'bg-[#1A2233] border-primary shadow-[inset_0_0_20px_rgba(225,29,72,0.2)]' 
-                : 'glass-input border-white/5 hover:border-white/20'
+                ? 'bg-white/5 border border-primary shadow-[0_0_15px_rgba(255,90,74,0.15)]' 
+                : 'glass-panel border-white/5 hover:border-white/20'
             }`}
           >
-            <div className="flex-1 text-left text-lg font-black text-white tracking-wider">{t.name}</div>
+            <div className="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center mr-4 shadow-inner overflow-hidden relative">
+              <span className="text-gray-300 font-black text-sm relative z-10">{t.name.substring(0, 2).toUpperCase()}</span>
+            </div>
+            <div className="flex-1 text-left flex flex-col">
+               <div className="text-gray-500 text-[10px] uppercase font-bold mb-0.5 tracking-widest">
+                 #{String(index + 1).padStart(2, '0')}
+               </div>
+               <div className="text-white font-black tracking-wider text-base leading-none mb-1 group-hover:text-primary transition-colors">
+                 {t.name}
+               </div>
+            </div>
           </button>
         ))}
       </div>
@@ -131,7 +188,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
         onClick={handleAction}
         className={`w-full font-black py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 ${
           selectedTarget 
-            ? 'glass-btn glass-btn glass-btn-red' 
+            ? 'glass-btn glass-btn-red' 
             : 'bg-[#05070A] border border-white/5 text-gray-600 cursor-not-allowed tracking-widest'
         }`}
       >
