@@ -47,10 +47,10 @@ function App() {
       <div className="absolute bottom-[-10%] right-[-20%] w-[300px] h-[300px] bg-red-900 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse-slow pointer-events-none" style={{ animationDelay: '2s' }}></div>
 
       {/* Mobile Container Wrapper */}
-      <div className="w-full max-w-md h-full min-h-[100dvh] flex flex-col relative z-10 sm:border-x sm:border-white/5 bg-[#05070A] shadow-2xl">
+      <div className="w-full max-w-md h-full min-h-[100dvh] flex flex-col relative z-10 sm:border-x sm:border-white/5 bg-black shadow-2xl">
         
         {currentScreen === 'loading' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500 bg-[#05070A] z-50">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500 bg-black z-50">
             <div className="mb-8 relative">
               <div className="absolute inset-0 bg-primary filter blur-3xl opacity-40 rounded-full animate-pulse"></div>
               <img 
@@ -69,12 +69,12 @@ function App() {
         )}
 
         {currentScreen === 'home' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-700 bg-[#05070A]">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-700 bg-black">
             
             {/* Logo Area */}
             <div className="mb-12 relative">
               <div className="absolute inset-0 bg-primary filter blur-3xl opacity-30 rounded-full"></div>
-              <div className="w-32 h-32 mx-auto metallic-panel flex items-center justify-center relative z-10 rotate-3">
+              <div className="w-32 h-32 mx-auto glass-panel flex items-center justify-center relative z-10 rotate-3">
                 <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400 -rotate-3">RR</span>
               </div>
             </div>
@@ -93,7 +93,7 @@ function App() {
             <div className="w-full mt-auto mb-8 space-y-4">
               <button 
                 onClick={() => setCurrentScreen('offlineLobby')}
-                className="w-full flex items-center justify-center gap-3 metallic-btn metallic-btn-red py-5 px-6 rounded-2xl overflow-hidden"
+                className="w-full flex items-center justify-center gap-3 glass-btn glass-btn-red py-5 px-6 rounded-2xl overflow-hidden"
               >
                 <Play size={24} className="relative z-10 fill-current" />
                 <span className="relative z-10">TAP TO PLAY</span>
@@ -101,7 +101,7 @@ function App() {
 
               <button 
                 onClick={() => setCurrentScreen('instructions')}
-                className="w-full flex items-center justify-center gap-3 metallic-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
+                className="w-full flex items-center justify-center gap-3 glass-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
               >
                 <Info size={20} className="relative z-10" />
                 <span className="relative z-10 tracking-widest uppercase">How to Play</span>
@@ -111,7 +111,7 @@ function App() {
                 <a 
                   href="/RedRole_Creovate.apk" 
                   download="RedRole_Creovate.apk"
-                  className="w-full flex items-center justify-center gap-3 metallic-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
+                  className="w-full flex items-center justify-center gap-3 glass-btn py-4 px-6 rounded-2xl overflow-hidden text-sm"
                 >
                   <Download size={20} className="relative z-10" />
                   <span className="relative z-10 tracking-widest uppercase">Download App (APK)</span>

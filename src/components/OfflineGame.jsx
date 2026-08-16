@@ -104,15 +104,28 @@ export default function OfflineGame({ playerNames, onEndGame }) {
 
   if (phase === 'day') {
     return (
-      <div className="flex flex-col items-center justify-center w-full">
-        <div className="metallic-panel p-8 max-w-md w-full text-center relative z-10 mb-6">
-          <h2 className="text-4xl font-black text-white mb-4 uppercase tracking-widest drop-shadow-md">Sun Rises</h2>
-          {deadThisNight ? (
-            <p className="text-xl text-primary font-bold tracking-wider">Someone was killed last night...</p>
-          ) : (
-            <p className="text-xl text-accent font-bold tracking-wider">The night was peaceful. No one died.</p>
-          )}
+      <div className="flex flex-col items-center w-full h-full">
+        {/* Mockup Top Info */}
+        <div className="w-full max-w-md text-left mb-4 pt-4 px-2">
+          <h1 className="text-2xl font-black tracking-widest text-primary/80 drop-shadow-md uppercase mb-1">RedRole</h1>
+          <p className="text-gray-500 text-[10px] font-bold tracking-widest uppercase">CURRENT GAME</p>
+          <p className="text-white text-sm font-black tracking-widest uppercase">THE OBSIDIAN ESTATE</p>
         </div>
+
+        <div className="glass-panel p-6 max-w-md w-full text-center relative z-10 mb-4">
+          <p className="text-gray-400 text-xs tracking-widest font-bold uppercase mb-3">GAME IN PROGRESS</p>
+          <h2 className="text-primary text-sm tracking-widest font-black uppercase mb-3 flex items-center justify-center gap-2">
+            <span className="text-lg">☀️</span> DAY PHASE: DISCUSSION
+          </h2>
+          <div className="text-5xl font-black text-primary drop-shadow-[0_0_15px_rgba(255,90,74,0.4)] mb-4 font-mono tracking-tighter">
+            {deadThisNight ? 'KILL' : 'SAFE'}
+          </div>
+          <div className="text-xs text-gray-400 font-bold tracking-widest uppercase flex items-center justify-center divide-x divide-white/20">
+            <span className="pr-3 text-white">{players.filter(p=>p.isAlive).length} PLAYERS ALIVE</span>
+            <span className="pl-3">{players.filter(p=>!p.isAlive).length} ELIMINATED</span>
+          </div>
+        </div>
+
         <VotingScreen players={players} onVoteComplete={handleVoteComplete} />
       </div>
     );
@@ -120,7 +133,7 @@ export default function OfflineGame({ playerNames, onEndGame }) {
 
   if (phase === 'game-over') {
     return (
-      <div className="metallic-panel p-8 max-w-md w-full text-center relative z-10">
+      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
         <h2 className="text-5xl font-black text-white mb-6 uppercase tracking-widest drop-shadow-[0_0_20px_currentColor]">GAME OVER</h2>
         <h3 className={`text-3xl font-black mb-8 uppercase tracking-widest drop-shadow-md ${winner === TEAMS.IMPOSTOR ? 'text-primary' : 'text-accent'}`}>
           {winner}S WIN!
@@ -138,7 +151,7 @@ export default function OfflineGame({ playerNames, onEndGame }) {
 
         <button 
           onClick={onEndGame}
-          className="w-full metallic-btn metallic-btn-red py-4 px-6 rounded-xl"
+          className="w-full glass-btn glass-btn-red py-4 px-6 rounded-xl"
         >
           PLAY AGAIN
         </button>

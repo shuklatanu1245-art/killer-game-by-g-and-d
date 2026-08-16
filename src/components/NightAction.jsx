@@ -51,12 +51,12 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
   // PASS PHONE SCREEN (NO ROLE NAME SHOWN TO PREVENT METAGAMING)
   if (!hasSeen) {
     return (
-      <div className="metallic-panel p-8 max-w-md w-full text-center relative z-10">
+      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
         <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-8">Pass the phone to</p>
         <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{player.name}</h1>
         <button 
           onClick={() => setHasSeen(true)}
-          className="w-full metallic-btn metallic-btn-red py-4 px-6 rounded-xl"
+          className="w-full glass-btn glass-btn glass-btn-red py-4 px-6 rounded-xl"
         >
           I AM READY
         </button>
@@ -67,11 +67,11 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
   // COMPLETED SCREEN
   if (actionCompleted) {
     return (
-      <div className="metallic-panel p-8 max-w-md w-full text-center relative z-10">
+      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
         <h2 className="text-3xl font-black text-white mb-8 tracking-widest uppercase">Action Completed.</h2>
         <button 
           onClick={() => onAction(selectedTarget, role)}
-          className="w-full metallic-btn py-4 px-6 rounded-xl"
+          className="w-full glass-btn py-4 px-6 rounded-xl"
         >
           PASS TO NEXT PLAYER
         </button>
@@ -82,7 +82,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
   // FAKE SCREEN FOR CIVILIANS AND JOKERS
   if (!config.hasTarget) {
     return (
-      <div className="metallic-panel p-8 max-w-md w-full text-center relative z-10">
+      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
         <div className="mb-12">
           <Moon size={48} className="mx-auto text-gray-600 mb-4 drop-shadow-md" />
           <h2 className="text-4xl font-black text-gray-500 mb-4 drop-shadow-md">
@@ -94,7 +94,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
         </div>
         <button 
           onClick={() => setActionCompleted(true)}
-          className="w-full metallic-btn py-4 px-6 rounded-xl"
+          className="w-full glass-btn py-4 px-6 rounded-xl"
         >
           END TURN
         </button>
@@ -104,7 +104,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
 
   // REAL ACTION SCREEN FOR KILLER, DOCTOR, DETECTIVE
   return (
-    <div className="metallic-panel p-6 max-w-md w-full relative z-10 flex flex-col h-[80vh]">
+    <div className="glass-panel p-6 max-w-md w-full relative z-10 flex flex-col h-[80vh]">
       <div className="text-center mb-6">
         <h2 className={`text-2xl font-black uppercase tracking-widest ${config.color} drop-shadow-[0_0_10px_currentColor] mb-1`}>You are the {role}</h2>
         <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Select a player to {config.action}</p>
@@ -118,7 +118,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
             className={`w-full flex items-center p-4 rounded-xl border transition-all ${
               selectedTarget === t.id 
                 ? 'bg-[#1A2233] border-primary shadow-[inset_0_0_20px_rgba(225,29,72,0.2)]' 
-                : 'bg-[#0B0F19] border-white/5 hover:border-white/20'
+                : 'glass-input border-white/5 hover:border-white/20'
             }`}
           >
             <div className="flex-1 text-left text-lg font-black text-white tracking-wider">{t.name}</div>
@@ -131,7 +131,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
         onClick={handleAction}
         className={`w-full font-black py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 ${
           selectedTarget 
-            ? 'metallic-btn metallic-btn-red' 
+            ? 'glass-btn glass-btn glass-btn-red' 
             : 'bg-[#05070A] border border-white/5 text-gray-600 cursor-not-allowed tracking-widest'
         }`}
       >

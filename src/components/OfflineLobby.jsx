@@ -34,7 +34,7 @@ export default function OfflineLobby({ initialPlayers = [], onBack, onStartGame 
   const canStart = playerNames.every(name => name.trim().length > 0);
 
   return (
-    <div className="metallic-panel p-8 max-w-md w-full relative z-10">
+    <div className="glass-panel p-8 max-w-md w-full relative z-10">
       <button 
         onClick={onBack}
         className="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors"
@@ -51,7 +51,7 @@ export default function OfflineLobby({ initialPlayers = [], onBack, onStartGame 
         <label className="block text-xs font-bold text-gray-400 mb-2 tracking-widest uppercase">
           Number of Players (4-10)
         </label>
-        <div className="flex items-center bg-[#0B0F19] border border-white/10 rounded-xl overflow-hidden shadow-inner">
+        <div className="flex items-center glass-input border border-white/10 rounded-xl overflow-hidden shadow-inner">
           <input 
             type="range" 
             min="4" 
@@ -77,7 +77,7 @@ export default function OfflineLobby({ initialPlayers = [], onBack, onStartGame 
               placeholder={`PLAYER ${index + 1} NAME`}
               value={name}
               onChange={(e) => handleNameChange(index, e.target.value)}
-              className="block w-full pl-10 pr-3 py-3 bg-[#0B0F19] border border-white/10 rounded-xl text-white placeholder-gray-600 font-bold focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner uppercase text-sm"
+              className="block w-full pl-10 pr-3 py-3 glass-input border border-white/10 rounded-xl text-white placeholder-gray-600 font-bold focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner uppercase text-sm"
             />
           </div>
         ))}
@@ -88,8 +88,8 @@ export default function OfflineLobby({ initialPlayers = [], onBack, onStartGame 
         onClick={() => onStartGame(playerNames)}
         className={`w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl transition-all duration-300 ${
           canStart 
-            ? 'metallic-btn metallic-btn-red' 
-            : 'bg-[#0B0F19] border border-white/5 text-gray-600 cursor-not-allowed font-black tracking-widest'
+            ? 'glass-btn glass-btn-red' 
+            : 'glass-input border border-white/5 text-gray-600 cursor-not-allowed font-black tracking-widest'
         }`}
       >
         <Play size={20} />

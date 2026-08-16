@@ -7,10 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0B0F19',
-        surface: '#1A233A',
-        primary: '#E11D48', // Rose-600 (Killer Vibe)
-        accent: '#10B981', // Emerald-500 (Success/Safe)
+        background: '#000000',
+        surface: '#0A0A0A',
+        primary: '#FF5A4A', // Coral Red (Glass Theme)
+        accent: '#10B981', // Emerald
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
