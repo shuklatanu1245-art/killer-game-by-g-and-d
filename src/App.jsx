@@ -141,6 +141,7 @@ function App() {
         {currentScreen === 'offlineLobby' && (
           <div className="flex-1 flex flex-col p-6 animate-in slide-in-from-right-8 duration-300">
             <OfflineLobby 
+              initialPlayers={players}
               onBack={() => setCurrentScreen('home')} 
               onStartGame={(names) => {
                 setPlayers(names);

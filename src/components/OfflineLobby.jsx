@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { ArrowLeft, UserPlus, Play } from 'lucide-react';
 
-export default function OfflineLobby({ onBack, onStartGame }) {
-  const [playerCount, setPlayerCount] = useState(4);
-  const [playerNames, setPlayerNames] = useState(Array(4).fill(''));
+export default function OfflineLobby({ initialPlayers = [], onBack, onStartGame }) {
+  const initialCount = initialPlayers.length > 0 ? Math.max(4, initialPlayers.length) : 4;
+  const initialNames = initialPlayers.length > 0 ? initialPlayers : Array(4).fill('');
+
+  const [playerCount, setPlayerCount] = useState(initialCount);
+  const [playerNames, setPlayerNames] = useState(initialNames);
 
   const handleCountChange = (e) => {
     const count = parseInt(e.target.value, 10);
