@@ -5,6 +5,7 @@ import Home from './components/Home';
 import Profiles from './components/Profiles';
 import OfflineGame from './components/OfflineGame';
 import Instructions from './components/Instructions';
+import SketchGame from './components/SketchGame';
 import './index.css';
 
 function App() {
@@ -173,9 +174,18 @@ function App() {
           </div>
         )}
 
-        {currentScreen === 'game' && (
+        {currentScreen === 'game' && activeGame === 'redrole' && (
           <div className="flex-1 flex flex-col p-6 animate-in fade-in duration-500">
             <OfflineGame 
+              playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
+              onEndGame={() => setCurrentScreen('hub')} 
+            />
+          </div>
+        )}
+
+        {currentScreen === 'game' && activeGame === 'sketch' && (
+          <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black">
+            <SketchGame 
               playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
               onEndGame={() => setCurrentScreen('hub')} 
             />
