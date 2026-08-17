@@ -6,6 +6,7 @@ import Profiles from './components/Profiles';
 import OfflineGame from './components/OfflineGame';
 import Instructions from './components/Instructions';
 import SketchGame from './components/SketchGame';
+import ImposterGame from './components/ImposterGame';
 import WebLanding from './components/WebLanding';
 import './index.css';
 
@@ -25,7 +26,8 @@ function App() {
     return Array(4).fill('');
   });
 
-  const [activeGame, setActiveGame] = useState(null); // 'redrole', etc
+  const [activeGame, setActiveGame] = useState(null); // 'redrole', 'sketch', 'imposter'
+  const [instructionGame, setInstructionGame] = useState('redrole');
   
   const [forceWebPlay, setForceWebPlay] = useState(false);
   const isNative = Capacitor.isNativePlatform();
@@ -40,8 +42,13 @@ function App() {
   const handlePlayGame = (gameId) => {
     // Validate players before launching
     const validPlayers = globalPlayers.filter(p => p.trim().length > 0);
-    if (validPlayers.length < 4) {
+    if (validPlayers.length < 4 && (gameId === 'redrole' || gameId === 'imposter')) {
       alert("You need at least 4 valid players in Profiles to start this game.");
+      setActiveTab('profiles');
+      return;
+    }
+    if (validPlayers.length < 3 && gameId === 'sketch') {
+      alert("At least 3 players are required to play Sketch & Guess.");
       setActiveTab('profiles');
       return;
     }
@@ -50,6 +57,7 @@ function App() {
   };
 
   const handleShowInstructions = (gameId) => {
+    setInstructionGame(gameId);
     setCurrentScreen('instructions');
   };
 
@@ -174,6 +182,7 @@ function App() {
         {currentScreen === 'instructions' && (
           <div className="flex-1 flex flex-col items-center justify-center p-6 animate-in slide-in-from-right-8 duration-300">
             <Instructions 
+              gameId={instructionGame}
               onBack={() => setCurrentScreen('hub')}
               onComplete={() => setCurrentScreen('hub')} 
             />
@@ -192,6 +201,15 @@ function App() {
         {currentScreen === 'game' && activeGame === 'sketch' && (
           <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black">
             <SketchGame 
+              playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
+              onEndGame={() => setCurrentScreen('hub')} 
+            />
+          </div>
+        )}
+
+        {currentScreen === 'game' && activeGame === 'imposter' && (
+          <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black">
+            <ImposterGame 
               playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
               onEndGame={() => setCurrentScreen('hub')} 
             />

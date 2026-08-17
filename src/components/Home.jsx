@@ -45,8 +45,41 @@ export default function Home({ onPlayGame, onShowInstructions }) {
           </div>
         </div>
 
+        {/* Imposter Word Game Card */}
+        <div className="glass-panel p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500 rounded-full filter blur-[50px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity"></div>
+          
+          <div className="flex justify-between items-start mb-6 relative z-10">
+            <div>
+              <h2 className="text-2xl font-black text-white tracking-wider uppercase mb-1">Imposter Word</h2>
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                <Ghost size={14} className="text-emerald-500" /> Deduction / Secret
+              </p>
+            </div>
+            <div className="w-12 h-12 glass-panel flex items-center justify-center -rotate-3 border-emerald-500/30">
+               <span className="text-xl font-black text-white rotate-3">IW</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10">
+            <button 
+              onClick={() => onPlayGame('imposter')}
+              className="flex-1 flex items-center justify-center gap-2 glass-btn py-3 rounded-xl uppercase font-bold tracking-widest text-sm hover:border-emerald-500/50 text-emerald-400"
+            >
+              <Play size={16} className="fill-current" />
+              PLAY
+            </button>
+            <button 
+              onClick={() => onShowInstructions('imposter')}
+              className="w-12 h-12 flex items-center justify-center glass-btn py-3 rounded-xl"
+            >
+              <Info size={20} className="text-white" />
+            </button>
+          </div>
+        </div>
+
         {/* Sketch & Guess Game Card */}
-        <div className="glass-panel p-6 relative overflow-hidden group mt-6">
+        <div className="glass-panel p-6 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full filter blur-[50px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity"></div>
           
           <div className="flex justify-between items-start mb-6 relative z-10">
@@ -64,10 +97,16 @@ export default function Home({ onPlayGame, onShowInstructions }) {
           <div className="flex items-center gap-3 relative z-10">
             <button 
               onClick={() => onPlayGame('sketch')}
-              className="flex-1 flex items-center justify-center gap-2 glass-btn py-3 rounded-xl uppercase font-bold tracking-widest text-sm hover:border-blue-500/50"
+              className="flex-1 flex items-center justify-center gap-2 glass-btn py-3 rounded-xl uppercase font-bold tracking-widest text-sm hover:border-blue-500/50 text-blue-400"
             >
-              <Play size={16} className="fill-current text-blue-500" />
+              <Play size={16} className="fill-current" />
               PLAY
+            </button>
+            <button 
+              onClick={() => onShowInstructions('sketch')}
+              className="w-12 h-12 flex items-center justify-center glass-btn py-3 rounded-xl"
+            >
+              <Info size={20} className="text-white" />
             </button>
           </div>
         </div>
