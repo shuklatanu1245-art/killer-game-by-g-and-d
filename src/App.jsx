@@ -6,6 +6,7 @@ import Profiles from './components/Profiles';
 import OfflineGame from './components/OfflineGame';
 import Instructions from './components/Instructions';
 import SketchGame from './components/SketchGame';
+import WebLanding from './components/WebLanding';
 import './index.css';
 
 function App() {
@@ -50,6 +51,10 @@ function App() {
   const handleShowInstructions = (gameId) => {
     setCurrentScreen('instructions');
   };
+
+  if (!isNative) {
+    return <WebLanding />;
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
