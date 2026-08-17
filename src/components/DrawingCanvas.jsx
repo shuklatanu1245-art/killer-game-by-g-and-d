@@ -1,11 +1,26 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Eraser, Pencil, Trash2 } from 'lucide-react';
+import { Eraser, Trash2, Circle } from 'lucide-react';
+
+const COLORS = [
+  { hex: '#FFFFFF', name: 'White' },
+  { hex: '#FF5A4A', name: 'Coral' },
+  { hex: '#3B82F6', name: 'Blue' },
+  { hex: '#10B981', name: 'Green' },
+  { hex: '#F59E0B', name: 'Yellow' }
+];
+
+const THICKNESS_OPTIONS = [
+  { value: 3, label: 'Thin' },
+  { value: 8, label: 'Medium' },
+  { value: 15, label: 'Thick' }
+];
 
 export default function DrawingCanvas({ onSave }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState('#FFFFFF'); // Default white
+  const [color, setColor] = useState('#FFFFFF'); 
   const [lineWidth, setLineWidth] = useState(3);
+  const [isErasing, setIsErasing] = useState(false);
   
   // Set up canvas context and sizing
   useEffect(() => {
@@ -20,10 +35,6 @@ export default function DrawingCanvas({ onSave }) {
     const ctx = canvas.getContext('2d');
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    
-    // Fill background with transparent color so base64 isn't just black on black
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
 
   const getCoordinates = (e) => {
@@ -42,10 +53,13 @@ export default function DrawingCanvas({ onSave }) {
   };
 
   const startDrawing = (e) => {
-    e.preventDefault(); // Prevent scrolling on touch
+    e.preventDefault(); 
     setIsDrawing(true);
     const { x, y } = getCoordinates(e);
     const ctx = canvasRef.current.getContext('2d');
+    
+    ctx.globalCompositeOperation = isErasing ? 'destination-out' : 'source-over';
+    
     ctx.beginPath();
     ctx.moveTo(x, y);
   };
@@ -55,16 +69,12 @@ export default function DrawingCanvas({ onSave }) {
     if (!isDrawing) return;
     const { x, y } = getCoordinates(e);
     const ctx = canvasRef.current.getContext('2d');
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
     
-    // Add glow effect if not erasing
-    if (color !== 'rgba(255, 255, 255, 0.05)') {
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = color;
-    } else {
-      ctx.shadowBlur = 0;
-    }
+    ctx.strokeStyle = isErasing ? 'rgba(0,0,0,1)' : color;
+    ctx.lineWidth = isErasing ? 30 : lineWidth; // Eraser is always thick
+    
+    // Removed shadowBlur to prevent spreading/bleeding effect
+    ctx.shadowBlur = 0;
     
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -78,27 +88,51 @@ export default function DrawingCanvas({ onSave }) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
   const handleSave = () => {
-    const dataUrl = canvasRef.current.toDataURL('image/png');
+    // Before saving, we want to make sure it's not totally transparent 
+    // by filling a black background behind the drawing so results screen looks good.
+    const canvas = canvasRef.current;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    tempCtx.fillStyle = '#1A1C23'; // Dark background
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    tempCtx.drawImage(canvas, 0, 0);
+    
+    const dataUrl = tempCanvas.toDataURL('image/png');
     onSave(dataUrl);
   };
 
   const selectEraser = () => {
-    setColor('rgba(255, 255, 255, 0.05)'); // Acts as an eraser on this background
-    setLineWidth(20);
+    setIsErasing(true);
   };
 
   const selectPen = (newColor) => {
     setColor(newColor);
-    setLineWidth(3);
+    setIsErasing(false);
   };
 
   return (
     <div className="flex flex-col h-full w-full">
+      {/* Controls Bar: Thickness */}
+      <div className="flex justify-between items-center mb-2 px-2">
+        <div className="flex gap-4 items-center">
+          {THICKNESS_OPTIONS.map(opt => (
+             <button
+                key={opt.value}
+                onClick={() => setLineWidth(opt.value)}
+                className={`flex items-center justify-center w-8 h-8 rounded-full transition-all ${lineWidth === opt.value && !isErasing ? 'bg-white/20' : 'opacity-50 hover:opacity-100'}`}
+             >
+                <Circle size={opt.value + 6} className="fill-current text-white" />
+             </button>
+          ))}
+        </div>
+      </div>
+
       <div className="flex-1 w-full bg-black/40 rounded-2xl border border-white/10 overflow-hidden relative shadow-inner touch-none">
         <canvas
           ref={canvasRef}
@@ -114,23 +148,19 @@ export default function DrawingCanvas({ onSave }) {
       </div>
       
       <div className="flex items-center justify-between mt-4">
-        <div className="flex gap-2">
-          <button 
-            onClick={() => selectPen('#FFFFFF')} 
-            className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${color === '#FFFFFF' ? 'border-primary bg-white/20' : 'border-white/20 bg-transparent'}`}
-          >
-            <div className="w-5 h-5 bg-white rounded-full shadow-[0_0_10px_white]"></div>
-          </button>
-          <button 
-            onClick={() => selectPen('#FF5A4A')} 
-            className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${color === '#FF5A4A' ? 'border-primary bg-primary/20' : 'border-white/20 bg-transparent'}`}
-          >
-            <div className="w-5 h-5 bg-primary rounded-full shadow-[0_0_10px_#FF5A4A]"></div>
-          </button>
+        <div className="flex gap-2 flex-wrap max-w-[70%]">
+          {COLORS.map(c => (
+            <button 
+              key={c.hex}
+              onClick={() => selectPen(c.hex)} 
+              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${color === c.hex && !isErasing ? 'border-primary scale-110' : 'border-white/20'}`}
+              style={{ backgroundColor: c.hex }}
+            />
+          ))}
           
           <button 
             onClick={selectEraser} 
-            className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${color === 'rgba(255, 255, 255, 0.05)' ? 'border-primary bg-white/10' : 'border-white/20 bg-transparent'}`}
+            className={`w-10 h-10 ml-2 rounded-full border-2 flex items-center justify-center transition-all ${isErasing ? 'border-primary bg-white/10 scale-110' : 'border-white/20 bg-transparent'}`}
           >
             <Eraser size={18} className="text-gray-300" />
           </button>
