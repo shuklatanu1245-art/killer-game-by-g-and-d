@@ -64,11 +64,17 @@ export default function WebLanding({ onPlayWeb }) {
             <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">For iPhone / iOS Devices</p>
             <button 
               onClick={onPlayWeb}
-              className="w-full bg-white/5 border border-white/10 py-4 rounded-xl font-black tracking-widest text-sm uppercase flex items-center justify-center gap-3 transition-all hover:bg-white/10 hover:border-white/20 group text-white"
+              className="w-full bg-white/5 border border-white/10 py-4 rounded-xl font-black tracking-widest text-sm uppercase flex items-center justify-center gap-3 transition-all hover:bg-white/10 hover:border-white/20 group text-white mb-2"
             >
               <Smartphone size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
-              Play on Web
+              Play in Browser
             </button>
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-left">
+               <p className="text-blue-400 text-[9px] font-bold uppercase tracking-wider mb-1">💡 Pro Tip for iPhone:</p>
+               <p className="text-gray-400 text-xs leading-relaxed">
+                 Open this site in <strong>Safari</strong>, tap the <strong>Share</strong> icon at the bottom, and select <strong>"Add to Home Screen"</strong>. It will install like a real app!
+               </p>
+            </div>
           </div>
         </div>
         
