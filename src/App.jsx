@@ -27,6 +27,7 @@ function App() {
 
   const [activeGame, setActiveGame] = useState(null); // 'redrole', etc
   
+  const [forceWebPlay, setForceWebPlay] = useState(false);
   const isNative = Capacitor.isNativePlatform();
 
   useEffect(() => {
@@ -52,8 +53,8 @@ function App() {
     setCurrentScreen('instructions');
   };
 
-  if (!isNative) {
-    return <WebLanding />;
+  if (!isNative && !forceWebPlay) {
+    return <WebLanding onPlayWeb={() => setForceWebPlay(true)} />;
   }
 
   const renderTabContent = () => {

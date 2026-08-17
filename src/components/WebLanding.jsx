@@ -1,7 +1,7 @@
 import React from 'react';
-import { Download, Gamepad2, Users, Star } from 'lucide-react';
+import { Download, Gamepad2, Users, Star, Smartphone } from 'lucide-react';
 
-export default function WebLanding() {
+export default function WebLanding({ onPlayWeb }) {
   return (
     <div className="min-h-screen bg-[#05070A] text-white flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
       
@@ -30,7 +30,7 @@ export default function WebLanding() {
         </p>
 
         {/* Features */}
-        <div className="flex justify-around mb-12">
+        <div className="flex justify-around mb-10">
           <div className="flex flex-col items-center">
              <Gamepad2 size={24} className="text-primary mb-2" />
              <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Multiple Games</span>
@@ -45,19 +45,33 @@ export default function WebLanding() {
           </div>
         </div>
 
-        {/* Download Button */}
-        <a 
-          href="/CreovateGames.apk" 
-          download="CreovateGames.apk"
-          className="w-full glass-btn py-5 rounded-2xl font-black tracking-widest text-lg uppercase flex items-center justify-center gap-3 transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(225,29,72,0.4)] group"
-        >
-          <Download size={24} className="group-hover:animate-bounce" />
-          Download APK
-        </a>
+        <div className="flex flex-col gap-4">
+          {/* Download Button (Android) */}
+          <div>
+            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">For Android Devices</p>
+            <a 
+              href="/CreovateGames.apk" 
+              download="CreovateGames.apk"
+              className="w-full glass-btn py-4 rounded-xl font-black tracking-widest text-sm uppercase flex items-center justify-center gap-3 transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(225,29,72,0.4)] group"
+            >
+              <Download size={20} className="group-hover:animate-bounce" />
+              Download APK
+            </a>
+          </div>
+
+          {/* Web Play Button (iPhone) */}
+          <div className="mt-2">
+            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">For iPhone / iOS Devices</p>
+            <button 
+              onClick={onPlayWeb}
+              className="w-full bg-white/5 border border-white/10 py-4 rounded-xl font-black tracking-widest text-sm uppercase flex items-center justify-center gap-3 transition-all hover:bg-white/10 hover:border-white/20 group text-white"
+            >
+              <Smartphone size={20} className="text-blue-400 group-hover:scale-110 transition-transform" />
+              Play on Web
+            </button>
+          </div>
+        </div>
         
-        <p className="mt-6 text-gray-500 text-[10px] font-bold uppercase tracking-wider">
-          For Android Devices Only. Best experienced natively.
-        </p>
       </div>
 
     </div>
