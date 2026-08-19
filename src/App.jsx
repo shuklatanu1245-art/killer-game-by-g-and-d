@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, Download, Home as HomeIcon, Users, MessageSquare, Settings as SettingsIcon, Gamepad2 } from 'lucide-react';
+import { Play, Download, Home as HomeIcon, Users, MessageSquare, Settings as SettingsIcon, Gamepad2, X } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import Home from './components/Home';
 import Profiles from './components/Profiles';
@@ -27,6 +27,7 @@ function App() {
   });
 
   const [activeGame, setActiveGame] = useState(null); // 'redrole', 'sketch', 'imposter'
+  const [activeGamePlayers, setActiveGamePlayers] = useState([]);
   const [instructionGame, setInstructionGame] = useState('redrole');
   
   const [forceWebPlay, setForceWebPlay] = useState(false);
@@ -52,6 +53,11 @@ function App() {
       setActiveTab('profiles');
       return;
     }
+    
+    // Randomize the valid players so order is not predictable
+    const shuffled = [...validPlayers].sort(() => Math.random() - 0.5);
+    setActiveGamePlayers(shuffled);
+    
     setActiveGame(gameId);
     setCurrentScreen('game');
   };
@@ -59,6 +65,12 @@ function App() {
   const handleShowInstructions = (gameId) => {
     setInstructionGame(gameId);
     setCurrentScreen('instructions');
+  };
+
+  const quitGame = () => {
+    if (confirm("Are you sure you want to quit the current game?")) {
+      setCurrentScreen('hub');
+    }
   };
 
   if (!isNative && !forceWebPlay) {
@@ -95,8 +107,8 @@ function App() {
             <p className="text-gray-500 text-sm font-bold tracking-widest uppercase">Coming soon.</p>
             {!isNative && (
               <a 
-                href="/RedRole_Creovate.apk" 
-                download="RedRole_Creovate.apk"
+                href="/CreovateGames.apk" 
+                download="CreovateGames.apk"
                 className="mt-8 flex items-center justify-center gap-3 glass-btn py-4 px-6 rounded-2xl overflow-hidden text-sm w-full max-w-[250px]"
               >
                 <Download size={20} className="relative z-10" />
@@ -189,31 +201,43 @@ function App() {
           </div>
         )}
 
-        {currentScreen === 'game' && activeGame === 'redrole' && (
-          <div className="flex-1 flex flex-col p-6 animate-in fade-in duration-500">
-            <OfflineGame 
-              playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
-              onEndGame={() => setCurrentScreen('hub')} 
-            />
-          </div>
-        )}
+        {currentScreen === 'game' && (
+          <>
+            {/* Global Quit Button */}
+            <button 
+              onClick={quitGame}
+              className="absolute top-4 left-4 z-[99] w-10 h-10 bg-black/50 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+            >
+              <X size={20} />
+            </button>
 
-        {currentScreen === 'game' && activeGame === 'sketch' && (
-          <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black">
-            <SketchGame 
-              playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
-              onEndGame={() => setCurrentScreen('hub')} 
-            />
-          </div>
-        )}
+            {activeGame === 'redrole' && (
+              <div className="flex-1 flex flex-col p-6 animate-in fade-in duration-500 pt-16">
+                <OfflineGame 
+                  playerNames={activeGamePlayers} 
+                  onEndGame={() => setCurrentScreen('hub')} 
+                />
+              </div>
+            )}
 
-        {currentScreen === 'game' && activeGame === 'imposter' && (
-          <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black">
-            <ImposterGame 
-              playerNames={globalPlayers.filter(p => p.trim().length > 0)} 
-              onEndGame={() => setCurrentScreen('hub')} 
-            />
-          </div>
+            {activeGame === 'sketch' && (
+              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
+                <SketchGame 
+                  playerNames={activeGamePlayers} 
+                  onEndGame={() => setCurrentScreen('hub')} 
+                />
+              </div>
+            )}
+
+            {activeGame === 'imposter' && (
+              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
+                <ImposterGame 
+                  playerNames={activeGamePlayers} 
+                  onEndGame={() => setCurrentScreen('hub')} 
+                />
+              </div>
+            )}
+          </>
         )}
 
       </div>
