@@ -1,44 +1,44 @@
 export const imposterCategories = {
   standard: [
-    { word: 'Apple', hint: 'Fruit' },
-    { word: 'Banana', hint: 'Fruit' },
-    { word: 'Car', hint: 'Vehicle' },
-    { word: 'Bicycle', hint: 'Vehicle' },
-    { word: 'Laptop', hint: 'Electronics' },
-    { word: 'Smartphone', hint: 'Electronics' },
-    { word: 'Dog', hint: 'Animal' },
-    { word: 'Cat', hint: 'Animal' },
-    { word: 'Guitar', hint: 'Musical Instrument' },
-    { word: 'Piano', hint: 'Musical Instrument' },
-    { word: 'Pizza', hint: 'Food' },
-    { word: 'Burger', hint: 'Food' },
-    { word: 'Coffee', hint: 'Drink' },
-    { word: 'Tea', hint: 'Drink' }
+    { word: 'Apple', hint: 'Doctor' },
+    { word: 'Banana', hint: 'Monkey' },
+    { word: 'Car', hint: 'Wheels' },
+    { word: 'Bicycle', hint: 'Pedal' },
+    { word: 'Laptop', hint: 'Keyboard' },
+    { word: 'Smartphone', hint: 'Screen' },
+    { word: 'Dog', hint: 'Bark' },
+    { word: 'Cat', hint: 'Meow' },
+    { word: 'Guitar', hint: 'Strings' },
+    { word: 'Piano', hint: 'Keys' },
+    { word: 'Pizza', hint: 'Slice' },
+    { word: 'Burger', hint: 'Bun' },
+    { word: 'Coffee', hint: 'Caffeine' },
+    { word: 'Tea', hint: 'Leaves' }
   ],
   bollywood: [
-    { word: 'Sholay', hint: 'Movie' },
-    { word: 'DDLJ', hint: 'Movie' },
-    { word: 'Amitabh', hint: 'Actor' },
-    { word: 'SRK', hint: 'Actor' },
-    { word: 'Kabir Singh', hint: 'Movie' },
-    { word: '3 Idiots', hint: 'Movie' },
-    { word: 'Ranbir Kapoor', hint: 'Actor' }
+    { word: 'Sholay', hint: 'Gabbar' },
+    { word: 'DDLJ', hint: 'Train' },
+    { word: 'Amitabh', hint: 'Angry' },
+    { word: 'SRK', hint: 'Romance' },
+    { word: 'Kabir Singh', hint: 'Anger' },
+    { word: '3 Idiots', hint: 'College' },
+    { word: 'Ranbir Kapoor', hint: 'Animal' }
   ],
   anime: [
-    { word: 'Naruto', hint: 'Anime' },
-    { word: 'One Piece', hint: 'Anime' },
-    { word: 'Goku', hint: 'Character' },
-    { word: 'Luffy', hint: 'Character' },
-    { word: 'Death Note', hint: 'Anime' },
-    { word: 'Attack on Titan', hint: 'Anime' }
+    { word: 'Naruto', hint: 'Ninja' },
+    { word: 'One Piece', hint: 'Pirate' },
+    { word: 'Goku', hint: 'Saiyan' },
+    { word: 'Luffy', hint: 'Rubber' },
+    { word: 'Death Note', hint: 'Book' },
+    { word: 'Attack on Titan', hint: 'Giants' }
   ],
   adult18: [
-    { word: 'Vodka', hint: 'Alcohol' },
-    { word: 'Beer', hint: 'Alcohol' },
-    { word: 'Strip Club', hint: 'Place' },
-    { word: 'Hangover', hint: 'Condition' },
-    { word: 'Condom', hint: 'Item' },
-    { word: 'Tinder', hint: 'App' }
+    { word: 'Vodka', hint: 'Russia' },
+    { word: 'Beer', hint: 'Mug' },
+    { word: 'Strip Club', hint: 'Pole' },
+    { word: 'Hangover', hint: 'Headache' },
+    { word: 'Condom', hint: 'Protection' },
+    { word: 'Tinder', hint: 'Swipe' }
   ]
 };
 
