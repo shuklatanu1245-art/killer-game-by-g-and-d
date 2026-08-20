@@ -155,8 +155,8 @@ function App() {
     <div className="h-[100dvh] w-full bg-black flex flex-col items-center justify-center relative overflow-hidden font-sans">
       
       {/* Background Decor (Professional & Subtle) */}
-      <div className="absolute top-[-10%] left-[-20%] w-[300px] h-[300px] bg-primary rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse-slow pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-20%] w-[300px] h-[300px] bg-red-900 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse-slow pointer-events-none" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-[-10%] left-[-20%] w-[300px] h-[300px] bg-[#FF69B4] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse-slow pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-20%] w-[300px] h-[300px] bg-[#069494] rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-pulse-slow pointer-events-none" style={{ animationDelay: '2s' }}></div>
 
       {/* Mobile Container Wrapper */}
       <div className="w-full max-w-md h-full flex flex-col relative z-10 sm:border-x sm:border-white/5 bg-black shadow-2xl overflow-hidden">
@@ -168,7 +168,7 @@ function App() {
               <img 
                 src="/logo.jpg" 
                 alt="Creovate Logo" 
-                className="w-48 h-48 object-cover rounded-[2rem] shadow-[0_0_40px_rgba(225,29,72,0.3)] relative z-10 border border-white/10"
+                className="w-48 h-48 object-cover rounded-[2rem] shadow-[0_0_40px_rgba(255,105,180,0.4)] relative z-10 border border-white/10"
               />
             </div>
             <h1 className="text-3xl font-black text-white tracking-widest animate-pulse uppercase">Creovate Games</h1>

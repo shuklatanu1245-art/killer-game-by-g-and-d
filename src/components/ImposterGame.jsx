@@ -158,7 +158,7 @@ export default function ImposterGame({ playerNames, onEndGame }) {
                  onClick={() => setImposterCount(Math.max(1, imposterCount - 1))}
                  className="w-12 h-12 rounded-full glass-btn text-xl font-bold flex items-center justify-center"
                >-</button>
-               <span className="text-5xl font-black text-primary drop-shadow-[0_0_15px_rgba(225,29,72,0.5)] w-16">{imposterCount}</span>
+               <span className="text-5xl font-black text-primary drop-shadow-[0_0_15px_rgba(255,105,180,0.5)] w-16">{imposterCount}</span>
                <button 
                  onClick={() => setImposterCount(Math.min(maxImposters, imposterCount + 1))}
                  className="w-12 h-12 rounded-full glass-btn text-xl font-bold flex items-center justify-center"
@@ -224,7 +224,7 @@ export default function ImposterGame({ playerNames, onEndGame }) {
         <div className="flex-1 flex flex-col items-center justify-center">
           {isImposter ? (
             <div className="animate-in zoom-in duration-500 w-full">
-               <Target size={64} className="mx-auto text-primary mb-6 drop-shadow-[0_0_20px_rgba(225,29,72,0.8)]" />
+               <Target size={64} className="mx-auto text-primary mb-6 drop-shadow-[0_0_20px_rgba(255,105,180,0.8)]" />
                <h3 className="text-3xl font-black text-primary tracking-widest uppercase mb-4">IMPOSTER</h3>
                <div className="glass-input p-4 rounded-xl border border-white/10 mb-6">
                  <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-1">Category Hint</p>
@@ -378,7 +378,7 @@ export default function ImposterGame({ playerNames, onEndGame }) {
         <div className="flex-1 flex flex-col items-center justify-center animate-in zoom-in duration-500">
            {isImposter ? (
              <>
-               <Target size={80} className="text-primary mb-6 drop-shadow-[0_0_30px_rgba(225,29,72,0.8)]" />
+               <Target size={80} className="text-primary mb-6 drop-shadow-[0_0_30px_rgba(255,105,180,0.8)]" />
                <h3 className="text-3xl font-black text-white tracking-widest uppercase mb-2">Was an Imposter!</h3>
                <p className="text-primary font-bold text-sm tracking-widest uppercase">Great job civilians.</p>
              </>
@@ -408,7 +408,7 @@ export default function ImposterGame({ playerNames, onEndGame }) {
   if (phase === 'end') {
     return (
       <div className="glass-panel p-8 max-w-md w-full text-center relative z-10 h-[70vh] flex flex-col justify-center">
-        <Crown size={80} className={`mx-auto mb-8 ${winner === 'Civilians' ? 'text-blue-500 drop-shadow-[0_0_30px_rgba(59,130,246,0.8)]' : 'text-primary drop-shadow-[0_0_30px_rgba(225,29,72,0.8)]'}`} />
+        <Crown size={80} className={`mx-auto mb-8 ${winner === 'Civilians' ? 'text-blue-500 drop-shadow-[0_0_30px_rgba(59,130,246,0.8)]' : 'text-primary drop-shadow-[0_0_30px_rgba(255,105,180,0.8)]'}`} />
         <h2 className={`text-4xl font-black tracking-widest uppercase mb-4 ${winner === 'Civilians' ? 'text-blue-500' : 'text-primary'}`}>
           {winner} Win!
         </h2>

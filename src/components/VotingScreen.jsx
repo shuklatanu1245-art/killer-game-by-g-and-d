@@ -36,7 +36,7 @@ export default function VotingScreen({ players, onVoteComplete }) {
           <button
             key={p.id}
             onClick={() => handleVote(p.id)}
-            className="w-full flex items-center p-3 rounded-2xl glass-panel hover:border-primary hover:shadow-[0_0_15px_rgba(255,90,74,0.15)] transition-all group"
+            className="w-full flex items-center p-3 rounded-2xl glass-panel hover:border-primary hover:shadow-[0_0_15px_rgba(255,105,180,0.15)] transition-all group"
           >
             <div className="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center mr-4 shadow-inner overflow-hidden relative">
               <div className="absolute inset-0 bg-primary opacity-10 group-hover:opacity-30 transition-opacity"></div>

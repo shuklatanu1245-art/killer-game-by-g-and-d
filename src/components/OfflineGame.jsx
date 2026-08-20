@@ -133,7 +133,7 @@ export default function OfflineGame({ playerNames, onEndGame }) {
           <h2 className="text-primary text-sm tracking-widest font-black uppercase mb-3 flex items-center justify-center gap-2">
             <span className="text-lg">☀️</span> DAY PHASE: DISCUSSION
           </h2>
-          <div className="text-5xl font-black text-primary drop-shadow-[0_0_15px_rgba(255,90,74,0.4)] mb-4 font-mono tracking-tighter">
+          <div className="text-5xl font-black text-primary drop-shadow-[0_0_15px_rgba(255,105,180,0.4)] mb-4 font-mono tracking-tighter">
             {deadThisNight ? 'KILL' : 'SAFE'}
           </div>
           <div className="text-xs text-gray-400 font-bold tracking-widest uppercase flex items-center justify-center divide-x divide-white/20">

@@ -6,8 +6,8 @@ export default function PassScreen({ player, subtitle = "Pass the phone to", onR
       
       {/* Animated Background Orbs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none rounded-3xl">
-        <div className="absolute top-[-10%] left-[-10%] w-[150px] h-[150px] bg-primary/10 rounded-full mix-blend-screen filter blur-[50px] animate-pulse-slow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[150px] h-[150px] bg-blue-500/10 rounded-full mix-blend-screen filter blur-[50px] animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[150px] h-[150px] bg-primary/20 rounded-full mix-blend-screen filter blur-[50px] animate-pulse-slow"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[150px] h-[150px] bg-accent/20 rounded-full mix-blend-screen filter blur-[50px] animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center flex-1 w-full">
