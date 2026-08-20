@@ -20,6 +20,22 @@ body {
   animation: pulse-slow 3s infinite ease-in-out;
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes glint {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-glint {
+  animation: glint 1.5s infinite;
+}
+
 /* Glassmorphism Styling */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Target, Heart, Search, ShieldQuestion, Moon } from 'lucide-react';
+import PassScreen from './PassScreen';
 
 export default function NightAction({ role, player, allPlayers, onAction }) {
   const [hasSeen, setHasSeen] = useState(false);
@@ -53,19 +54,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
 
   // PASS PHONE SCREEN (NO ROLE NAME SHOWN TO PREVENT METAGAMING)
   if (!hasSeen) {
-    return (
-      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
-        <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-8">Pass the phone to</p>
-        <div className="text-6xl mb-4">{player.avatar}</div>
-        <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{player.name}</h1>
-        <button 
-          onClick={() => setHasSeen(true)}
-          className="w-full glass-btn glass-btn-red py-4 px-6 rounded-xl"
-        >
-          I AM READY
-        </button>
-      </div>
-    );
+    return <PassScreen player={player} subtitle="Wake up," onReveal={() => setHasSeen(true)} />;
   }
 
   // DETECTION LOADING SCREEN

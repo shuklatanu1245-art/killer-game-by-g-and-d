@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Palette, PenTool, Type, Eye, ChevronRight, Home } from 'lucide-react';
 import DrawingCanvas from './DrawingCanvas';
 import { getRandomWord } from '../utils/wordList';
+import PassScreen from './PassScreen';
 
 export default function SketchGame({ playerNames, onEndGame }) {
   const [phase, setPhase] = useState('setup'); // setup, pass, action, results
@@ -113,20 +114,11 @@ export default function SketchGame({ playerNames, onEndGame }) {
 
   if (phase === 'pass') {
     return (
-      <div className="glass-panel p-8 max-w-md w-full h-[80vh] flex flex-col justify-center text-center relative z-10">
-        <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-8">Pass the phone to</p>
-        <div className="text-6xl mb-4">{currentPlayer.avatar}</div>
-        <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{currentPlayer.name}</h1>
-        <div className="mb-10 text-primary font-bold tracking-widest uppercase">
-          Your task: {isDrawingTurn ? 'Draw' : 'Guess'}
-        </div>
-        <button 
-          onClick={() => setPhase('action')}
-          className="w-full glass-btn glass-btn-red py-4 px-6 rounded-xl"
-        >
-          I AM READY
-        </button>
-      </div>
+      <PassScreen 
+        player={currentPlayer} 
+        subtitle="Pass the phone to" 
+        onReveal={() => setPhase('action')} 
+      />
     );
   }
 
