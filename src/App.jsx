@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Play, Download, Home as HomeIcon, Users, MessageSquare, Settings as SettingsIcon, Gamepad2, X } from 'lucide-react';
+import { Play, Download, Home as HomeIcon, Users, MessageSquare, Settings as SettingsIcon, Trophy, X } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import Home from './components/Home';
 import Profiles from './components/Profiles';
+import Leaderboard from './components/Leaderboard';
 import OfflineGame from './components/OfflineGame';
 import Instructions from './components/Instructions';
 import SketchGame from './components/SketchGame';
@@ -12,18 +13,40 @@ import './index.css';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('loading'); // 'loading', 'hub', 'game', 'instructions'
-  const [activeTab, setActiveTab] = useState('home'); // 'home', 'active', 'profiles', 'messages', 'settings'
+  const [activeTab, setActiveTab] = useState('home'); // 'home', 'leaderboard', 'profiles', 'messages', 'settings'
   
   const [globalPlayers, setGlobalPlayers] = useState(() => {
-    const saved = localStorage.getItem('creovate_global_players');
+    const saved = localStorage.getItem('creovate_global_players_v2');
     if (saved) {
       try {
         return JSON.parse(saved);
       } catch (e) {
-        return Array(4).fill('');
+        // Fallback
       }
     }
-    return Array(4).fill('');
+    
+    // Migrate old data
+    const oldSaved = localStorage.getItem('creovate_global_players');
+    if (oldSaved) {
+      try {
+        const old = JSON.parse(oldSaved);
+        if (old.length > 0 && typeof old[0] === 'string') {
+          return old.map(name => ({
+            id: Math.random().toString(36).substring(7),
+            name: name,
+            avatar: '👤',
+            score: 0
+          }));
+        }
+      } catch(e) {}
+    }
+
+    return Array(4).fill(null).map(() => ({ 
+      id: Math.random().toString(36).substring(7), 
+      name: '', 
+      avatar: '👤', 
+      score: 0 
+    }));
   });
 
   const [activeGame, setActiveGame] = useState(null); // 'redrole', 'sketch', 'imposter'
@@ -42,7 +65,7 @@ function App() {
 
   const handlePlayGame = (gameId) => {
     // Validate players before launching
-    const validPlayers = globalPlayers.filter(p => p.trim().length > 0);
+    const validPlayers = globalPlayers.filter(p => p.name && p.name.trim().length > 0);
     if (validPlayers.length < 4 && (gameId === 'redrole' || gameId === 'imposter')) {
       alert("You need at least 4 valid players in Profiles to start this game.");
       setActiveTab('profiles');
@@ -73,6 +96,18 @@ function App() {
     }
   };
 
+  const handleGameEnd = (winnerIds = []) => {
+    if (winnerIds && winnerIds.length > 0) {
+      const newPlayers = [...globalPlayers];
+      winnerIds.forEach(id => {
+        const p = newPlayers.find(p => p.id === id);
+        if (p) p.score += 10;
+      });
+      setGlobalPlayers(newPlayers);
+    }
+    setCurrentScreen('hub');
+  };
+
   if (!isNative && !forceWebPlay) {
     return <WebLanding onPlayWeb={() => setForceWebPlay(true)} />;
   }
@@ -83,14 +118,8 @@ function App() {
         return <Home onPlayGame={handlePlayGame} onShowInstructions={handleShowInstructions} />;
       case 'profiles':
         return <Profiles globalPlayers={globalPlayers} setGlobalPlayers={setGlobalPlayers} />;
-      case 'active':
-        return (
-          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-            <Gamepad2 size={48} className="text-gray-600 mb-4" />
-            <h2 className="text-xl font-black text-white uppercase tracking-widest mb-2">No Active Game</h2>
-            <p className="text-gray-500 text-sm font-bold tracking-widest uppercase">Start a game from the Home tab.</p>
-          </div>
-        );
+      case 'leaderboard':
+        return <Leaderboard players={globalPlayers} />;
       case 'messages':
         return (
           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -167,9 +196,9 @@ function App() {
                 <span className="text-[10px] font-black uppercase tracking-widest">Home</span>
               </button>
               
-              <button onClick={() => setActiveTab('active')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'active' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
-                <Gamepad2 size={24} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Active</span>
+              <button onClick={() => setActiveTab('leaderboard')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'leaderboard' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
+                <Trophy size={24} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Stats</span>
               </button>
               
               <button onClick={() => setActiveTab('profiles')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'profiles' ? 'text-primary' : 'text-gray-500'} transition-colors`}>
@@ -215,7 +244,7 @@ function App() {
               <div className="flex-1 flex flex-col p-6 animate-in fade-in duration-500 pt-16">
                 <OfflineGame 
                   playerNames={activeGamePlayers} 
-                  onEndGame={() => setCurrentScreen('hub')} 
+                  onEndGame={handleGameEnd} 
                 />
               </div>
             )}
@@ -224,7 +253,7 @@ function App() {
               <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
                 <SketchGame 
                   playerNames={activeGamePlayers} 
-                  onEndGame={() => setCurrentScreen('hub')} 
+                  onEndGame={handleGameEnd} 
                 />
               </div>
             )}
@@ -233,7 +262,7 @@ function App() {
               <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
                 <ImposterGame 
                   playerNames={activeGamePlayers} 
-                  onEndGame={() => setCurrentScreen('hub')} 
+                  onEndGame={handleGameEnd} 
                 />
               </div>
             )}

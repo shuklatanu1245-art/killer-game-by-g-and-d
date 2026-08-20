@@ -19,6 +19,7 @@ export default function PassPhone({ player, onNext }) {
   return (
     <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
       <h2 className="text-xl font-bold text-gray-400 mb-2 uppercase tracking-widest">Pass the Phone to</h2>
+      <div className="text-6xl mb-4">{player.avatar}</div>
       <h1 className="text-5xl font-black text-white mb-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{player.name}</h1>
 
       {!hasSeen ? (

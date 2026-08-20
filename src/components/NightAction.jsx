@@ -56,6 +56,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
     return (
       <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
         <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-8">Pass the phone to</p>
+        <div className="text-6xl mb-4">{player.avatar}</div>
         <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{player.name}</h1>
         <button 
           onClick={() => setHasSeen(true)}
@@ -169,7 +170,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
             }`}
           >
             <div className="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center mr-4 shadow-inner overflow-hidden relative">
-              <span className="text-gray-300 font-black text-sm relative z-10">{t.name.substring(0, 2).toUpperCase()}</span>
+              <span className="text-2xl relative z-10">{t.avatar}</span>
             </div>
             <div className="flex-1 text-left flex flex-col">
                <div className="text-gray-500 text-[10px] uppercase font-bold mb-0.5 tracking-widest">

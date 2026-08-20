@@ -11,8 +11,8 @@ export const TEAMS = {
   CIVILIAN: 'Civilian'
 };
 
-export function distributeRoles(playerNames) {
-  const count = playerNames.length;
+export function distributeRoles(players) {
+  const count = players.length;
   let pool = [ROLES.KILLER, ROLES.DOCTOR, ROLES.DETECTIVE, ROLES.CIVILIAN];
   
   if (count >= 5) pool.push(ROLES.JOKER);
@@ -21,9 +21,10 @@ export function distributeRoles(playerNames) {
   // Shuffle array randomly
   pool = pool.sort(() => Math.random() - 0.5);
   
-  return playerNames.map((name, index) => ({
-    id: index.toString(),
-    name,
+  return players.map((player, index) => ({
+    id: player.id || index.toString(),
+    name: player.name,
+    avatar: player.avatar || '👤',
     role: pool[index],
     isAlive: true
   }));

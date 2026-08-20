@@ -1,0 +1,95 @@
+// Procedural Sound Engine using Web Audio API
+// This avoids bundling large MP3 files.
+
+let audioCtx = null;
+
+const initAudio = () => {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+};
+
+export const playTick = () => {
+  try {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime); // High pitch tick
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+    
+    gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {
+    console.error("Audio playback failed", e);
+  }
+};
+
+export const playHeartbeat = () => {
+  try {
+    initAudio();
+    
+    // First beat
+    let osc1 = audioCtx.createOscillator();
+    let gain1 = audioCtx.createGain();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(50, audioCtx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.1);
+    gain1.gain.setValueAtTime(1, audioCtx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.start(audioCtx.currentTime);
+    osc1.stop(audioCtx.currentTime + 0.2);
+
+    // Second beat (slightly delayed)
+    let osc2 = audioCtx.createOscillator();
+    let gain2 = audioCtx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(55, audioCtx.currentTime + 0.25);
+    osc2.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.35);
+    gain2.gain.setValueAtTime(0.8, audioCtx.currentTime + 0.25);
+    gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.start(audioCtx.currentTime + 0.25);
+    osc2.stop(audioCtx.currentTime + 0.45);
+  } catch (e) {
+    console.error("Audio playback failed", e);
+  }
+};
+
+export const playChime = () => {
+  try {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+    
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.0);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 1.0);
+  } catch (e) {
+    console.error("Audio playback failed", e);
+  }
+};

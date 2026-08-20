@@ -40,7 +40,7 @@ export default function VotingScreen({ players, onVoteComplete }) {
           >
             <div className="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center mr-4 shadow-inner overflow-hidden relative">
               <div className="absolute inset-0 bg-primary opacity-10 group-hover:opacity-30 transition-opacity"></div>
-              <span className="text-gray-300 font-black text-sm relative z-10">{p.name.substring(0, 2).toUpperCase()}</span>
+              <span className="text-2xl relative z-10">{p.avatar}</span>
             </div>
             
             <div className="flex-1 text-left flex flex-col">

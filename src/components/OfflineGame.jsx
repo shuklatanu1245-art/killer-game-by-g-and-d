@@ -3,6 +3,7 @@ import PassPhone from './PassPhone';
 import NightAction from './NightAction';
 import VotingScreen from './VotingScreen';
 import { distributeRoles, checkWinCondition, ROLES, TEAMS } from '../gameLogic';
+import { playHeartbeat, playChime } from '../utils/soundManager';
 
 export default function OfflineGame({ playerNames, onEndGame }) {
   const [players, setPlayers] = useState([]);
@@ -26,6 +27,11 @@ export default function OfflineGame({ playerNames, onEndGame }) {
       setTurnIndex(0);
       setPhase('night');
       setNightActions({});
+      // Start heartbeat
+      const heartbeatInterval = setInterval(() => {
+         playHeartbeat();
+      }, 1500);
+      window.currentHeartbeat = heartbeatInterval;
     }
   };
 
@@ -46,6 +52,10 @@ export default function OfflineGame({ playerNames, onEndGame }) {
   };
 
   const processNightEnd = (finalActions) => {
+    if (window.currentHeartbeat) {
+       clearInterval(window.currentHeartbeat);
+    }
+
     let killedId = finalActions[ROLES.KILLER];
     const healedId = finalActions[ROLES.DOCTOR];
 
@@ -73,11 +83,17 @@ export default function OfflineGame({ playerNames, onEndGame }) {
     if (winTeam) {
       setWinner(winTeam);
       setPhase('game-over');
+      playChime();
     } else {
       setTurnIndex(0);
       setPhase('night');
       setNightActions({});
       setDeadThisNight(null);
+      // Resume heartbeat
+      const heartbeatInterval = setInterval(() => {
+         playHeartbeat();
+      }, 1500);
+      window.currentHeartbeat = heartbeatInterval;
     }
   };
 
@@ -133,27 +149,36 @@ export default function OfflineGame({ playerNames, onEndGame }) {
 
   if (phase === 'game-over') {
     return (
-      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
+      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10 h-full flex flex-col justify-center">
         <h2 className="text-5xl font-black text-white mb-6 uppercase tracking-widest drop-shadow-[0_0_20px_currentColor]">GAME OVER</h2>
         <h3 className={`text-3xl font-black mb-8 uppercase tracking-widest drop-shadow-md ${winner === TEAMS.IMPOSTOR ? 'text-primary' : 'text-accent'}`}>
           {winner}S WIN!
         </h3>
         
-        <div className="text-left bg-[#05070A] border border-white/5 p-4 rounded-xl mb-8 space-y-2 shadow-inner">
+        <div className="text-left bg-[#05070A] border border-white/5 p-4 rounded-xl mb-8 space-y-2 shadow-inner max-h-48 overflow-y-auto custom-scrollbar">
           <p className="text-gray-500 font-bold tracking-widest text-xs uppercase mb-2">Final Roles:</p>
           {players.map(p => (
             <div key={p.id} className="flex justify-between border-b border-white/5 pb-2 mt-2">
-              <span className={`font-bold uppercase tracking-wider ${p.isAlive ? 'text-white' : 'text-gray-600 line-through'}`}>{p.name}</span>
+              <span className={`font-bold uppercase tracking-wider ${p.isAlive ? 'text-white' : 'text-gray-600 line-through'}`}>
+                 {p.avatar} {p.name}
+              </span>
               <span className="text-gray-400 font-bold uppercase tracking-widest text-sm">{p.role}</span>
             </div>
           ))}
         </div>
 
         <button 
-          onClick={onEndGame}
-          className="w-full glass-btn glass-btn-red py-4 px-6 rounded-xl"
+          onClick={() => {
+             const isImposterWin = winner === TEAMS.IMPOSTOR;
+             const winningIds = players.filter(p => {
+                 if (isImposterWin) return p.role === ROLES.KILLER || p.role === ROLES.JOKER;
+                 return p.role !== ROLES.KILLER && p.role !== ROLES.JOKER; // civilians win
+             }).map(p => p.id);
+             onEndGame(winningIds);
+          }}
+          className="w-full glass-btn glass-btn-red py-4 px-6 rounded-xl font-black tracking-widest uppercase"
         >
-          PLAY AGAIN
+          BACK TO HUB
         </button>
       </div>
     );

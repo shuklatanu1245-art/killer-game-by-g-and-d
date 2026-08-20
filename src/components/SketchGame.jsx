@@ -9,29 +9,40 @@ export default function SketchGame({ playerNames, onEndGame }) {
   const [chain, setChain] = useState([]); 
   const [guessInput, setGuessInput] = useState('');
   
+  // Category state
+  const [category, setCategory] = useState('standard');
+  const [customWordsInput, setCustomWordsInput] = useState('');
+
   useEffect(() => {
-    // Initialize game
+    // Validate players
     if (playerNames.length < 3) {
       alert("At least 3 players are required for Sketch & Guess.");
       onEndGame();
       return;
     }
-    
-    // Pick starting word
-    const startingWord = getRandomWord();
-    setChain([{ type: 'word', value: startingWord, player: 'System' }]);
-    setPhase('pass');
   }, [playerNames, onEndGame]);
 
-  const currentPlayer = playerNames[currentPlayerIndex];
+  const startGame = () => {
+    const customList = customWordsInput.split(',').map(w => w.trim()).filter(w => w.length > 0);
+    if (category === 'custom' && customList.length === 0) {
+      alert("Please enter some custom words!");
+      return;
+    }
+    
+    const startingWord = getRandomWord(category, customList);
+    setChain([{ type: 'word', value: startingWord, player: 'System' }]);
+    setPhase('pass');
+  };
+
+  const currentPlayer = playerNames[currentPlayerIndex] || {};
   const isDrawingTurn = currentPlayerIndex % 2 === 0; // Even indexes draw (0, 2, 4)
-  const previousItem = chain[chain.length - 1];
+  const previousItem = chain[chain.length - 1] || {};
 
   const handleActionComplete = (value) => {
     const newChain = [...chain, { 
       type: isDrawingTurn ? 'drawing' : 'guess', 
       value, 
-      player: currentPlayer 
+      player: currentPlayer.name 
     }];
     
     setChain(newChain);
@@ -51,11 +62,61 @@ export default function SketchGame({ playerNames, onEndGame }) {
     handleActionComplete(guessInput.trim());
   };
 
+  if (phase === 'setup') {
+    return (
+      <div className="glass-panel p-8 max-w-md w-full relative z-10 flex flex-col h-[70vh]">
+        <div className="text-center mb-8">
+          <Palette size={48} className="mx-auto text-primary mb-4" />
+          <h2 className="text-3xl font-black text-white tracking-widest uppercase">Sketch & Guess</h2>
+          <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mt-2">{playerNames.length} Players</p>
+        </div>
+        
+        <div className="flex-1 flex flex-col justify-center gap-6 overflow-y-auto custom-scrollbar">
+          <div className="text-center mt-4">
+             <label className="text-gray-300 font-bold uppercase tracking-widest text-sm mb-4 block">Select Category</label>
+             <div className="flex flex-wrap justify-center gap-2">
+               {['standard', 'bollywood', 'anime', 'adult18', 'custom'].map(cat => (
+                 <button 
+                   key={cat}
+                   onClick={() => setCategory(cat)}
+                   className={`px-4 py-2 rounded-xl text-xs font-bold tracking-widest uppercase transition-all ${category === cat ? 'glass-btn glass-btn-red' : 'glass-panel text-gray-400 border-white/5 hover:border-white/20'}`}
+                 >
+                   {cat}
+                 </button>
+               ))}
+             </div>
+          </div>
+          
+          {category === 'custom' && (
+            <div className="text-center mt-2 animate-in fade-in">
+              <label className="text-gray-300 font-bold uppercase tracking-widest text-xs mb-2 block">Custom Words (comma separated)</label>
+              <textarea 
+                className="w-full glass-input p-4 rounded-xl border border-white/10 text-white font-bold text-sm tracking-wider resize-none"
+                rows="3"
+                placeholder="Apple, Banana, Car..."
+                value={customWordsInput}
+                onChange={(e) => setCustomWordsInput(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        <button 
+          onClick={startGame}
+          className="w-full glass-btn glass-btn-red py-4 rounded-xl font-black tracking-widest uppercase text-lg mt-4"
+        >
+          START GAME
+        </button>
+      </div>
+    );
+  }
+
   if (phase === 'pass') {
     return (
       <div className="glass-panel p-8 max-w-md w-full h-[80vh] flex flex-col justify-center text-center relative z-10">
         <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-8">Pass the phone to</p>
-        <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{currentPlayer}</h1>
+        <div className="text-6xl mb-4">{currentPlayer.avatar}</div>
+        <h1 className="text-5xl font-black mb-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{currentPlayer.name}</h1>
         <div className="mb-10 text-primary font-bold tracking-widest uppercase">
           Your task: {isDrawingTurn ? 'Draw' : 'Guess'}
         </div>
@@ -74,7 +135,7 @@ export default function SketchGame({ playerNames, onEndGame }) {
       <div className="w-full h-[90vh] flex flex-col relative z-10">
         {/* Header */}
         <div className="text-center mb-4">
-          <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-1">{currentPlayer}'s Turn</p>
+          <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-1">{currentPlayer.name}'s Turn</p>
           
           {isDrawingTurn ? (
             <div className="glass-panel py-3 px-4 inline-block">
@@ -155,7 +216,7 @@ export default function SketchGame({ playerNames, onEndGame }) {
         </div>
 
         <button 
-          onClick={onEndGame}
+          onClick={() => onEndGame(playerNames.map(p => p.id))}
           className="w-full glass-btn py-4 rounded-xl font-black tracking-widest uppercase flex items-center justify-center gap-2"
         >
           <Home size={20} />
