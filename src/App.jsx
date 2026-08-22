@@ -8,7 +8,9 @@ import OfflineGame from './components/OfflineGame';
 import Instructions from './components/Instructions';
 import SketchGame from './components/SketchGame';
 import ImposterGame from './components/ImposterGame';
+import TabooGame from './components/TabooGame';
 import WebLanding from './components/WebLanding';
+import { playBackgroundMusic } from './utils/soundManager';
 import './index.css';
 
 function App() {
@@ -62,6 +64,20 @@ function App() {
       return () => clearTimeout(timer);
     }
   }, [currentScreen]);
+
+  useEffect(() => {
+    const handleInteraction = () => {
+      playBackgroundMusic();
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('touchstart', handleInteraction);
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+  }, []);
 
   const handlePlayGame = (gameId) => {
     // Validate players before launching
@@ -261,6 +277,15 @@ function App() {
             {activeGame === 'imposter' && (
               <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
                 <ImposterGame 
+                  playerNames={activeGamePlayers} 
+                  onEndGame={handleGameEnd} 
+                />
+              </div>
+            )}
+
+            {activeGame === 'taboo' && (
+              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
+                <TabooGame 
                   playerNames={activeGamePlayers} 
                   onEndGame={handleGameEnd} 
                 />

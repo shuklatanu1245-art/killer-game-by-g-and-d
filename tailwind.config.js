@@ -7,10 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#000000',
-        surface: '#0A0A0A',
-        primary: '#FF69B4', // Hot Pink
-        accent: '#00F0FF', // Cyan
+        background: '#020617', // Midnight Blue
+        surface: '#0F172A',
+        primary: '#00E5FF', // Neon Cyan
+        accent: '#FFFFFF', // White
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

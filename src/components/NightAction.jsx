@@ -178,7 +178,7 @@ export default function NightAction({ role, player, allPlayers, onAction }) {
         onClick={handleAction}
         className={`w-full font-black py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 ${
           selectedTarget 
-            ? 'glass-btn glass-btn-red' 
+            ? 'glass-btn glass-btn-primary' 
             : 'bg-[#05070A] border border-white/5 text-gray-600 cursor-not-allowed tracking-widest'
         }`}
       >

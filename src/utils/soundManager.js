@@ -2,13 +2,57 @@
 // This avoids bundling large MP3 files.
 
 let audioCtx = null;
+let bgmOscillators = [];
+let bgmGain = null;
+let bgmPlaying = false;
 
-const initAudio = () => {
+export const initAudio = () => {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
+  }
+};
+
+export const playBackgroundMusic = () => {
+  if (bgmPlaying) return;
+  try {
+    initAudio();
+    bgmPlaying = true;
+    
+    bgmGain = audioCtx.createGain();
+    bgmGain.gain.value = 0.05; // Very quiet background drone
+    bgmGain.connect(audioCtx.destination);
+    
+    // Create a dark, moody drone using 3 oscillators
+    const freqs = [55.00, 82.41, 110.00]; // A1, E2, A2 (power chord)
+    freqs.forEach(freq => {
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      // Add a slight detune to make it sound richer
+      osc.detune.value = (Math.random() - 0.5) * 10;
+      
+      osc.connect(bgmGain);
+      osc.start();
+      bgmOscillators.push(osc);
+    });
+
+    // Slow LFO for breathing effect
+    const lfo = audioCtx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.05; // very slow
+    const lfoGain = audioCtx.createGain();
+    lfoGain.gain.value = 0.02;
+    lfo.connect(lfoGain);
+    lfoGain.connect(bgmGain.gain);
+    lfo.start();
+    bgmOscillators.push(lfo);
+
+  } catch (e) {
+    console.error("BGM failed", e);
   }
 };
 

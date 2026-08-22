@@ -6,9 +6,9 @@ export default function Leaderboard({ players }) {
   return (
     <div className="w-full flex flex-col h-full overflow-hidden">
       <div className="text-center mb-6 pt-6">
-        <h2 className="text-3xl font-black text-white mb-2 tracking-wide uppercase">Leaderboard</h2>
-        <p className="text-primary text-xs tracking-widest font-bold uppercase flex items-center justify-center gap-1">
-          <Trophy size={14} /> Global Scores
+        <h2 className="text-3xl font-black text-white mb-2 tracking-wide uppercase">Game Night<br/>Champion</h2>
+        <p className="text-primary text-xs tracking-widest font-bold uppercase flex items-center justify-center gap-1 mt-2">
+          <Trophy size={14} /> Total Score
         </p>
       </div>
 

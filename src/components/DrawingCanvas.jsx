@@ -175,7 +175,7 @@ export default function DrawingCanvas({ onSave }) {
         
         <button 
           onClick={handleSave}
-          className="glass-btn glass-btn-red px-6 py-2 rounded-xl font-bold tracking-widest text-sm"
+          className="glass-btn glass-btn-primary px-6 py-2 rounded-xl font-bold tracking-widest text-sm"
         >
           DONE
         </button>

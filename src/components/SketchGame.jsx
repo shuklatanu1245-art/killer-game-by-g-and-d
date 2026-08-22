@@ -80,7 +80,7 @@ export default function SketchGame({ playerNames, onEndGame }) {
                  <button 
                    key={cat}
                    onClick={() => setCategory(cat)}
-                   className={`px-4 py-2 rounded-xl text-xs font-bold tracking-widest uppercase transition-all ${category === cat ? 'glass-btn glass-btn-red' : 'glass-panel text-gray-400 border-white/5 hover:border-white/20'}`}
+                   className={`px-4 py-2 rounded-xl text-xs font-bold tracking-widest uppercase transition-all ${category === cat ? 'glass-btn glass-btn-primary' : 'glass-panel text-gray-400 border-white/5 hover:border-white/20'}`}
                  >
                    {cat}
                  </button>
@@ -104,7 +104,7 @@ export default function SketchGame({ playerNames, onEndGame }) {
 
         <button 
           onClick={startGame}
-          className="w-full glass-btn glass-btn-red py-4 rounded-xl font-black tracking-widest uppercase text-lg mt-4"
+          className="w-full glass-btn glass-btn-primary py-4 rounded-xl font-black tracking-widest uppercase text-lg mt-4"
         >
           START GAME
         </button>
@@ -162,7 +162,7 @@ export default function SketchGame({ playerNames, onEndGame }) {
                   <button 
                     type="submit"
                     disabled={!guessInput.trim()}
-                    className={`w-full py-4 rounded-xl font-black tracking-widest uppercase transition-all ${guessInput.trim() ? 'glass-btn glass-btn-red' : 'bg-white/5 text-gray-600 border border-white/10'}`}
+                    className={`w-full py-4 rounded-xl font-black tracking-widest uppercase transition-all ${guessInput.trim() ? 'glass-btn glass-btn-primary' : 'bg-white/5 text-gray-600 border border-white/10'}`}
                   >
                     SUBMIT GUESS
                   </button>

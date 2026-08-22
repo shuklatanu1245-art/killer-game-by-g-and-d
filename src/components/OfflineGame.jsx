@@ -176,7 +176,7 @@ export default function OfflineGame({ playerNames, onEndGame }) {
              }).map(p => p.id);
              onEndGame(winningIds);
           }}
-          className="w-full glass-btn glass-btn-red py-4 px-6 rounded-xl font-black tracking-widest uppercase"
+          className="w-full glass-btn glass-btn-primary py-4 px-6 rounded-xl font-black tracking-widest uppercase"
         >
           BACK TO HUB
         </button>

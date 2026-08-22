@@ -88,7 +88,7 @@ export default function OfflineLobby({ initialPlayers = [], onBack, onStartGame 
         onClick={() => onStartGame(playerNames)}
         className={`w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl transition-all duration-300 ${
           canStart 
-            ? 'glass-btn glass-btn-red' 
+            ? 'glass-btn glass-btn-primary' 
             : 'glass-input border border-white/5 text-gray-600 cursor-not-allowed font-black tracking-widest'
         }`}
       >

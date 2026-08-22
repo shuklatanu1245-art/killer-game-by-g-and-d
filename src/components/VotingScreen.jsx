@@ -1,78 +1,133 @@
 import { useState } from 'react';
-import { Gavel } from 'lucide-react';
+import { Gavel, Target } from 'lucide-react';
+import PassScreen from './PassScreen';
 
 export default function VotingScreen({ players, onVoteComplete }) {
+  const [phase, setPhase] = useState('pass'); // pass, vote, confirm
+  const [votingTurnIndex, setVotingTurnIndex] = useState(0);
   const [votes, setVotes] = useState({});
-  const [hasVoted, setHasVoted] = useState(false);
-  const alivePlayers = players.filter(p => p.isAlive);
+  const [selectedVoteTarget, setSelectedVoteTarget] = useState(null);
 
-  const handleVote = (targetId) => {
-    // In a simple pass & play, we might just have the group agree and tap once, 
-    // or simulate each person passing and voting. Let's do a group consensus vote for offline speed.
-    setVotes({ consensus: targetId });
-    setHasVoted(true);
+  const alivePlayers = players.filter(p => p.isAlive);
+  const currentTurnPlayer = alivePlayers[votingTurnIndex];
+
+  const submitSecretVote = () => {
+    if (!selectedVoteTarget) return;
+    
+    const newVotes = { ...votes };
+    newVotes[selectedVoteTarget] = (newVotes[selectedVoteTarget] || 0) + 1;
+    setVotes(newVotes);
+    setSelectedVoteTarget(null);
+
+    if (votingTurnIndex + 1 < alivePlayers.length) {
+      setVotingTurnIndex(votingTurnIndex + 1);
+      setPhase('pass');
+    } else {
+      // Tally votes
+      let maxVotes = 0;
+      let targetId = null;
+      let tie = false;
+      
+      Object.keys(newVotes).forEach(id => {
+        if (newVotes[id] > maxVotes) {
+          maxVotes = newVotes[id];
+          targetId = id;
+          tie = false;
+        } else if (newVotes[id] === maxVotes) {
+          tie = true;
+        }
+      });
+
+      if (tie) {
+        onVoteComplete(null); // No one eliminated
+      } else {
+        onVoteComplete(targetId);
+      }
+    }
   };
 
-  if (hasVoted) {
-    return (
-      <div className="glass-panel p-8 max-w-md w-full text-center relative z-10">
-        <h2 className="text-3xl font-black text-white mb-8 tracking-widest uppercase">Vote Cast!</h2>
-        <button 
-          onClick={() => onVoteComplete(votes.consensus)}
-          className="w-full glass-btn py-4 px-6 rounded-xl"
-        >
-          SEE RESULTS
-        </button>
-      </div>
-    );
+  const skipVote = () => {
+    if (votingTurnIndex + 1 < alivePlayers.length) {
+      setVotingTurnIndex(votingTurnIndex + 1);
+      setPhase('pass');
+    } else {
+      // Tally votes
+      let maxVotes = 0;
+      let targetId = null;
+      let tie = false;
+      
+      Object.keys(votes).forEach(id => {
+        if (votes[id] > maxVotes) {
+          maxVotes = votes[id];
+          targetId = id;
+          tie = false;
+        } else if (votes[id] === maxVotes) {
+          tie = true;
+        }
+      });
+
+      if (tie) {
+        onVoteComplete(null); // No one eliminated
+      } else {
+        onVoteComplete(targetId);
+      }
+    }
+  }
+
+  if (phase === 'pass') {
+    return <PassScreen player={currentTurnPlayer} subtitle="Pass the phone to vote secretly" onReveal={() => setPhase('vote')} />;
   }
 
   return (
-    <div className="w-full relative z-10 flex flex-col flex-1 h-full min-h-0">
-      
-      {/* Player List */}
-      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 mb-4">
-        {alivePlayers.map((p, index) => (
+    <div className="w-full relative z-10 flex flex-col flex-1 h-full min-h-[70vh]">
+      <div className="text-center mb-6">
+        <p className="text-primary font-bold text-[10px] uppercase tracking-widest mb-1">{currentTurnPlayer.name}'s Turn</p>
+        <h2 className="text-2xl font-black uppercase tracking-widest text-white drop-shadow-md mb-1">Secret Vote</h2>
+        <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest">Who is suspicious?</p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 mb-6">
+        {alivePlayers.filter(p => p.id !== currentTurnPlayer.id).map((p) => (
           <button
             key={p.id}
-            onClick={() => handleVote(p.id)}
-            className="w-full flex items-center p-3 rounded-2xl glass-panel hover:border-primary hover:shadow-[0_0_15px_rgba(255,105,180,0.15)] transition-all group"
+            onClick={() => setSelectedVoteTarget(p.id)}
+            className={`w-full flex items-center p-3 rounded-2xl transition-all group ${
+              selectedVoteTarget === p.id 
+                ? 'bg-primary/20 border border-primary shadow-[0_0_15px_rgba(0,229,255,0.2)]' 
+                : 'glass-panel border-white/5 hover:border-white/20'
+            }`}
           >
-            <div className="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center mr-4 shadow-inner overflow-hidden relative">
-              <div className="absolute inset-0 bg-primary opacity-10 group-hover:opacity-30 transition-opacity"></div>
-              <span className="text-2xl relative z-10">{p.avatar}</span>
+            <div className="w-12 h-12 rounded-full bg-surface border border-white/10 flex items-center justify-center mr-4 shadow-inner text-2xl">
+              {p.avatar}
             </div>
-            
             <div className="flex-1 text-left flex flex-col">
-              <div className="text-gray-500 text-[10px] uppercase font-bold mb-0.5 tracking-widest">
-                #{String(index + 1).padStart(2, '0')}
-              </div>
-              <div className="text-white font-black tracking-wider text-base leading-none mb-1 group-hover:text-primary transition-colors">
-                {p.name}
-              </div>
-              <div className="text-accent text-[10px] font-bold uppercase tracking-widest">
-                ALIVE
-              </div>
-            </div>
-            
-            <div className="flex flex-col items-end">
-               <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold mb-1 group-hover:text-primary transition-colors">
-                 VOTE
-               </span>
-               <Gavel size={16} className="text-gray-600 group-hover:text-primary transition-colors" />
+               <div className="text-white font-black tracking-wider text-base group-hover:text-primary transition-colors">
+                 {p.name}
+               </div>
             </div>
           </button>
         ))}
       </div>
 
-      {/* Action Area */}
       <div className="glass-panel-accent p-4 mt-auto">
-        <p className="text-center text-xs tracking-widest font-bold uppercase text-gray-400 mb-3">VOTE / DISCUSS</p>
+        <button 
+          disabled={!selectedVoteTarget}
+          onClick={submitSecretVote}
+          className={`w-full font-black py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 mb-4 ${
+            selectedVoteTarget 
+              ? 'glass-btn-primary animate-pulse text-white' 
+              : 'bg-[#05070A] border border-white/5 text-gray-600 cursor-not-allowed tracking-widest'
+          }`}
+        >
+          <Target size={20} />
+          {selectedVoteTarget ? `LOCK IN VOTE` : `SELECT A PLAYER`}
+        </button>
+
         <button
-          onClick={() => handleVote(null)} // Skip vote / PASS
+          onClick={skipVote}
           className="w-full flex items-center justify-center py-4 rounded-xl bg-transparent border border-gray-600 hover:border-white text-gray-400 hover:text-white font-black tracking-widest transition-all uppercase text-sm"
         >
-          PASS (SKIP VOTE)
+          SKIP / PASS TURN
         </button>
       </div>
     </div>

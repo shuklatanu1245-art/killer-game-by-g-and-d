@@ -43,7 +43,7 @@ export default function Instructions({ gameId, onComplete, onBack }) {
         ) : (
           <button 
             onClick={onComplete}
-            className="w-full flex items-center justify-center gap-3 glass-btn glass-btn-red py-4 px-6 rounded-xl group"
+            className="w-full flex items-center justify-center gap-3 glass-btn glass-btn-primary py-4 px-6 rounded-xl group"
           >
             <CheckCircle2 size={20} />
             OK, LET'S PLAY!
