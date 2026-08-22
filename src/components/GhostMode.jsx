@@ -4,14 +4,21 @@ import { playTick, playChime } from '../utils/soundManager';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const PENALTIES = [
-  "Do 10 Pushups",
-  "Sing a song for 30 seconds",
-  "Let someone draw on your face with a pen",
-  "Post a funny selfie on your story",
-  "Drink a glass of water without using hands",
-  "Speak in an accent until the next round",
-  "Act like a monkey for 10 seconds",
-  "Give your phone to the player on your right for 1 minute"
+  "Call a random contact and sing 'Happy Birthday' to them.",
+  "Let the group send one text message to anyone in your contacts.",
+  "Eat a raw onion slice or a spoonful of hot sauce.",
+  "Do 20 pushups while shouting your deepest secret.",
+  "Let someone crack an egg on your head.",
+  "Speak only in whispers for the next 3 rounds.",
+  "Post the ugliest selfie on your Instagram/WhatsApp story for 1 hour.",
+  "Give your unlocked phone to the person on your left for 2 minutes.",
+  "Eat a spoonful of plain mustard or mayonnaise.",
+  "Do a plank for 1 minute while the group roasts you.",
+  "Bark like a dog loudly out the window for 15 seconds.",
+  "Drink a disgusting mix of 3 liquids chosen by the group.",
+  "Show the group your last 5 Google searches.",
+  "Let the group draw a unibrow on you with a marker.",
+  "Smell the socks of the person sitting next to you."
 ];
 
 export default function GhostMode({ playerName, onComplete }) {
