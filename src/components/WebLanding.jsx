@@ -45,7 +45,7 @@ export default function WebLanding({ onPlayWeb }) {
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-2 md:gap-6 text-xs md:text-sm font-bold tracking-widest uppercase">
-            {['home', 'services', 'pricing', 'games', 'admin', 'contact'].map((tab) => (
+            {['home', 'services', 'pricing', 'games', 'contact'].map((tab) => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -66,8 +66,27 @@ export default function WebLanding({ onPlayWeb }) {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-white/10 bg-black/80 py-6 text-center relative z-10 mt-auto">
-        <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">
+      <footer className="w-full border-t border-white/10 bg-black/80 py-8 text-center relative z-10 mt-auto">
+        <div className="flex flex-col items-center justify-center gap-3 mb-6">
+          <p className="text-gray-500 text-[10px] font-black tracking-widest uppercase mb-1">Quick Access</p>
+          <div className="flex items-center justify-center gap-6">
+            <button 
+              onClick={() => setActiveTab('admin')} 
+              className="text-gray-400 hover:text-[#00E5FF] text-xs font-bold tracking-widest uppercase transition-colors"
+            >
+              Admin Portal
+            </button>
+            <a 
+              href="https://instagram.com/creov.atestudio" 
+              target="_blank" 
+              rel="noreferrer"
+              className="text-gray-400 hover:text-[#8A2BE2] text-xs font-bold tracking-widest uppercase transition-colors"
+            >
+              Instagram
+            </a>
+          </div>
+        </div>
+        <p className="text-gray-600 text-[10px] font-bold tracking-widest uppercase border-t border-white/5 pt-6 max-w-md mx-auto">
           © {new Date().getFullYear()} Creovate Studio. All rights reserved.
         </p>
       </footer>
