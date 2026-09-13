@@ -210,7 +210,6 @@ function ServicesTab({ onServiceClick }) {
             <h3 className="text-xl font-black uppercase tracking-wider mb-4 relative z-10">{s.title}</h3>
             <p className="text-gray-400 text-sm relative z-10 flex-1">{s.desc}</p>
             
-            {/* Call to action button inside the card */}
             <div className="mt-8 relative z-10 w-full">
               <button className={`w-full py-3 rounded-xl border border-white/10 group-hover:border-white/30 text-xs font-black uppercase tracking-widest ${s.color} bg-black/50 transition-all`}>
                 See Pricing &rarr;
@@ -224,6 +223,43 @@ function ServicesTab({ onServiceClick }) {
 }
 
 function PricingTab({ filter, setFilter }) {
+  const [orderModal, setOrderModal] = useState({ isOpen: false, plan: null, sectionTitle: null });
+  const [orderForm, setOrderForm] = useState({ name: "", email: "", details: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleOrderSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    
+    try {
+      const res = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: orderForm.name,
+          email: orderForm.email,
+          plan_title: orderModal.sectionTitle,
+          plan_name: orderModal.plan.name,
+          price: orderModal.plan.price,
+          details: orderForm.details
+        })
+      });
+      
+      if (res.ok) {
+        alert("Order placed successfully! We will contact you soon.");
+        setOrderModal({ isOpen: false, plan: null, sectionTitle: null });
+        setOrderForm({ name: "", email: "", details: "" });
+      } else {
+        alert("Failed to place order. Database might not be initialized yet.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error placing order. Ensure API backend is running on Vercel.");
+    }
+    
+    setSubmitting(false);
+  };
+
   const allSections = [
     {
       title: "Thumbnail Designing", 
@@ -268,7 +304,7 @@ function PricingTab({ filter, setFilter }) {
     : allSections.filter(s => s.title === filter);
 
   return (
-    <div className="flex flex-col items-center flex-1 w-full">
+    <div className="flex flex-col items-center flex-1 w-full relative">
       <h2 className="text-4xl font-black uppercase tracking-widest mb-4 text-center">
         Price <span className="text-[#8A2BE2]">Chart</span>
       </h2>
@@ -285,14 +321,54 @@ function PricingTab({ filter, setFilter }) {
 
       <div className="w-full space-y-12">
         {displayedSections.map((section, idx) => (
-          <PricingSection key={idx} {...section} />
+          <PricingSection 
+            key={idx} 
+            {...section} 
+            onOrder={(plan) => setOrderModal({ isOpen: true, plan, sectionTitle: section.title })}
+          />
         ))}
       </div>
+
+      {/* Order Modal */}
+      {orderModal.isOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setOrderModal({ isOpen: false, plan: null, sectionTitle: null })} 
+              className="absolute top-4 right-4 text-gray-500 hover:text-white"
+            >
+              ✕
+            </button>
+            <h3 className="text-2xl font-black uppercase tracking-widest mb-2">Place Order</h3>
+            <p className="text-[#00E5FF] font-bold text-xs uppercase tracking-widest mb-6">
+              {orderModal.sectionTitle} - {orderModal.plan.name} (₹{orderModal.plan.price})
+            </p>
+            
+            <form className="space-y-4" onSubmit={handleOrderSubmit}>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Your Name</label>
+                <input required type="text" value={orderForm.name} onChange={e => setOrderForm({...orderForm, name: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Email / Instagram</label>
+                <input required type="text" value={orderForm.email} onChange={e => setOrderForm({...orderForm, email: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Project Details</label>
+                <textarea required rows="3" value={orderForm.details} onChange={e => setOrderForm({...orderForm, details: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none resize-none"></textarea>
+              </div>
+              <button type="submit" disabled={submitting} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-4 rounded-xl mt-4 hover:bg-[#00E5FF]/80 transition-colors">
+                {submitting ? "Submitting..." : "Confirm Order"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function PricingSection({ title, icon, color, borderColor, plans }) {
+function PricingSection({ title, icon, color, borderColor, plans, onOrder }) {
   return (
     <div className={`w-full border ${borderColor}/30 rounded-3xl p-6 bg-[#05070A] shadow-xl`}>
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 pb-4 border-b border-white/5">
@@ -321,7 +397,10 @@ function PricingSection({ title, icon, color, borderColor, plans }) {
                 </div>
               ))}
             </div>
-            <button className={`w-full py-3 rounded-xl font-black tracking-widest uppercase text-xs transition-colors border ${p.popular ? `bg-[#8A2BE2] text-white border-[#8A2BE2] hover:bg-[#8A2BE2]/80` : 'border-white/20 text-white hover:bg-white/10'}`}>
+            <button 
+              onClick={() => onOrder(p)}
+              className={`w-full py-3 rounded-xl font-black tracking-widest uppercase text-xs transition-colors border ${p.popular ? `bg-[#8A2BE2] text-white border-[#8A2BE2] hover:bg-[#8A2BE2]/80` : 'border-white/20 text-white hover:bg-white/10'}`}
+            >
               Order Now
             </button>
           </div>
@@ -421,6 +500,8 @@ function GamesTab({ onPlayWeb }) {
 function AdminTab() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
   
   const handleLogin = (e) => {
     e.preventDefault();
@@ -429,10 +510,36 @@ function AdminTab() {
     
     if (email === "admin@creovate.in" && pass === "Creovate@123") {
       setIsLoggedIn(true);
+      fetchOrders();
     } else {
       alert("Invalid Email or Password!");
     }
   };
+
+  const fetchOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const res = await fetch('/api/get-orders');
+      if (res.ok) {
+        const data = await res.json();
+        setOrders(data.orders || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setLoadingOrders(false);
+  };
+
+  const initDB = async () => {
+    try {
+      const res = await fetch('/api/init-db');
+      if (res.ok) {
+        alert("Database Tables Created! (Neon Postgres)");
+      } else {
+        alert("DB Error");
+      }
+    } catch(err) { alert(err); }
+  }
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -503,10 +610,59 @@ function AdminTab() {
   return (
     <div className="flex flex-col flex-1 w-full max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-black uppercase tracking-widest">Admin <span className="text-[#8A2BE2]">Dashboard</span></h2>
-        <button onClick={() => setIsLoggedIn(false)} className="text-red-400 text-[10px] font-bold uppercase tracking-widest border border-red-400/30 px-4 py-2 rounded-lg hover:bg-red-400/10">
-          Logout
-        </button>
+        <div>
+          <h2 className="text-3xl font-black uppercase tracking-widest">Admin <span className="text-[#8A2BE2]">Dashboard</span></h2>
+          <p className="text-[#00E5FF] text-xs font-bold uppercase tracking-widest mt-1">Vercel Postgres Connected</p>
+        </div>
+        <div className="flex gap-4">
+          <button onClick={initDB} className="text-yellow-400 text-[10px] font-bold uppercase tracking-widest border border-yellow-400/30 px-4 py-2 rounded-lg hover:bg-yellow-400/10">
+            Init Postgres DB (1st time only)
+          </button>
+          <button onClick={() => setIsLoggedIn(false)} className="text-red-400 text-[10px] font-bold uppercase tracking-widest border border-red-400/30 px-4 py-2 rounded-lg hover:bg-red-400/10">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Customer Orders Section */}
+      <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-green-400/10 rounded-xl">
+              <Users className="text-green-400" size={24} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black uppercase tracking-widest">Customer Orders</h3>
+              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">From Postgres DB</p>
+            </div>
+          </div>
+          <button onClick={fetchOrders} className="text-xs uppercase font-bold tracking-widest text-white/50 hover:text-white">Refresh</button>
+        </div>
+        
+        {loadingOrders ? (
+          <p className="text-center text-gray-500 text-sm py-4">Loading orders...</p>
+        ) : orders.length > 0 ? (
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <div key={order.id} className="border border-white/5 bg-black/50 p-4 rounded-xl">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-bold text-[#00E5FF]">{order.name}</h4>
+                    <p className="text-xs text-gray-400">{order.email}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-[#8A2BE2] text-sm uppercase tracking-widest">{order.plan_title}</p>
+                    <p className="text-xs text-white">Plan: {order.plan_name} (₹{order.price})</p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-300 mt-4 border-t border-white/5 pt-4">"{order.details}"</p>
+                <p className="text-[10px] text-gray-600 mt-2 text-right">{new Date(order.created_at).toLocaleString()}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 text-sm py-4">No orders received yet.</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -539,22 +695,6 @@ function AdminTab() {
             </div>
             <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
           </label>
-        </div>
-
-        <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl opacity-50">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-white/5 rounded-xl">
-              <Code className="text-white" size={24} />
-            </div>
-            <div>
-              <h3 className="text-lg font-black uppercase tracking-widest">Edit Services</h3>
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Needs Database</p>
-            </div>
-          </div>
-          <p className="text-gray-400 text-sm">A real database (like Firebase) is required to save changes to text, pricing, and services. Cloudinary only stores images.</p>
-          <button disabled className="w-full py-4 mt-8 border border-white/10 rounded-xl text-gray-500 uppercase tracking-widest text-xs font-bold bg-white/5">
-            Locked
-          </button>
         </div>
       </div>
     </div>
