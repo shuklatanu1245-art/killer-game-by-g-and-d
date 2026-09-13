@@ -703,7 +703,7 @@ function AdminTab({ services, onDataChange }) {
                   <div key={p.id} className="border border-white/5 p-4 rounded-xl bg-[#0A0D14] relative group">
                     <div className="flex justify-between items-start mb-2">
                       <p className="font-bold uppercase tracking-widest text-xs">{p.name}</p>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-2 transition-opacity">
                         <button onClick={() => setPlanModal({ isOpen: true, mode: 'EDIT', service_id: s.id, data: { id: p.id, name: p.name, price: p.price, features: p.features || [''], is_popular: p.is_popular } })} className="text-blue-400 text-[10px] font-bold bg-blue-500/20 px-2 py-1 rounded">EDIT</button>
                         <button onClick={() => handleDeletePlan(p.id)} className="text-red-400 bg-red-500/20 px-2 py-1 rounded"><Trash2 size={12}/></button>
                       </div>
