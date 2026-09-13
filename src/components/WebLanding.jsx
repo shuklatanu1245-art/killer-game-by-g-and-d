@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, Instagram, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2 } from 'lucide-react';
 
 export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
@@ -323,7 +323,7 @@ function ContactTab() {
           
           <a href="https://instagram.com/creov.atestudio" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors mb-6 group w-max">
             <div className="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 p-3 rounded-xl text-white group-hover:scale-110 transition-transform">
-              <Instagram size={24} />
+              <MessageCircle size={24} />
             </div>
             <div>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">DM Us on Instagram</p>
