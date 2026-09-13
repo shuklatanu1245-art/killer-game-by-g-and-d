@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2 } from 'lucide-react';
 
 export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
@@ -12,6 +12,8 @@ export default function WebLanding({ onPlayWeb }) {
         return <ServicesTab />;
       case 'pricing':
         return <PricingTab />;
+      case 'portfolio':
+        return <PortfolioTab />;
       case 'games':
         return <GamesTab onPlayWeb={onPlayWeb} />;
       case 'admin':
@@ -45,7 +47,7 @@ export default function WebLanding({ onPlayWeb }) {
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-2 md:gap-6 text-xs md:text-sm font-bold tracking-widest uppercase">
-            {['home', 'services', 'pricing', 'games', 'contact'].map((tab) => (
+            {['home', 'services', 'pricing', 'portfolio', 'games', 'contact'].map((tab) => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -170,7 +172,6 @@ function PricingTab() {
       <p className="text-gray-400 font-bold tracking-widest text-sm uppercase mb-12">Creative Designs. Modern Websites. AI-Powered Ads.</p>
       
       <div className="w-full space-y-12">
-        {/* Thumbnails */}
         <PricingSection 
           title="Thumbnail Designing" 
           icon={<ImageIcon/>} 
@@ -182,7 +183,6 @@ function PricingTab() {
           ]}
         />
 
-        {/* Posters */}
         <PricingSection 
           title="Poster Designing" 
           icon={<Layout/>} 
@@ -194,7 +194,6 @@ function PricingTab() {
           ]}
         />
 
-        {/* Websites */}
         <PricingSection 
           title="Website Development" 
           icon={<Code/>} 
@@ -206,7 +205,6 @@ function PricingTab() {
           ]}
         />
         
-        {/* AI Ads */}
         <PricingSection 
           title="AI Advertisement Videos" 
           icon={<Video/>} 
@@ -261,6 +259,62 @@ function PricingSection({ title, icon, color, borderColor, plans }) {
   );
 }
 
+function PortfolioTab() {
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Requires Resource List to be unchecked in Cloudinary Security Settings
+    fetch('https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json')
+      .then(res => res.json())
+      .then(data => {
+        setImages(data.resources || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Cloudinary fetch error:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center flex-1 w-full">
+      <h2 className="text-4xl font-black uppercase tracking-widest mb-4 text-center">
+        Our <span className="text-[#00E5FF]">Portfolio</span>
+      </h2>
+      <p className="text-gray-400 font-bold tracking-widest text-sm uppercase mb-12 text-center max-w-lg">
+        Explore our recent work.
+      </p>
+      
+      {loading ? (
+        <div className="flex items-center gap-3 text-[#00E5FF] mt-10">
+          <Loader2 className="animate-spin" size={32} />
+          <span className="font-bold tracking-widest uppercase">Loading Portfolio...</span>
+        </div>
+      ) : images.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+          {images.map((img) => (
+            <div key={img.public_id} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]">
+              <img 
+                src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${img.version}/${img.public_id}.${img.format}`}
+                alt="Portfolio Item"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center mt-10 p-10 border border-white/10 rounded-3xl bg-[#0A0D14] w-full max-w-md">
+          <ImageIcon size={48} className="mx-auto text-gray-500 mb-4" />
+          <h3 className="text-xl font-bold text-white mb-2 tracking-widest uppercase">Portfolio is Empty</h3>
+          <p className="text-gray-400 text-sm mb-4">Upload images from the Admin Panel.</p>
+          <p className="text-red-400 text-[10px] uppercase font-bold tracking-widest">Note: 'Resource list' must be enabled in Cloudinary Security settings!</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function GamesTab({ onPlayWeb }) {
   return (
     <div className="flex flex-col items-center justify-center flex-1">
@@ -294,38 +348,133 @@ function GamesTab({ onPlayWeb }) {
 }
 
 function AdminTab() {
-  return (
-    <div className="flex flex-col items-center justify-center flex-1">
-      <div className="w-full max-w-md p-8 rounded-3xl border border-white/10 bg-[#0A0D14] shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF]"></div>
-        
-        <div className="text-center mb-10">
-          <ShieldCheck size={48} className="mx-auto text-[#8A2BE2] mb-4" />
-          <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-2">Admin Portal</h2>
-          <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">Restricted Access</p>
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ml_default");
+    formData.append("tags", "creovate_portfolio");
+    
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      if (data.secure_url) {
+        alert("Uploaded to Portfolio Successfully! (Refresh page to see it)");
+      } else {
+        alert("Upload failed: " + (data.error?.message || "Unknown error"));
+      }
+    } catch (err) {
+      alert("Error uploading to Cloudinary");
+    }
+    setUploading(false);
+    e.target.value = "";
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center flex-1">
+        <div className="w-full max-w-md p-8 rounded-3xl border border-white/10 bg-[#0A0D14] shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF]"></div>
+          
+          <div className="text-center mb-10">
+            <ShieldCheck size={48} className="mx-auto text-[#8A2BE2] mb-4" />
+            <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-2">Admin Portal</h2>
+            <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">Restricted Access</p>
+          </div>
+          
+          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }}>
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Email</label>
+              <div className="relative">
+                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input type="email" required className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#8A2BE2]" />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Password</label>
+              <div className="relative">
+                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input type="password" required className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#8A2BE2]" />
+              </div>
+            </div>
+            
+            <button type="submit" className="w-full bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white font-black tracking-widest uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+              Login <ChevronRight size={20} />
+            </button>
+          </form>
         </div>
-        
-        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Backend not connected yet!"); }}>
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Email Address</label>
-            <div className="relative">
-              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-              <input type="email" placeholder="admin@creovate.in" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#8A2BE2] transition-colors" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col flex-1 w-full max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-black uppercase tracking-widest">Admin <span className="text-[#8A2BE2]">Dashboard</span></h2>
+        <button onClick={() => setIsLoggedIn(false)} className="text-red-400 text-[10px] font-bold uppercase tracking-widest border border-red-400/30 px-4 py-2 rounded-lg hover:bg-red-400/10">
+          Logout
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Upload to Cloudinary */}
+        <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl relative overflow-hidden group">
+          <div className="absolute inset-0 bg-[#00E5FF]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div className="flex items-center gap-4 mb-6 relative z-10">
+            <div className="p-3 bg-[#00E5FF]/10 rounded-xl">
+              <ImageIcon className="text-[#00E5FF]" size={24} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black uppercase tracking-widest">Add to Portfolio</h3>
+              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Cloudinary Database</p>
             </div>
           </div>
+          <p className="text-gray-400 text-sm mb-6 relative z-10">Select an image to instantly upload it to Cloudinary. It will automatically be tagged and displayed on the public Portfolio tab.</p>
           
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Password</label>
-            <div className="relative">
-              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-              <input type="password" placeholder="••••••••" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#8A2BE2] transition-colors" />
+          <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#00E5FF]/30 rounded-2xl cursor-pointer hover:bg-[#00E5FF]/5 transition-colors relative z-10">
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              {uploading ? (
+                <>
+                  <Loader2 className="animate-spin text-[#00E5FF] mb-2" size={32} />
+                  <p className="text-xs text-[#00E5FF] font-black uppercase tracking-widest">Uploading...</p>
+                </>
+              ) : (
+                <>
+                  <Upload className="text-[#00E5FF] mb-2" size={32} />
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Select Image to Upload</p>
+                </>
+              )}
+            </div>
+            <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
+          </label>
+        </div>
+
+        {/* Edit Text */}
+        <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl opacity-50">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 bg-white/5 rounded-xl">
+              <Code className="text-white" size={24} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black uppercase tracking-widest">Edit Services</h3>
+              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Needs Database</p>
             </div>
           </div>
-          
-          <button type="submit" className="w-full bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white font-black tracking-widest uppercase py-4 rounded-xl mt-4 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-            Login <ChevronRight size={20} />
+          <p className="text-gray-400 text-sm">A real database (like Firebase) is required to save changes to text, pricing, and services. Cloudinary only stores images.</p>
+          <button disabled className="w-full py-4 mt-8 border border-white/10 rounded-xl text-gray-500 uppercase tracking-widest text-xs font-bold bg-white/5">
+            Locked
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );
