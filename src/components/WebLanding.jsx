@@ -564,6 +564,34 @@ function AdminTab({ services, onDataChange }) {
     } catch(err) {}
   };
 
+  const handleEditService = async (s) => {
+    const title = prompt("Edit Service Title:", s.title);
+    const desc = prompt("Edit Service Description:", s.description);
+    if (!title || !desc) return;
+    try {
+      await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'EDIT_SERVICE', payload: { id: s.id, title, description: desc } })
+      });
+      onDataChange();
+    } catch(err) {}
+  };
+
+  const handleEditPlan = async (p) => {
+    const name = prompt("Edit Plan Name:", p.name);
+    const price = prompt("Edit Plan Price:", p.price);
+    const featuresStr = prompt("Edit Features (comma separated):", (p.features || []).join(", "));
+    if (!name || !price) return;
+    const features = featuresStr ? featuresStr.split(",").map(f => f.trim()) : [];
+    try {
+      await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'EDIT_PLAN', payload: { id: p.id, name, price, features } })
+      });
+      onDataChange();
+    } catch(err) {}
+  };
+
   const handleAddPlan = async (service_id) => {
     const name = prompt("Plan Name (e.g. Basic):");
     const price = prompt("Plan Price (e.g. 499):");
@@ -637,6 +665,7 @@ function AdminTab({ services, onDataChange }) {
                 <h4 className="text-lg font-bold text-[#00E5FF] uppercase tracking-widest">{s.title}</h4>
                 <div className="flex gap-2">
                   <button onClick={() => handleAddPlan(s.id)} className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-md">Add Plan</button>
+                  <button onClick={() => handleEditService(s)} className="text-xs bg-blue-500/20 text-blue-400 px-3 py-1 rounded-md">Edit</button>
                   <button onClick={() => handleDeleteService(s.id)} className="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-md">Delete Service</button>
                 </div>
               </div>
@@ -645,7 +674,10 @@ function AdminTab({ services, onDataChange }) {
                   <div key={p.id} className="border border-white/5 p-4 rounded-xl bg-[#0A0D14]">
                     <div className="flex justify-between items-start mb-2">
                       <p className="font-bold uppercase tracking-widest text-xs">{p.name}</p>
-                      <button onClick={() => handleDeletePlan(p.id)} className="text-red-400"><Trash2 size={14}/></button>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleEditPlan(p)} className="text-blue-400 text-xs font-bold">EDIT</button>
+                        <button onClick={() => handleDeletePlan(p.id)} className="text-red-400"><Trash2 size={14}/></button>
+                      </div>
                     </div>
                     <p className="text-xl font-black text-gray-300">₹{p.price}</p>
                   </div>
