@@ -1,9 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2, Target, Zap, Award } from 'lucide-react';
+import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2, Target, Zap, Award, Trash2, Plus } from 'lucide-react';
 
 export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
   const [pricingFilter, setPricingFilter] = useState('all');
+  const [dynamicServices, setDynamicServices] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  const fetchDynamicData = async () => {
+    try {
+      const res = await fetch('/api/get-pricing');
+      if (res.ok) {
+        const data = await res.json();
+        setDynamicServices(data.services || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setLoadingData(false);
+  };
+
+  useEffect(() => {
+    fetchDynamicData();
+  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -17,18 +36,18 @@ export default function WebLanding({ onPlayWeb }) {
       case 'home':
         return <HomeTab onNavigate={handleTabChange} />;
       case 'services':
-        return <ServicesTab onServiceClick={(title) => {
+        return <ServicesTab services={dynamicServices} loading={loadingData} onServiceClick={(title) => {
           setPricingFilter(title);
           setActiveTab('pricing');
         }} />;
       case 'pricing':
-        return <PricingTab filter={pricingFilter} setFilter={setPricingFilter} />;
+        return <PricingTab services={dynamicServices} loading={loadingData} filter={pricingFilter} setFilter={setPricingFilter} />;
       case 'portfolio':
         return <PortfolioTab />;
       case 'games':
         return <GamesTab onPlayWeb={onPlayWeb} />;
       case 'admin':
-        return <AdminTab />;
+        return <AdminTab onDataChange={fetchDynamicData} services={dynamicServices} />;
       case 'contact':
         return <ContactTab />;
       default:
@@ -108,10 +127,19 @@ export default function WebLanding({ onPlayWeb }) {
 
 // --- TAB COMPONENTS ---
 
+function getIconComponent(iconName) {
+  switch (iconName) {
+    case 'ImageIcon': return <ImageIcon size={40} />;
+    case 'Layout': return <Layout size={40} />;
+    case 'Code': return <Code size={40} />;
+    case 'Video': return <Video size={40} />;
+    default: return <Star size={40} />;
+  }
+}
+
 function HomeTab({ onNavigate }) {
   return (
     <div className="flex flex-col flex-1 pt-12">
-      {/* Hero Section */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-24">
         <div className="flex-1 text-left">
           <h2 className="text-[#8A2BE2] text-3xl font-black italic tracking-widest mb-4 drop-shadow-[0_0_15px_rgba(138,43,226,0.5)]">
@@ -153,7 +181,6 @@ function HomeTab({ onNavigate }) {
         </div>
       </div>
 
-      {/* Why Choose Us Section */}
       <div className="w-full bg-[#0A0D14] rounded-3xl p-10 border border-white/5 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#00E5FF] rounded-full filter blur-[150px] opacity-10 pointer-events-none"></div>
         <h2 className="text-3xl font-black uppercase tracking-widest mb-12 text-center">Why <span className="text-[#00E5FF]">Choose Us?</span></h2>
@@ -176,18 +203,13 @@ function HomeTab({ onNavigate }) {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
 
-function ServicesTab({ onServiceClick }) {
-  const services = [
-    { icon: <ImageIcon size={40}/>, title: "Thumbnail Designing", desc: "Eye-catching thumbnails that get more clicks.", color: "text-[#8A2BE2]", border: "border-[#8A2BE2]/50", bg: "bg-[#8A2BE2]/10" },
-    { icon: <Layout size={40}/>, title: "Poster Designing", desc: "Creative posters that leave a lasting impact.", color: "text-[#00E5FF]", border: "border-[#00E5FF]/50", bg: "bg-[#00E5FF]/10" },
-    { icon: <Code size={40}/>, title: "Website Development", desc: "Modern, responsive and high-performing websites.", color: "text-green-400", border: "border-green-400/50", bg: "bg-green-400/10" },
-    { icon: <Video size={40}/>, title: "AI Advertisement Videos", desc: "AI-powered ads that promote and perform.", color: "text-orange-400", border: "border-orange-400/50", bg: "bg-orange-400/10" },
-  ];
+function ServicesTab({ services, loading, onServiceClick }) {
+  if (loading) return <div className="text-center py-20"><Loader2 className="animate-spin mx-auto text-[#8A2BE2]" size={40} /></div>;
+  if (!services || services.length === 0) return <div className="text-center py-20 text-gray-500">No services available. Init DB from Admin Panel.</div>;
 
   return (
     <div className="flex flex-col items-center justify-center flex-1">
@@ -203,12 +225,12 @@ function ServicesTab({ onServiceClick }) {
           <div 
             key={i} 
             onClick={() => onServiceClick(s.title)}
-            className={`p-8 rounded-2xl border ${s.border} bg-[#0A0D14] flex flex-col items-center text-center hover:scale-105 transition-all duration-300 shadow-xl relative overflow-hidden group cursor-pointer`}
+            className={`p-8 rounded-2xl border ${s.border_color}/50 bg-[#0A0D14] flex flex-col items-center text-center hover:scale-105 transition-all duration-300 shadow-xl relative overflow-hidden group cursor-pointer`}
           >
             <div className={`absolute inset-0 ${s.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-            <div className={`${s.color} mb-6 relative z-10 drop-shadow-lg`}>{s.icon}</div>
+            <div className={`${s.color} mb-6 relative z-10 drop-shadow-lg`}>{getIconComponent(s.icon)}</div>
             <h3 className="text-xl font-black uppercase tracking-wider mb-4 relative z-10">{s.title}</h3>
-            <p className="text-gray-400 text-sm relative z-10 flex-1">{s.desc}</p>
+            <p className="text-gray-400 text-sm relative z-10 flex-1">{s.description}</p>
             
             <div className="mt-8 relative z-10 w-full">
               <button className={`w-full py-3 rounded-xl border border-white/10 group-hover:border-white/30 text-xs font-black uppercase tracking-widest ${s.color} bg-black/50 transition-all`}>
@@ -222,10 +244,17 @@ function ServicesTab({ onServiceClick }) {
   );
 }
 
-function PricingTab({ filter, setFilter }) {
+function PricingTab({ services, loading, filter, setFilter }) {
   const [orderModal, setOrderModal] = useState({ isOpen: false, plan: null, sectionTitle: null });
   const [orderForm, setOrderForm] = useState({ name: "", email: "", details: "" });
   const [submitting, setSubmitting] = useState(false);
+
+  if (loading) return <div className="text-center py-20"><Loader2 className="animate-spin mx-auto text-[#00E5FF]" size={40} /></div>;
+  if (!services || services.length === 0) return <div className="text-center py-20 text-gray-500">No pricing available. Init DB from Admin Panel.</div>;
+
+  const displayedSections = filter === 'all' 
+    ? services 
+    : services.filter(s => s.title === filter);
 
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
@@ -250,58 +279,13 @@ function PricingTab({ filter, setFilter }) {
         setOrderModal({ isOpen: false, plan: null, sectionTitle: null });
         setOrderForm({ name: "", email: "", details: "" });
       } else {
-        alert("Failed to place order. Database might not be initialized yet.");
+        alert("Failed to place order.");
       }
     } catch (err) {
-      console.error(err);
-      alert("Error placing order. Ensure API backend is running on Vercel.");
+      alert("Error placing order.");
     }
-    
     setSubmitting(false);
   };
-
-  const allSections = [
-    {
-      title: "Thumbnail Designing", 
-      icon: <ImageIcon/>, color: "text-[#8A2BE2]", borderColor: "border-[#8A2BE2]",
-      plans: [
-        { name: "Basic", price: "149", features: ["1 Thumbnail", "1 Concept", "1 Revision"] },
-        { name: "Pro", price: "299", popular: true, features: ["Premium Design", "Advanced Effects", "2 Revisions"] },
-        { name: "Creator Pack", price: "999", features: ["5 Thumbnails", "Consistent Style", "Priority Delivery"] }
-      ]
-    },
-    {
-      title: "Poster Designing", 
-      icon: <Layout/>, color: "text-[#00E5FF]", borderColor: "border-[#00E5FF]",
-      plans: [
-        { name: "Basic", price: "299", features: ["1 Professional Poster", "High Quality Design", "1 Revision"] },
-        { name: "Premium", price: "499", popular: true, features: ["Custom Design", "Advanced Graphics", "2 Revisions"] },
-        { name: "Business Pack", price: "1,499", features: ["5 Posters", "Consistent Branding", "Priority Delivery"] }
-      ]
-    },
-    {
-      title: "Website Development", 
-      icon: <Code/>, color: "text-green-400", borderColor: "border-green-400",
-      plans: [
-        { name: "Starter", price: "2,999+", features: ["Single Page Website", "Mobile Responsive", "Contact Section", "Basic SEO"] },
-        { name: "Business", price: "5,999+", popular: true, features: ["Multi-Section Website", "Responsive Design", "Contact / CTA", "Professional UI"] },
-        { name: "Custom", price: "9,999+", features: ["Custom Functionality", "Advanced UI/UX", "Multiple Pages", "Priority Support"] }
-      ]
-    },
-    {
-      title: "AI Advertisement Videos", 
-      icon: <Video/>, color: "text-orange-400", borderColor: "border-orange-400",
-      plans: [
-        { name: "Starter", price: "499", features: ["15-20 Sec Video", "AI Visuals", "Background Music", "HD Quality"] },
-        { name: "Professional", price: "999", popular: true, features: ["30-40 Sec Video", "Voiceover", "Editing", "HD Quality"] },
-        { name: "Business Ad", price: "1,999+", features: ["Custom Concept", "Multiple Scenes", "Professional Editing", "HD Quality"] }
-      ]
-    }
-  ];
-
-  const displayedSections = filter === 'all' 
-    ? allSections 
-    : allSections.filter(s => s.title === filter);
 
   return (
     <div className="flex flex-col items-center flex-1 w-full relative">
@@ -329,34 +313,22 @@ function PricingTab({ filter, setFilter }) {
         ))}
       </div>
 
-      {/* Order Modal */}
       {orderModal.isOpen && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
             <button 
               onClick={() => setOrderModal({ isOpen: false, plan: null, sectionTitle: null })} 
               className="absolute top-4 right-4 text-gray-500 hover:text-white"
-            >
-              ✕
-            </button>
+            >✕</button>
             <h3 className="text-2xl font-black uppercase tracking-widest mb-2">Place Order</h3>
             <p className="text-[#00E5FF] font-bold text-xs uppercase tracking-widest mb-6">
               {orderModal.sectionTitle} - {orderModal.plan.name} (₹{orderModal.plan.price})
             </p>
             
             <form className="space-y-4" onSubmit={handleOrderSubmit}>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Your Name</label>
-                <input required type="text" value={orderForm.name} onChange={e => setOrderForm({...orderForm, name: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Email / Instagram</label>
-                <input required type="text" value={orderForm.email} onChange={e => setOrderForm({...orderForm, email: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Project Details</label>
-                <textarea required rows="3" value={orderForm.details} onChange={e => setOrderForm({...orderForm, details: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none resize-none"></textarea>
-              </div>
+              <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Your Name</label><input required type="text" value={orderForm.name} onChange={e => setOrderForm({...orderForm, name: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" /></div>
+              <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Email / Instagram</label><input required type="text" value={orderForm.email} onChange={e => setOrderForm({...orderForm, email: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" /></div>
+              <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Project Details</label><textarea required rows="3" value={orderForm.details} onChange={e => setOrderForm({...orderForm, details: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none resize-none"></textarea></div>
               <button type="submit" disabled={submitting} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-4 rounded-xl mt-4 hover:bg-[#00E5FF]/80 transition-colors">
                 {submitting ? "Submitting..." : "Confirm Order"}
               </button>
@@ -368,39 +340,38 @@ function PricingTab({ filter, setFilter }) {
   );
 }
 
-function PricingSection({ title, icon, color, borderColor, plans, onOrder }) {
+function PricingSection({ title, icon, color, border_color, plans, onOrder }) {
+  // Use a fallback if plans is undefined
+  const pList = plans || [];
   return (
-    <div className={`w-full border ${borderColor}/30 rounded-3xl p-6 bg-[#05070A] shadow-xl`}>
+    <div className={`w-full border ${border_color}/30 rounded-3xl p-6 bg-[#05070A] shadow-xl`}>
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 pb-4 border-b border-white/5">
         <div className="flex items-center gap-4">
-          <div className={`${color} bg-white/5 p-4 rounded-2xl`}>{icon}</div>
+          <div className={`${color} bg-white/5 p-4 rounded-2xl`}>{getIconComponent(icon)}</div>
           <h3 className={`text-2xl font-black uppercase tracking-wider ${color}`}>{title}</h3>
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((p, i) => (
-          <div key={i} className={`rounded-2xl border ${p.popular ? borderColor : 'border-white/10'} p-6 bg-[#0A0D14] flex flex-col relative hover:-translate-y-2 transition-transform duration-300 shadow-lg`}>
-            {p.popular && (
-              <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-black border ${borderColor} ${color}`}>
+        {pList.map((p, i) => (
+          <div key={i} className={`rounded-2xl border ${p.is_popular ? border_color : 'border-white/10'} p-6 bg-[#0A0D14] flex flex-col relative hover:-translate-y-2 transition-transform duration-300 shadow-lg`}>
+            {p.is_popular && (
+              <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-black border ${border_color} ${color}`}>
                 Most Popular
               </div>
             )}
-            <h4 className={`text-center font-bold uppercase tracking-widest text-sm mb-4 ${p.popular ? color : 'text-gray-400'}`}>{p.name}</h4>
+            <h4 className={`text-center font-bold uppercase tracking-widest text-sm mb-4 ${p.is_popular ? color : 'text-gray-400'}`}>{p.name}</h4>
             <div className="text-center mb-6">
-              <span className={`text-4xl font-black ${p.popular ? 'text-white' : 'text-gray-300'}`}>₹{p.price}</span>
+              <span className={`text-4xl font-black ${p.is_popular ? 'text-white' : 'text-gray-300'}`}>₹{p.price}</span>
             </div>
             <div className="flex-1 space-y-3 mb-8">
-              {p.features.map((f, j) => (
+              {p.features && p.features.map((f, j) => (
                 <div key={j} className="flex items-center gap-3 text-sm text-gray-400">
                   <CheckCircle2 size={16} className={color} /> {f}
                 </div>
               ))}
             </div>
-            <button 
-              onClick={() => onOrder(p)}
-              className={`w-full py-3 rounded-xl font-black tracking-widest uppercase text-xs transition-colors border ${p.popular ? `bg-[#8A2BE2] text-white border-[#8A2BE2] hover:bg-[#8A2BE2]/80` : 'border-white/20 text-white hover:bg-white/10'}`}
-            >
+            <button onClick={() => onOrder(p)} className={`w-full py-3 rounded-xl font-black tracking-widest uppercase text-xs transition-colors border ${p.is_popular ? `bg-[#8A2BE2] text-white border-[#8A2BE2] hover:bg-[#8A2BE2]/80` : 'border-white/20 text-white hover:bg-white/10'}`}>
               Order Now
             </button>
           </div>
@@ -444,7 +415,7 @@ function PortfolioTab() {
       ) : images.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
           {images.map((img) => (
-            <div key={img.public_id} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]">
+            <div key={img.public_id} className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]">
               <img 
                 src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${img.version}/${img.public_id}.${img.format}`}
                 alt="Portfolio Item"
@@ -497,23 +468,22 @@ function GamesTab({ onPlayWeb }) {
   );
 }
 
-function AdminTab() {
+function AdminTab({ services, onDataChange }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   
+  const [portfolioImages, setPortfolioImages] = useState([]);
+  const [deletingImage, setDeletingImage] = useState(null);
+
   const handleLogin = (e) => {
     e.preventDefault();
-    const email = e.target.email.value;
-    const pass = e.target.password.value;
-    
-    if (email === "admin@creovate.in" && pass === "Creovate@123") {
+    if (e.target.email.value === "admin@creovate.in" && e.target.password.value === "Creovate@123") {
       setIsLoggedIn(true);
       fetchOrders();
-    } else {
-      alert("Invalid Email or Password!");
-    }
+      fetchPortfolio();
+    } else { alert("Invalid Email or Password!"); }
   };
 
   const fetchOrders = async () => {
@@ -524,83 +494,109 @@ function AdminTab() {
         const data = await res.json();
         setOrders(data.orders || []);
       }
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) {}
     setLoadingOrders(false);
   };
 
-  const initDB = async () => {
+  const fetchPortfolio = () => {
+    fetch('https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json')
+      .then(res => res.json())
+      .then(data => setPortfolioImages(data.resources || []))
+      .catch(err => console.error(err));
+  };
+
+  const handleDeletePortfolioImage = async (public_id) => {
+    if (!confirm("Delete this portfolio image?")) return;
+    setDeletingImage(public_id);
     try {
-      const res = await fetch('/api/init-db');
-      if (res.ok) {
-        alert("Database Tables Created! (Neon Postgres)");
-      } else {
-        alert("DB Error");
-      }
-    } catch(err) { alert(err); }
-  }
+      const res = await fetch('/api/delete-portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ public_id })
+      });
+      if (res.ok) fetchPortfolio();
+      else alert("Failed to delete.");
+    } catch(err) { alert("Error deleting"); }
+    setDeletingImage(null);
+  };
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setUploading(true);
-    
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "ml_default");
     formData.append("tags", "creovate_portfolio");
-    
     try {
-      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", {
-        method: "POST",
-        body: formData
-      });
+      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (data.secure_url) {
-        alert("Uploaded to Portfolio Successfully! (Refresh page to see it)");
-      } else {
-        alert("Upload failed: " + (data.error?.message || "Unknown error"));
+        alert("Uploaded Successfully!");
+        fetchPortfolio();
       }
-    } catch (err) {
-      alert("Error uploading to Cloudinary");
-    }
+    } catch (err) { alert("Error uploading to Cloudinary"); }
     setUploading(false);
     e.target.value = "";
+  };
+
+  // --- Dynamic Pricing Handlers ---
+  const handleAddService = async () => {
+    const title = prompt("Service Title (e.g. Logo Design):");
+    if (!title) return;
+    try {
+      await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'ADD_SERVICE', payload: { title, icon: 'Star', color: 'text-white', bg: 'bg-white/10', border_color: 'border-white', description: 'New service description.' } })
+      });
+      onDataChange();
+    } catch(err) {}
+  };
+
+  const handleDeleteService = async (id) => {
+    if(!confirm("Delete this service and ALL its plans?")) return;
+    try {
+      await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'DELETE_SERVICE', payload: { id } })
+      });
+      onDataChange();
+    } catch(err) {}
+  };
+
+  const handleAddPlan = async (service_id) => {
+    const name = prompt("Plan Name (e.g. Basic):");
+    const price = prompt("Plan Price (e.g. 499):");
+    if (!name || !price) return;
+    try {
+      await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'ADD_PLAN', payload: { service_id, name, price, features: ["Feature 1"], is_popular: false } })
+      });
+      onDataChange();
+    } catch(err) {}
+  };
+
+  const handleDeletePlan = async (id) => {
+    if(!confirm("Delete this plan?")) return;
+    try {
+      await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'DELETE_PLAN', payload: { id } })
+      });
+      onDataChange();
+    } catch(err) {}
   };
 
   if (!isLoggedIn) {
     return (
       <div className="flex flex-col items-center justify-center flex-1">
-        <div className="w-full max-w-md p-8 rounded-3xl border border-white/10 bg-[#0A0D14] shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF]"></div>
-          
-          <div className="text-center mb-10">
-            <ShieldCheck size={48} className="mx-auto text-[#8A2BE2] mb-4" />
-            <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-2">Admin Portal</h2>
-            <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">Restricted Access</p>
-          </div>
-          
-          <form className="space-y-6" onSubmit={handleLogin}>
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Email</label>
-              <div className="relative">
-                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input type="email" name="email" required className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#8A2BE2]" />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Password</label>
-              <div className="relative">
-                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input type="password" name="password" required className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#8A2BE2]" />
-              </div>
-            </div>
-            
-            <button type="submit" className="w-full bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white font-black tracking-widest uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-              Login <ChevronRight size={20} />
-            </button>
+        <div className="w-full max-w-md p-8 rounded-3xl border border-white/10 bg-[#0A0D14] shadow-2xl relative">
+          <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-2 text-center">Admin Portal</h2>
+          <form className="space-y-6 mt-6" onSubmit={handleLogin}>
+            <input type="email" name="email" required placeholder="Email" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+            <input type="password" name="password" required placeholder="Password" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+            <button type="submit" className="w-full bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white font-black tracking-widest uppercase py-4 rounded-xl">Login</button>
           </form>
         </div>
       </div>
@@ -608,95 +604,83 @@ function AdminTab() {
   }
 
   return (
-    <div className="flex flex-col flex-1 w-full max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-3xl font-black uppercase tracking-widest">Admin <span className="text-[#8A2BE2]">Dashboard</span></h2>
-          <p className="text-[#00E5FF] text-xs font-bold uppercase tracking-widest mt-1">Vercel Postgres Connected</p>
-        </div>
-        <div className="flex gap-4">
-          <button onClick={initDB} className="text-yellow-400 text-[10px] font-bold uppercase tracking-widest border border-yellow-400/30 px-4 py-2 rounded-lg hover:bg-yellow-400/10">
-            Init Postgres DB (1st time only)
-          </button>
-          <button onClick={() => setIsLoggedIn(false)} className="text-red-400 text-[10px] font-bold uppercase tracking-widest border border-red-400/30 px-4 py-2 rounded-lg hover:bg-red-400/10">
-            Logout
-          </button>
+    <div className="flex flex-col flex-1 w-full max-w-5xl mx-auto space-y-12">
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-black uppercase tracking-widest">Admin Dashboard</h2>
+        <button onClick={() => fetch('/api/init-db').then(()=>alert('DB Init Run!'))} className="text-yellow-400 text-xs font-bold uppercase border border-yellow-400/30 px-4 py-2 rounded-lg">Init DB</button>
+      </div>
+
+      {/* Orders */}
+      <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
+        <h3 className="text-xl font-black uppercase tracking-widest mb-4">Customer Orders</h3>
+        <div className="space-y-4">
+          {orders.map(o => (
+             <div key={o.id} className="border border-white/5 bg-black/50 p-4 rounded-xl flex justify-between">
+               <div><p className="font-bold text-[#00E5FF]">{o.name}</p><p className="text-xs">{o.email}</p></div>
+               <div className="text-right"><p className="font-bold text-[#8A2BE2]">{o.plan_title}</p><p className="text-xs">{o.plan_name} (₹{o.price})</p></div>
+             </div>
+          ))}
         </div>
       </div>
 
-      {/* Customer Orders Section */}
-      <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-400/10 rounded-xl">
-              <Users className="text-green-400" size={24} />
-            </div>
-            <div>
-              <h3 className="text-lg font-black uppercase tracking-widest">Customer Orders</h3>
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">From Postgres DB</p>
-            </div>
-          </div>
-          <button onClick={fetchOrders} className="text-xs uppercase font-bold tracking-widest text-white/50 hover:text-white">Refresh</button>
+      {/* Dynamic Services & Pricing Manager */}
+      <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-black uppercase tracking-widest">Manage Services & Pricing</h3>
+          <button onClick={handleAddService} className="flex items-center gap-2 text-xs bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20"><Plus size={16}/> Add Service</button>
         </div>
         
-        {loadingOrders ? (
-          <p className="text-center text-gray-500 text-sm py-4">Loading orders...</p>
-        ) : orders.length > 0 ? (
-          <div className="space-y-4">
-            {orders.map((order) => (
-              <div key={order.id} className="border border-white/5 bg-black/50 p-4 rounded-xl">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-bold text-[#00E5FF]">{order.name}</h4>
-                    <p className="text-xs text-gray-400">{order.email}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-[#8A2BE2] text-sm uppercase tracking-widest">{order.plan_title}</p>
-                    <p className="text-xs text-white">Plan: {order.plan_name} (₹{order.price})</p>
-                  </div>
+        <div className="space-y-8">
+          {services.map(s => (
+            <div key={s.id} className="border border-white/10 p-6 rounded-2xl bg-black/30">
+              <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/10">
+                <h4 className="text-lg font-bold text-[#00E5FF] uppercase tracking-widest">{s.title}</h4>
+                <div className="flex gap-2">
+                  <button onClick={() => handleAddPlan(s.id)} className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-md">Add Plan</button>
+                  <button onClick={() => handleDeleteService(s.id)} className="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-md">Delete Service</button>
                 </div>
-                <p className="text-sm text-gray-300 mt-4 border-t border-white/5 pt-4">"{order.details}"</p>
-                <p className="text-[10px] text-gray-600 mt-2 text-right">{new Date(order.created_at).toLocaleString()}</p>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500 text-sm py-4">No orders received yet.</p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[#00E5FF]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div className="flex items-center gap-4 mb-6 relative z-10">
-            <div className="p-3 bg-[#00E5FF]/10 rounded-xl">
-              <ImageIcon className="text-[#00E5FF]" size={24} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {s.plans && s.plans.map(p => (
+                  <div key={p.id} className="border border-white/5 p-4 rounded-xl bg-[#0A0D14]">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-bold uppercase tracking-widest text-xs">{p.name}</p>
+                      <button onClick={() => handleDeletePlan(p.id)} className="text-red-400"><Trash2 size={14}/></button>
+                    </div>
+                    <p className="text-xl font-black text-gray-300">₹{p.price}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div>
-              <h3 className="text-lg font-black uppercase tracking-widest">Add to Portfolio</h3>
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Cloudinary Database</p>
-            </div>
-          </div>
-          <p className="text-gray-400 text-sm mb-6 relative z-10">Select an image to instantly upload it to Cloudinary. It will automatically be tagged and displayed on the public Portfolio tab.</p>
-          
-          <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#00E5FF]/30 rounded-2xl cursor-pointer hover:bg-[#00E5FF]/5 transition-colors relative z-10">
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              {uploading ? (
-                <>
-                  <Loader2 className="animate-spin text-[#00E5FF] mb-2" size={32} />
-                  <p className="text-xs text-[#00E5FF] font-black uppercase tracking-widest">Uploading...</p>
-                </>
-              ) : (
-                <>
-                  <Upload className="text-[#00E5FF] mb-2" size={32} />
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Select Image to Upload</p>
-                </>
-              )}
-            </div>
-            <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
-          </label>
+          ))}
         </div>
       </div>
+
+      {/* Portfolio Uploader / Manager */}
+      <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
+        <h3 className="text-xl font-black uppercase tracking-widest mb-6">Manage Portfolio</h3>
+        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#00E5FF]/30 rounded-2xl cursor-pointer hover:bg-[#00E5FF]/5 transition-colors mb-8">
+          {uploading ? <Loader2 className="animate-spin text-[#00E5FF]" size={32} /> : <Upload className="text-[#00E5FF]" size={32} />}
+          <p className="text-xs text-gray-400 font-bold uppercase mt-2">Upload Image</p>
+          <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
+        </label>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {portfolioImages.map(img => (
+            <div key={img.public_id} className="relative aspect-video rounded-xl overflow-hidden group">
+              <img src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${img.version}/${img.public_id}.${img.format}`} className="w-full h-full object-cover" />
+              <button 
+                onClick={() => handleDeletePortfolioImage(img.public_id)}
+                disabled={deletingImage === img.public_id}
+                className="absolute inset-0 bg-red-600/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                {deletingImage === img.public_id ? <Loader2 className="animate-spin" /> : <Trash2 size={24} />}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
@@ -705,42 +689,12 @@ function ContactTab() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 w-full">
       <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-12">
-        
         <div>
           <h2 className="text-4xl font-black uppercase tracking-widest mb-6">Let's build<br/><span className="text-[#00E5FF]">Something Great.</span></h2>
-          <p className="text-gray-400 leading-relaxed mb-10">Have a project in mind? We'd love to hear about it. Drop us a message or reach out on Instagram to bring your ideas to life.</p>
-          
-          <a href="https://instagram.com/creov.atestudio" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors mb-6 group w-max">
-            <div className="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 p-3 rounded-xl text-white group-hover:scale-110 transition-transform">
-              <MessageCircle size={24} />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">DM Us on Instagram</p>
-              <p className="text-lg font-black tracking-wider text-white">@creov.atestudio</p>
-            </div>
+          <a href="https://instagram.com/creov.atestudio" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10">
+            <MessageCircle size={24} className="text-purple-500" /> <div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">DM Us on Instagram</p><p className="text-lg font-black text-white">@creov.atestudio</p></div>
           </a>
         </div>
-        
-        <div className="bg-[#0A0D14] p-8 rounded-3xl border border-white/10 shadow-2xl">
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Message sent successfully!"); }}>
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Your Name</label>
-              <input type="text" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#00E5FF] transition-colors" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Email Address</label>
-              <input type="email" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#00E5FF] transition-colors" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Project Details</label>
-              <textarea rows="4" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#00E5FF] transition-colors resize-none"></textarea>
-            </div>
-            <button type="submit" className="w-full bg-[#00E5FF] text-black font-black tracking-widest uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-[#00E5FF]/80 transition-colors">
-              <Send size={18} /> Send Message
-            </button>
-          </form>
-        </div>
-
       </div>
     </div>
   );
