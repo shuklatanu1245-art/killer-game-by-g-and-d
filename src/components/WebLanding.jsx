@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2, Target, Zap, Award, Trash2, Plus } from 'lucide-react';
+import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2, Target, Zap, Award, Trash2, Plus, X } from 'lucide-react';
 
 export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
@@ -128,6 +128,9 @@ export default function WebLanding({ onPlayWeb }) {
 // --- TAB COMPONENTS ---
 
 function getIconComponent(iconName) {
+  if (iconName && iconName.startsWith('http')) {
+    return <img src={iconName} alt="Service" className="w-16 h-16 object-cover rounded-xl shadow-lg border border-white/10" />;
+  }
   switch (iconName) {
     case 'ImageIcon': return <ImageIcon size={40} />;
     case 'Layout': return <Layout size={40} />;
@@ -341,7 +344,6 @@ function PricingTab({ services, loading, filter, setFilter }) {
 }
 
 function PricingSection({ title, icon, color, border_color, plans, onOrder }) {
-  // Use a fallback if plans is undefined
   const pList = plans || [];
   return (
     <div className={`w-full border ${border_color}/30 rounded-3xl p-6 bg-[#05070A] shadow-xl`}>
@@ -470,12 +472,16 @@ function GamesTab({ onPlayWeb }) {
 
 function AdminTab({ services, onDataChange }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  
   const [portfolioImages, setPortfolioImages] = useState([]);
   const [deletingImage, setDeletingImage] = useState(null);
+  const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
+
+  // Modals state
+  const [serviceModal, setServiceModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '' } });
+  const [planModal, setPlanModal] = useState({ isOpen: false, mode: 'ADD', service_id: null, data: { id: null, name: '', price: '', features: [''], is_popular: false } });
+  const [uploadingServiceImg, setUploadingServiceImg] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -520,10 +526,10 @@ function AdminTab({ services, onDataChange }) {
     setDeletingImage(null);
   };
 
-  const handleUpload = async (e) => {
+  const handleUploadPortfolio = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setUploading(true);
+    setUploadingPortfolio(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "ml_default");
@@ -536,21 +542,42 @@ function AdminTab({ services, onDataChange }) {
         fetchPortfolio();
       }
     } catch (err) { alert("Error uploading to Cloudinary"); }
-    setUploading(false);
+    setUploadingPortfolio(false);
     e.target.value = "";
   };
 
-  // --- Dynamic Pricing Handlers ---
-  const handleAddService = async () => {
-    const title = prompt("Service Title (e.g. Logo Design):");
-    if (!title) return;
+  // --- Service Modal Handlers ---
+  const handleServiceImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingServiceImg(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ml_default");
+    formData.append("tags", "creovate_services");
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.secure_url) {
+        setServiceModal(prev => ({ ...prev, data: { ...prev.data, icon: data.secure_url } }));
+      }
+    } catch (err) { alert("Error uploading"); }
+    setUploadingServiceImg(false);
+  };
+
+  const submitService = async (e) => {
+    e.preventDefault();
+    const { id, title, description, icon } = serviceModal.data;
+    const payload = { id, title, description, icon: icon || 'Star', color: 'text-white', bg: 'bg-white/10', border_color: 'border-white' };
+    const action = serviceModal.mode === 'ADD' ? 'ADD_SERVICE' : 'EDIT_SERVICE';
     try {
       await fetch('/api/manage-pricing', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'ADD_SERVICE', payload: { title, icon: 'Star', color: 'text-white', bg: 'bg-white/10', border_color: 'border-white', description: 'New service description.' } })
+        body: JSON.stringify({ action, payload })
       });
       onDataChange();
-    } catch(err) {}
+      setServiceModal({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '' } });
+    } catch(err) { alert("Error saving service"); }
   };
 
   const handleDeleteService = async (id) => {
@@ -564,45 +591,36 @@ function AdminTab({ services, onDataChange }) {
     } catch(err) {}
   };
 
-  const handleEditService = async (s) => {
-    const title = prompt("Edit Service Title:", s.title);
-    const desc = prompt("Edit Service Description:", s.description);
-    if (!title || !desc) return;
-    try {
-      await fetch('/api/manage-pricing', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'EDIT_SERVICE', payload: { id: s.id, title, description: desc } })
-      });
-      onDataChange();
-    } catch(err) {}
+  // --- Plan Modal Handlers ---
+  const addFeatureInput = () => {
+    setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: [...prev.data.features, ''] } }));
+  };
+  
+  const updateFeatureInput = (index, value) => {
+    const newFeatures = [...planModal.data.features];
+    newFeatures[index] = value;
+    setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: newFeatures } }));
   };
 
-  const handleEditPlan = async (p) => {
-    const name = prompt("Edit Plan Name:", p.name);
-    const price = prompt("Edit Plan Price:", p.price);
-    const featuresStr = prompt("Edit Features (comma separated):", (p.features || []).join(", "));
-    if (!name || !price) return;
-    const features = featuresStr ? featuresStr.split(",").map(f => f.trim()) : [];
-    try {
-      await fetch('/api/manage-pricing', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'EDIT_PLAN', payload: { id: p.id, name, price, features } })
-      });
-      onDataChange();
-    } catch(err) {}
+  const removeFeatureInput = (index) => {
+    const newFeatures = planModal.data.features.filter((_, i) => i !== index);
+    setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: newFeatures } }));
   };
 
-  const handleAddPlan = async (service_id) => {
-    const name = prompt("Plan Name (e.g. Basic):");
-    const price = prompt("Plan Price (e.g. 499):");
-    if (!name || !price) return;
+  const submitPlan = async (e) => {
+    e.preventDefault();
+    const { id, name, price, features, is_popular } = planModal.data;
+    const cleanFeatures = features.filter(f => f.trim() !== '');
+    const payload = { id, service_id: planModal.service_id, name, price, features: cleanFeatures, is_popular };
+    const action = planModal.mode === 'ADD' ? 'ADD_PLAN' : 'EDIT_PLAN';
     try {
       await fetch('/api/manage-pricing', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'ADD_PLAN', payload: { service_id, name, price, features: ["Feature 1"], is_popular: false } })
+        body: JSON.stringify({ action, payload })
       });
       onDataChange();
-    } catch(err) {}
+      setPlanModal({ isOpen: false, mode: 'ADD', service_id: null, data: { id: null, name: '', price: '', features: [''], is_popular: false } });
+    } catch(err) { alert("Error saving plan"); }
   };
 
   const handleDeletePlan = async (id) => {
@@ -635,7 +653,6 @@ function AdminTab({ services, onDataChange }) {
     <div className="flex flex-col flex-1 w-full max-w-5xl mx-auto space-y-12">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-black uppercase tracking-widest">Admin Dashboard</h2>
-        <button onClick={() => fetch('/api/init-db').then(()=>alert('DB Init Run!'))} className="text-yellow-400 text-xs font-bold uppercase border border-yellow-400/30 px-4 py-2 rounded-lg">Init DB</button>
       </div>
 
       {/* Orders */}
@@ -655,28 +672,40 @@ function AdminTab({ services, onDataChange }) {
       <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-black uppercase tracking-widest">Manage Services & Pricing</h3>
-          <button onClick={handleAddService} className="flex items-center gap-2 text-xs bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20"><Plus size={16}/> Add Service</button>
+          <button 
+            onClick={() => setServiceModal({ isOpen: true, mode: 'ADD', data: { id: null, title: '', description: '', icon: '' } })} 
+            className="flex items-center gap-2 text-xs bg-[#00E5FF] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#00E5FF]/80"
+          >
+            <Plus size={16}/> Add Service
+          </button>
         </div>
         
         <div className="space-y-8">
           {services.map(s => (
             <div key={s.id} className="border border-white/10 p-6 rounded-2xl bg-black/30">
               <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/10">
-                <h4 className="text-lg font-bold text-[#00E5FF] uppercase tracking-widest">{s.title}</h4>
+                <div className="flex items-center gap-4">
+                  {s.icon && s.icon.startsWith('http') ? (
+                    <img src={s.icon} className="w-12 h-12 object-cover rounded-md border border-white/10" />
+                  ) : (
+                    <div className="w-12 h-12 bg-white/10 rounded-md flex items-center justify-center"><Star size={20}/></div>
+                  )}
+                  <h4 className="text-lg font-bold text-[#00E5FF] uppercase tracking-widest">{s.title}</h4>
+                </div>
                 <div className="flex gap-2">
-                  <button onClick={() => handleAddPlan(s.id)} className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-md">Add Plan</button>
-                  <button onClick={() => handleEditService(s)} className="text-xs bg-blue-500/20 text-blue-400 px-3 py-1 rounded-md">Edit</button>
-                  <button onClick={() => handleDeleteService(s.id)} className="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-md">Delete Service</button>
+                  <button onClick={() => setPlanModal({ isOpen: true, mode: 'ADD', service_id: s.id, data: { id: null, name: '', price: '', features: [''], is_popular: false } })} className="text-xs font-bold bg-green-500/20 text-green-400 px-3 py-1 rounded-md">Add Plan</button>
+                  <button onClick={() => setServiceModal({ isOpen: true, mode: 'EDIT', data: { id: s.id, title: s.title, description: s.description, icon: s.icon } })} className="text-xs font-bold bg-blue-500/20 text-blue-400 px-3 py-1 rounded-md">Edit</button>
+                  <button onClick={() => handleDeleteService(s.id)} className="text-xs font-bold bg-red-500/20 text-red-400 px-3 py-1 rounded-md">Delete</button>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {s.plans && s.plans.map(p => (
-                  <div key={p.id} className="border border-white/5 p-4 rounded-xl bg-[#0A0D14]">
+                  <div key={p.id} className="border border-white/5 p-4 rounded-xl bg-[#0A0D14] relative group">
                     <div className="flex justify-between items-start mb-2">
                       <p className="font-bold uppercase tracking-widest text-xs">{p.name}</p>
-                      <div className="flex gap-2">
-                        <button onClick={() => handleEditPlan(p)} className="text-blue-400 text-xs font-bold">EDIT</button>
-                        <button onClick={() => handleDeletePlan(p.id)} className="text-red-400"><Trash2 size={14}/></button>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => setPlanModal({ isOpen: true, mode: 'EDIT', service_id: s.id, data: { id: p.id, name: p.name, price: p.price, features: p.features || [''], is_popular: p.is_popular } })} className="text-blue-400 text-[10px] font-bold bg-blue-500/20 px-2 py-1 rounded">EDIT</button>
+                        <button onClick={() => handleDeletePlan(p.id)} className="text-red-400 bg-red-500/20 px-2 py-1 rounded"><Trash2 size={12}/></button>
                       </div>
                     </div>
                     <p className="text-xl font-black text-gray-300">₹{p.price}</p>
@@ -692,9 +721,9 @@ function AdminTab({ services, onDataChange }) {
       <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
         <h3 className="text-xl font-black uppercase tracking-widest mb-6">Manage Portfolio</h3>
         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#00E5FF]/30 rounded-2xl cursor-pointer hover:bg-[#00E5FF]/5 transition-colors mb-8">
-          {uploading ? <Loader2 className="animate-spin text-[#00E5FF]" size={32} /> : <Upload className="text-[#00E5FF]" size={32} />}
+          {uploadingPortfolio ? <Loader2 className="animate-spin text-[#00E5FF]" size={32} /> : <Upload className="text-[#00E5FF]" size={32} />}
           <p className="text-xs text-gray-400 font-bold uppercase mt-2">Upload Image</p>
-          <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
+          <input type="file" className="hidden" accept="image/*" onChange={handleUploadPortfolio} disabled={uploadingPortfolio} />
         </label>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -712,6 +741,85 @@ function AdminTab({ services, onDataChange }) {
           ))}
         </div>
       </div>
+
+      {/* --- Service Modal --- */}
+      {serviceModal.isOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative">
+            <button onClick={() => setServiceModal({isOpen: false})} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20}/></button>
+            <h3 className="text-xl font-black uppercase tracking-widest mb-6">{serviceModal.mode === 'ADD' ? 'Add New Service' : 'Edit Service'}</h3>
+            
+            <form onSubmit={submitService} className="space-y-4">
+              <div className="flex flex-col items-center mb-4">
+                {serviceModal.data.icon && serviceModal.data.icon.startsWith('http') ? (
+                  <img src={serviceModal.data.icon} className="w-24 h-24 object-cover rounded-xl border border-white/20 mb-3" />
+                ) : (
+                  <div className="w-24 h-24 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center mb-3">
+                    <ImageIcon size={32} className="text-gray-500"/>
+                  </div>
+                )}
+                <label className="text-xs font-bold text-[#00E5FF] cursor-pointer bg-[#00E5FF]/10 px-4 py-2 rounded-lg">
+                  {uploadingServiceImg ? 'Uploading...' : 'Upload Image'}
+                  <input type="file" className="hidden" accept="image/*" onChange={handleServiceImageUpload} disabled={uploadingServiceImg} />
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Service Title</label>
+                <input required type="text" value={serviceModal.data.title} onChange={e=>setServiceModal(p=>({...p, data:{...p.data, title: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Description</label>
+                <textarea required rows="3" value={serviceModal.data.description} onChange={e=>setServiceModal(p=>({...p, data:{...p.data, description: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white resize-none"></textarea>
+              </div>
+              <button type="submit" disabled={uploadingServiceImg} className="w-full bg-[#8A2BE2] text-white font-black uppercase tracking-widest py-3 rounded-xl mt-4">Save Service</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- Plan Modal --- */}
+      {planModal.isOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setPlanModal({isOpen: false})} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20}/></button>
+            <h3 className="text-xl font-black uppercase tracking-widest mb-6">{planModal.mode === 'ADD' ? 'Add Plan' : 'Edit Plan'}</h3>
+            
+            <form onSubmit={submitPlan} className="space-y-4">
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Plan Name</label>
+                  <input required type="text" value={planModal.data.name} onChange={e=>setPlanModal(p=>({...p, data:{...p.data, name: e.target.value}}))} placeholder="e.g. Basic" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Price</label>
+                  <input required type="text" value={planModal.data.price} onChange={e=>setPlanModal(p=>({...p, data:{...p.data, price: e.target.value}}))} placeholder="e.g. 499" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 mb-4">
+                <input type="checkbox" id="popular" checked={planModal.data.is_popular} onChange={e=>setPlanModal(p=>({...p, data:{...p.data, is_popular: e.target.checked}}))} className="w-4 h-4 rounded border-white/10" />
+                <label htmlFor="popular" className="text-xs font-bold text-[#8A2BE2] uppercase tracking-widest">Mark as 'Most Popular'</label>
+              </div>
+
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Plan Features</label>
+                {planModal.data.features.map((feat, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <input type="text" value={feat} onChange={e => updateFeatureInput(index, e.target.value)} placeholder={`Feature ${index + 1}`} className="flex-1 bg-[#05070A] border border-white/10 rounded-lg py-2 px-3 text-sm text-white" />
+                    <button type="button" onClick={() => removeFeatureInput(index)} className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg"><Trash2 size={16}/></button>
+                  </div>
+                ))}
+                <button type="button" onClick={addFeatureInput} className="w-full border border-dashed border-white/20 text-gray-400 text-xs font-bold uppercase py-2 rounded-lg mt-2 hover:bg-white/5 flex items-center justify-center gap-2">
+                  <Plus size={14}/> Add Feature
+                </button>
+              </div>
+
+              <button type="submit" className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-3 rounded-xl mt-6">Save Plan</button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

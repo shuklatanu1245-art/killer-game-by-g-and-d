@@ -1,4 +1,4 @@
-﻿import pg from 'pg';
+import pg from 'pg';
 const { Pool } = pg;
 
 export default async function handler(req, res) {
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       await pool.query(DELETE FROM services WHERE id = , [payload.id]);
       res.status(200).json({ success: true });
     } else if (action === 'EDIT_SERVICE') {
-      await pool.query(UPDATE services SET title = , description =  WHERE id = , [payload.title, payload.description, payload.id]);
+      await pool.query(`UPDATE services SET title = $1, description = $2, icon = $3 WHERE id = $4`, [payload.title, payload.description, payload.icon, payload.id]);
       res.status(200).json({ success: true });
     } else if (action === 'ADD_PLAN') {
       const r = await pool.query(INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES (, , , , ) RETURNING *, [payload.service_id, payload.name, payload.price, JSON.stringify(payload.features), payload.is_popular]);
