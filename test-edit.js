@@ -1,0 +1,1 @@
+﻿import fetch from 'node-fetch'; async function run() { const res = await fetch('http://localhost:3000/api/manage-pricing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'EDIT_PLAN', payload: { id: 1, name: 'Basic', price: '150', features: ['A', 'B'] } }) }); console.log(await res.text()); } run();

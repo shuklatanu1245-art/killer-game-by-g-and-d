@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       await pool.query(DELETE FROM pricing_plans WHERE id = , [payload.id]);
       res.status(200).json({ success: true });
     } else if (action === 'EDIT_PLAN') {
-      await pool.query(UPDATE pricing_plans SET name = , price = , features =  WHERE id = , [payload.name, payload.price, JSON.stringify(payload.features), payload.id]);
+      await pool.query(`UPDATE pricing_plans SET name = $1, price = $2, features = $3, is_popular = $4 WHERE id = $5`, [payload.name, payload.price, JSON.stringify(payload.features), payload.is_popular, payload.id]);
       res.status(200).json({ success: true });
     } else {
       res.status(400).json({ error: 'Invalid action' });
