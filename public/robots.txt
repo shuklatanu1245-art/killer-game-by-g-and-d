@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://killer-game-by-g-and-d.vercel.app/sitemap.xml
+Sitemap: https://creovate.in.net/sitemap.xml
