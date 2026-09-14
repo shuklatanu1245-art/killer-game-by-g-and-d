@@ -538,8 +538,23 @@ function AdminTab({ services, contacts, onDataChange }) {
     setLoadingOrders(false);
   };
 
+  const handleDeleteOrder = async (id) => {
+    if(!confirm("Mark this order as DONE and delete it?")) return;
+    try {
+      await fetch('/api/delete-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      fetchOrders();
+    } catch(err) {
+      alert("Error deleting order");
+    }
+  };
+
+  // --- Portfolio Managers ---
   const fetchPortfolio = () => {
-    fetch('https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json')
+    fetch(`https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json?v=${Date.now()}`)
       .then(res => res.json())
       .then(data => setPortfolioImages(data.resources || []))
       .catch(err => console.error(err));
@@ -560,7 +575,7 @@ function AdminTab({ services, contacts, onDataChange }) {
     setDeletingImage(null);
   };
 
-  const handleUploadPortfolio = async (e) => {
+  const handlePortfolioUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setUploadingPortfolio(true);
@@ -568,6 +583,7 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("file", file);
     formData.append("upload_preset", "ml_default");
     formData.append("tags", "creovate_portfolio");
+    formData.append("public_id", "portfolio_" + Date.now());
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", { method: "POST", body: formData });
       const data = await res.json();
@@ -589,6 +605,7 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("file", file);
     formData.append("upload_preset", "ml_default");
     formData.append("tags", "creovate_services");
+    formData.append("public_id", "service_" + Date.now());
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", { method: "POST", body: formData });
       const data = await res.json();
@@ -697,9 +714,12 @@ function AdminTab({ services, contacts, onDataChange }) {
         <h3 className="text-xl font-black uppercase tracking-widest mb-4">Customer Orders</h3>
         <div className="space-y-4">
           {orders.map(o => (
-             <div key={o.id} className="border border-white/5 bg-black/50 p-4 rounded-xl flex justify-between">
-               <div><p className="font-bold text-[#00E5FF]">{o.name}</p><p className="text-xs">{o.email}</p></div>
-               <div className="text-right"><p className="font-bold text-[#8A2BE2]">{o.plan_title}</p><p className="text-xs">{o.plan_name} (₹{o.price})</p></div>
+             <div key={o.id} className="border border-white/5 bg-black/50 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+               <div><p className="font-bold text-[#00E5FF]">{o.name}</p><p className="text-xs text-gray-400">{o.email}</p></div>
+               <div className="sm:text-right flex-1"><p className="font-bold text-[#8A2BE2]">{o.plan_title}</p><p className="text-xs text-gray-400">{o.plan_name} (₹{o.price})</p></div>
+               <button onClick={() => handleDeleteOrder(o.id)} className="bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-green-500 hover:text-black transition-colors whitespace-nowrap">
+                 Mark as Done
+               </button>
              </div>
           ))}
         </div>
@@ -787,7 +807,7 @@ function AdminTab({ services, contacts, onDataChange }) {
         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#00E5FF]/30 rounded-2xl cursor-pointer hover:bg-[#00E5FF]/5 transition-colors mb-8">
           {uploadingPortfolio ? <Loader2 className="animate-spin text-[#00E5FF]" size={32} /> : <Upload className="text-[#00E5FF]" size={32} />}
           <p className="text-xs text-gray-400 font-bold uppercase mt-2">Upload Image</p>
-          <input type="file" className="hidden" accept="image/*" onChange={handleUploadPortfolio} disabled={uploadingPortfolio} />
+          <input type="file" className="hidden" accept="image/*" onChange={handlePortfolioUpload} disabled={uploadingPortfolio} />
         </label>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
