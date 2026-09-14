@@ -30,6 +30,15 @@ export default async function handler(req, res) {
     } else if (action === 'EDIT_PLAN') {
       await pool.query(`UPDATE pricing_plans SET name = $1, price = $2, features = $3, is_popular = $4 WHERE id = $5`, [payload.name, payload.price, JSON.stringify(payload.features), payload.is_popular, payload.id]);
       res.status(200).json({ success: true });
+    } else if (action === 'ADD_CONTACT') {
+      const r = await pool.query(`INSERT INTO contacts (platform, handle, url) VALUES ($1, $2, $3) RETURNING *`, [payload.platform, payload.handle, payload.url]);
+      res.status(200).json({ success: true, data: r.rows[0] });
+    } else if (action === 'EDIT_CONTACT') {
+      await pool.query(`UPDATE contacts SET platform = $1, handle = $2, url = $3 WHERE id = $4`, [payload.platform, payload.handle, payload.url, payload.id]);
+      res.status(200).json({ success: true });
+    } else if (action === 'DELETE_CONTACT') {
+      await pool.query(`DELETE FROM contacts WHERE id = $1`, [payload.id]);
+      res.status(200).json({ success: true });
     } else {
       res.status(400).json({ error: 'Invalid action' });
     }

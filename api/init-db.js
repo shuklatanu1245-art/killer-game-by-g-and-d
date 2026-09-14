@@ -49,25 +49,21 @@ export default async function handler(req, res) {
       );
     `);
 
-    // 4. Seed initial default data if services table is empty
-    const checkServices = await pool.query('SELECT COUNT(*) FROM services');
-    if (parseInt(checkServices.rows[0].count) === 0) {
-      console.log("Seeding initial data...");
-      
-      const s1 = await pool.query(`INSERT INTO services (title, icon, color, bg, border_color, description) VALUES ('Thumbnail Designing', 'ImageIcon', 'text-[#8A2BE2]', 'bg-[#8A2BE2]/10', 'border-[#8A2BE2]', 'Eye-catching thumbnails that get more clicks.') RETURNING id`);
-      const s1Id = s1.rows[0].id;
-      await pool.query(`INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES ($1, 'Basic', '149', '["1 Thumbnail", "1 Concept", "1 Revision"]', false)`, [s1Id]);
-      await pool.query(`INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES ($1, 'Pro', '299', '["Premium Design", "Advanced Effects", "2 Revisions"]', true)`, [s1Id]);
-      await pool.query(`INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES ($1, 'Creator Pack', '999', '["5 Thumbnails", "Consistent Style", "Priority Delivery"]', false)`, [s1Id]);
+    // 4. Create Contacts Table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS contacts (
+        id SERIAL PRIMARY KEY,
+        platform VARCHAR(255) NOT NULL,
+        handle VARCHAR(255) NOT NULL,
+        url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
 
-      const s2 = await pool.query(`INSERT INTO services (title, icon, color, bg, border_color, description) VALUES ('Poster Designing', 'Layout', 'text-[#00E5FF]', 'bg-[#00E5FF]/10', 'border-[#00E5FF]', 'Creative posters that leave a lasting impact.') RETURNING id`);
-      const s2Id = s2.rows[0].id;
-      await pool.query(`INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES ($1, 'Basic', '299', '["1 Professional Poster", "High Quality Design", "1 Revision"]', false)`, [s2Id]);
-      await pool.query(`INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES ($1, 'Premium', '499', '["Custom Design", "Advanced Graphics", "2 Revisions"]', true)`, [s2Id]);
-
-      const s3 = await pool.query(`INSERT INTO services (title, icon, color, bg, border_color, description) VALUES ('Website Development', 'Code', 'text-green-400', 'bg-green-400/10', 'border-green-400', 'Modern, responsive and high-performing websites.') RETURNING id`);
-      const s3Id = s3.rows[0].id;
-      await pool.query(`INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES ($1, 'Starter', '2,999+', '["Single Page Website", "Mobile Responsive"]', false)`, [s3Id]);
+    // Seed contacts if empty
+    const checkContacts = await pool.query('SELECT COUNT(*) FROM contacts');
+    if (parseInt(checkContacts.rows[0].count) === 0) {
+      await pool.query(`INSERT INTO contacts (platform, handle, url) VALUES ('Instagram', '@creov.atestudio', 'https://instagram.com/creov.atestudio')`);
     }
 
     res.status(200).json({ message: "Database tables updated and seeded successfully!" });

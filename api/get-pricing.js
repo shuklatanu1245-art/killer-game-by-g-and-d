@@ -12,6 +12,7 @@ export default async function handler(req, res) {
   try {
     const servicesRes = await pool.query(`SELECT * FROM services ORDER BY id ASC`);
     const plansRes = await pool.query(`SELECT * FROM pricing_plans ORDER BY id ASC`);
+    const contactsRes = await pool.query(`SELECT * FROM contacts ORDER BY id ASC`);
     
     const services = servicesRes.rows.map(s => {
       const plans = plansRes.rows.filter(p => p.service_id === s.id).map(p => ({
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
       return { ...s, plans };
     });
     
-    res.status(200).json({ success: true, services });
+    res.status(200).json({ success: true, services, contacts: contactsRes.rows });
   } catch (error) {
     console.error("Fetch Pricing Error:", error);
     res.status(500).json({ error: error.message });

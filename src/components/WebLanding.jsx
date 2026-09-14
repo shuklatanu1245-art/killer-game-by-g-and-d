@@ -5,6 +5,7 @@ export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
   const [pricingFilter, setPricingFilter] = useState('all');
   const [dynamicServices, setDynamicServices] = useState([]);
+  const [dynamicContacts, setDynamicContacts] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
   const fetchDynamicData = async () => {
@@ -13,6 +14,7 @@ export default function WebLanding({ onPlayWeb }) {
       if (res.ok) {
         const data = await res.json();
         setDynamicServices(data.services || []);
+        setDynamicContacts(data.contacts || []);
       }
     } catch (err) {
       console.error(err);
@@ -47,9 +49,9 @@ export default function WebLanding({ onPlayWeb }) {
       case 'games':
         return <GamesTab onPlayWeb={onPlayWeb} />;
       case 'admin':
-        return <AdminTab onDataChange={fetchDynamicData} services={dynamicServices} />;
+        return <AdminTab onDataChange={fetchDynamicData} services={dynamicServices} contacts={dynamicContacts} />;
       case 'contact':
-        return <ContactTab />;
+        return <ContactTab contacts={dynamicContacts} />;
       default:
         return <HomeTab onNavigate={handleTabChange} />;
     }
@@ -470,7 +472,7 @@ function GamesTab({ onPlayWeb }) {
   );
 }
 
-function AdminTab({ services, onDataChange }) {
+function AdminTab({ services, contacts, onDataChange }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
@@ -481,7 +483,39 @@ function AdminTab({ services, onDataChange }) {
   // Modals state
   const [serviceModal, setServiceModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '' } });
   const [planModal, setPlanModal] = useState({ isOpen: false, mode: 'ADD', service_id: null, data: { id: null, name: '', price: '', features: [''], is_popular: false } });
+  const [contactModal, setContactModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '' } });
   const [uploadingServiceImg, setUploadingServiceImg] = useState(false);
+  
+  const [isSavingPlan, setIsSavingPlan] = useState(false);
+  const [isSavingContact, setIsSavingContact] = useState(false);
+
+  const submitContact = async (e) => {
+    e.preventDefault();
+    setIsSavingContact(true);
+    const payload = contactModal.data;
+    const action = contactModal.mode === 'ADD' ? 'ADD_CONTACT' : 'EDIT_CONTACT';
+    try {
+      const res = await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, payload })
+      });
+      if (!res.ok) throw new Error("Server error");
+      onDataChange();
+      setContactModal({ isOpen: false, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '' } });
+    } catch(err) { alert("Error saving contact."); }
+    setIsSavingContact(false);
+  };
+
+  const handleDeleteContact = async (id) => {
+    if(!confirm("Delete this contact method?")) return;
+    try {
+      await fetch('/api/manage-pricing', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'DELETE_CONTACT', payload: { id } })
+      });
+      onDataChange();
+    } catch(err) {}
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -607,8 +641,6 @@ function AdminTab({ services, onDataChange }) {
     setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: newFeatures } }));
   };
 
-  const [isSavingPlan, setIsSavingPlan] = useState(false);
-
   const submitPlan = async (e) => {
     e.preventDefault();
     setIsSavingPlan(true);
@@ -722,6 +754,33 @@ function AdminTab({ services, onDataChange }) {
         </div>
       </div>
 
+      {/* Manage Contacts */}
+      <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-black uppercase tracking-widest">Manage Contacts</h3>
+          <button 
+            onClick={() => setContactModal({ isOpen: true, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '' } })} 
+            className="flex items-center gap-2 text-xs bg-[#00E5FF] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#00E5FF]/80"
+          >
+            <Plus size={16}/> Add Contact
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {contacts && contacts.map(c => (
+             <div key={c.id} className="border border-white/5 bg-black/30 p-4 rounded-xl flex justify-between items-center group">
+               <div>
+                 <p className="font-bold text-[#00E5FF]">{c.platform}</p>
+                 <p className="text-xs text-gray-400">{c.handle}</p>
+               </div>
+               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                 <button onClick={() => setContactModal({ isOpen: true, mode: 'EDIT', data: { id: c.id, platform: c.platform, handle: c.handle, url: c.url } })} className="text-blue-400 text-xs font-bold bg-blue-500/20 px-3 py-1 rounded">EDIT</button>
+                 <button onClick={() => handleDeleteContact(c.id)} className="text-red-400 bg-red-500/20 px-3 py-1 rounded">DELETE</button>
+               </div>
+             </div>
+          ))}
+        </div>
+      </div>
+
       {/* Portfolio Uploader / Manager */}
       <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
         <h3 className="text-xl font-black uppercase tracking-widest mb-6">Manage Portfolio</h3>
@@ -828,19 +887,66 @@ function AdminTab({ services, onDataChange }) {
         </div>
       )}
 
+      {contactModal.isOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative">
+            <button onClick={() => setContactModal({isOpen: false})} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20}/></button>
+            <h3 className="text-xl font-black uppercase tracking-widest mb-6">{contactModal.mode === 'ADD' ? 'Add Contact' : 'Edit Contact'}</h3>
+            
+            <form onSubmit={submitContact} className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Platform (e.g. Instagram, Email)</label>
+                <input required type="text" value={contactModal.data.platform} onChange={e=>setContactModal(p=>({...p, data:{...p.data, platform: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Handle (e.g. @creovate, +91...)</label>
+                <input required type="text" value={contactModal.data.handle} onChange={e=>setContactModal(p=>({...p, data:{...p.data, handle: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">URL / Link</label>
+                <input required type="text" value={contactModal.data.url} onChange={e=>setContactModal(p=>({...p, data:{...p.data, url: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+              </div>
+
+              <button type="submit" disabled={isSavingContact} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-3 rounded-xl mt-6">
+                {isSavingContact ? "Saving..." : "Save Contact"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
 
-function ContactTab() {
+function ContactTab({ contacts }) {
+  const getIcon = (platform) => {
+    const p = platform.toLowerCase();
+    if (p.includes('insta')) return <MessageCircle size={24} className="text-purple-500" />;
+    if (p.includes('mail') || p.includes('email')) return <Mail size={24} className="text-red-400" />;
+    if (p.includes('whatsapp') || p.includes('phone') || p.includes('call')) return <Smartphone size={24} className="text-green-400" />;
+    return <MessageCircle size={24} className="text-[#00E5FF]" />;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center flex-1 w-full">
       <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
           <h2 className="text-4xl font-black uppercase tracking-widest mb-6">Let's build<br/><span className="text-[#00E5FF]">Something Great.</span></h2>
-          <a href="https://instagram.com/creov.atestudio" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10">
-            <MessageCircle size={24} className="text-purple-500" /> <div><p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">DM Us on Instagram</p><p className="text-lg font-black text-white">@creov.atestudio</p></div>
-          </a>
+          <div className="space-y-4">
+            {contacts && contacts.map(c => (
+              <a key={c.id} href={c.url} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                {getIcon(c.platform)} 
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Connect on {c.platform}</p>
+                  <p className="text-lg font-black text-white">{c.handle}</p>
+                </div>
+              </a>
+            ))}
+            {(!contacts || contacts.length === 0) && (
+              <p className="text-gray-500 text-sm italic">Contact info will appear here.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
