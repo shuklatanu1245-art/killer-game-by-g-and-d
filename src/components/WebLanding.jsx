@@ -993,8 +993,11 @@ function ContactTab({ contacts }) {
                 );
               }
               
+              const formattedUrl = formatLink(c.url);
+              const isExternal = formattedUrl.startsWith('http');
+              
               return (
-                <a key={c.id} href={formatLink(c.url)} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <a key={c.id} href={formattedUrl} target={isExternal ? "_blank" : "_self"} rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
                   {content}
                 </a>
               );
