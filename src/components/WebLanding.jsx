@@ -779,7 +779,7 @@ function AdminTab({ services, contacts, onDataChange }) {
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-black uppercase tracking-widest">Manage Contacts</h3>
           <button 
-            onClick={() => setContactModal({ isOpen: true, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '' } })} 
+            onClick={() => setContactModal({ isOpen: true, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '', is_clickable: true } })} 
             className="flex items-center gap-2 text-xs bg-[#00E5FF] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#00E5FF]/80"
           >
             <Plus size={16}/> Add Contact
@@ -793,7 +793,7 @@ function AdminTab({ services, contacts, onDataChange }) {
                  <p className="text-xs text-gray-400">{c.handle}</p>
                </div>
                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                 <button onClick={() => setContactModal({ isOpen: true, mode: 'EDIT', data: { id: c.id, platform: c.platform, handle: c.handle, url: c.url } })} className="text-blue-400 text-xs font-bold bg-blue-500/20 px-3 py-1 rounded">EDIT</button>
+                 <button onClick={() => setContactModal({ isOpen: true, mode: 'EDIT', data: { id: c.id, platform: c.platform, handle: c.handle, url: c.url, is_clickable: c.is_clickable } })} className="text-blue-400 text-xs font-bold bg-blue-500/20 px-3 py-1 rounded">EDIT</button>
                  <button onClick={() => handleDeleteContact(c.id)} className="text-red-400 bg-red-500/20 px-3 py-1 rounded">DELETE</button>
                </div>
              </div>
@@ -915,16 +915,21 @@ function AdminTab({ services, contacts, onDataChange }) {
             
             <form onSubmit={submitContact} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Platform (e.g. Instagram, Email)</label>
-                <input required type="text" value={contactModal.data.platform} onChange={e=>setContactModal(p=>({...p, data:{...p.data, platform: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">1. URL / Email / Phone Number (Link)</label>
+                <input required type="text" value={contactModal.data.url} onChange={e=>setContactModal(p=>({...p, data:{...p.data, url: e.target.value}}))} placeholder="e.g. https://wa.me/91987654321" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Handle (e.g. @creovate, +91...)</label>
-                <input required type="text" value={contactModal.data.handle} onChange={e=>setContactModal(p=>({...p, data:{...p.data, handle: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">2. Heading (e.g. Instagram, WhatsApp)</label>
+                <input required type="text" value={contactModal.data.platform} onChange={e=>setContactModal(p=>({...p, data:{...p.data, platform: e.target.value}}))} placeholder="e.g. WhatsApp" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">URL / Link</label>
-                <input required type="text" value={contactModal.data.url} onChange={e=>setContactModal(p=>({...p, data:{...p.data, url: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">3. Display Text (Optional Handle)</label>
+                <input required type="text" value={contactModal.data.handle} onChange={e=>setContactModal(p=>({...p, data:{...p.data, handle: e.target.value}}))} placeholder="e.g. +91 98765 43210" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
+              </div>
+
+              <div className="flex items-center gap-2 mt-2">
+                <input type="checkbox" id="clickable" checked={contactModal.data.is_clickable !== false} onChange={e=>setContactModal(p=>({...p, data:{...p.data, is_clickable: e.target.checked}}))} className="w-4 h-4 rounded border-white/10" />
+                <label htmlFor="clickable" className="text-xs font-bold text-[#00E5FF] uppercase tracking-widest">Make this clickable?</label>
               </div>
 
               <button type="submit" disabled={isSavingContact} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-3 rounded-xl mt-6">
@@ -954,15 +959,31 @@ function ContactTab({ contacts }) {
         <div>
           <h2 className="text-4xl font-black uppercase tracking-widest mb-6">Let's build<br/><span className="text-[#00E5FF]">Something Great.</span></h2>
           <div className="space-y-4">
-            {contacts && contacts.map(c => (
-              <a key={c.id} href={c.url} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                {getIcon(c.platform)} 
-                <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Connect on {c.platform}</p>
-                  <p className="text-lg font-black text-white">{c.handle}</p>
-                </div>
-              </a>
-            ))}
+            {contacts && contacts.map(c => {
+              const content = (
+                <>
+                  {getIcon(c.platform)} 
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Connect on {c.platform}</p>
+                    <p className="text-lg font-black text-white">{c.handle}</p>
+                  </div>
+                </>
+              );
+              
+              if (c.is_clickable === false) {
+                return (
+                  <div key={c.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 opacity-80">
+                    {content}
+                  </div>
+                );
+              }
+              
+              return (
+                <a key={c.id} href={c.url} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                  {content}
+                </a>
+              );
+            })}
             {(!contacts || contacts.length === 0) && (
               <p className="text-gray-500 text-sm italic">Contact info will appear here.</p>
             )}
