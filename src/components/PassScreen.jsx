@@ -2,7 +2,7 @@ import HoldToReveal from './HoldToReveal';
 
 export default function PassScreen({ player, subtitle = "Pass the phone to", onReveal }) {
   return (
-    <div className="glass-panel p-8 max-w-md w-full h-[80vh] flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
+    <div className="glass-panel p-6 max-w-md w-full flex-1 h-full min-h-[40vh] flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
       
       {/* Animated Background Orbs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none rounded-3xl">
