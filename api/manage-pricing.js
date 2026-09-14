@@ -13,19 +13,19 @@ export default async function handler(req, res) {
   
   try {
     if (action === 'ADD_SERVICE') {
-      const r = await pool.query(INSERT INTO services (title, icon, color, bg, border_color, description) VALUES (, , , , , ) RETURNING *, [payload.title, payload.icon, payload.color, payload.bg, payload.border_color, payload.description]);
+      const r = await pool.query(`INSERT INTO services (title, icon, color, bg, border_color, description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, [payload.title, payload.icon, payload.color, payload.bg, payload.border_color, payload.description]);
       res.status(200).json({ success: true, data: r.rows[0] });
     } else if (action === 'DELETE_SERVICE') {
-      await pool.query(DELETE FROM services WHERE id = , [payload.id]);
+      await pool.query(`DELETE FROM services WHERE id = $1`, [payload.id]);
       res.status(200).json({ success: true });
     } else if (action === 'EDIT_SERVICE') {
       await pool.query(`UPDATE services SET title = $1, description = $2, icon = $3 WHERE id = $4`, [payload.title, payload.description, payload.icon, payload.id]);
       res.status(200).json({ success: true });
     } else if (action === 'ADD_PLAN') {
-      const r = await pool.query(INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES (, , , , ) RETURNING *, [payload.service_id, payload.name, payload.price, JSON.stringify(payload.features), payload.is_popular]);
+      const r = await pool.query(`INSERT INTO pricing_plans (service_id, name, price, features, is_popular) VALUES ($1, $2, $3, $4, $5) RETURNING *`, [payload.service_id, payload.name, payload.price, JSON.stringify(payload.features), payload.is_popular]);
       res.status(200).json({ success: true, data: r.rows[0] });
     } else if (action === 'DELETE_PLAN') {
-      await pool.query(DELETE FROM pricing_plans WHERE id = , [payload.id]);
+      await pool.query(`DELETE FROM pricing_plans WHERE id = $1`, [payload.id]);
       res.status(200).json({ success: true });
     } else if (action === 'EDIT_PLAN') {
       await pool.query(`UPDATE pricing_plans SET name = $1, price = $2, features = $3, is_popular = $4 WHERE id = $5`, [payload.name, payload.price, JSON.stringify(payload.features), payload.is_popular, payload.id]);
