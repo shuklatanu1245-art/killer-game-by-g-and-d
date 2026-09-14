@@ -607,20 +607,25 @@ function AdminTab({ services, onDataChange }) {
     setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: newFeatures } }));
   };
 
+  const [isSavingPlan, setIsSavingPlan] = useState(false);
+
   const submitPlan = async (e) => {
     e.preventDefault();
+    setIsSavingPlan(true);
     const { id, name, price, features, is_popular } = planModal.data;
     const cleanFeatures = features.filter(f => f.trim() !== '');
     const payload = { id, service_id: planModal.service_id, name, price, features: cleanFeatures, is_popular };
     const action = planModal.mode === 'ADD' ? 'ADD_PLAN' : 'EDIT_PLAN';
     try {
-      await fetch('/api/manage-pricing', {
+      const res = await fetch('/api/manage-pricing', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, payload })
       });
+      if (!res.ok) throw new Error("Server error");
       onDataChange();
       setPlanModal({ isOpen: false, mode: 'ADD', service_id: null, data: { id: null, name: '', price: '', features: [''], is_popular: false } });
-    } catch(err) { alert("Error saving plan"); }
+    } catch(err) { alert("Error saving plan. Please try again."); }
+    setIsSavingPlan(false);
   };
 
   const handleDeletePlan = async (id) => {
@@ -815,7 +820,9 @@ function AdminTab({ services, onDataChange }) {
                 </button>
               </div>
 
-              <button type="submit" className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-3 rounded-xl mt-6">Save Plan</button>
+              <button type="submit" disabled={isSavingPlan} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-3 rounded-xl mt-6">
+                {isSavingPlan ? "Saving..." : "Save Plan"}
+              </button>
             </form>
           </div>
         </div>
