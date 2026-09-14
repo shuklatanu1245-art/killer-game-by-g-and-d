@@ -168,17 +168,17 @@ function App() {
   };
 
   return (
-    <div className="h-[100dvh] w-full bg-black flex flex-col items-center justify-center relative overflow-hidden font-sans">
+    <div className="h-[100dvh] w-full bg-[#05070A] flex flex-col items-center justify-center relative overflow-hidden font-sans">
       
       {/* Background Decor (Professional & Subtle) */}
-      <div className="absolute top-[-10%] left-[-20%] w-[300px] h-[300px] bg-[#FF69B4] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse-slow pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-20%] w-[300px] h-[300px] bg-[#069494] rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-pulse-slow pointer-events-none" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-[-10%] left-[-20%] w-[300px] h-[300px] bg-[#8A2BE2] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-pulse-slow pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-20%] w-[300px] h-[300px] bg-[#00E5FF] rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-pulse-slow pointer-events-none" style={{ animationDelay: '2s' }}></div>
 
       {/* Mobile Container Wrapper */}
-      <div className="w-full max-w-md h-full flex flex-col relative z-10 sm:border-x sm:border-white/5 bg-black shadow-2xl overflow-hidden">
+      <div className="w-full max-w-md h-full flex flex-col relative z-10 sm:border-x sm:border-white/5 bg-[#05070A] shadow-2xl overflow-hidden">
         
         {currentScreen === 'loading' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500 bg-black z-50">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500 bg-[#05070A] z-50">
             <div className="mb-8 relative">
               <div className="absolute inset-0 bg-primary filter blur-3xl opacity-40 rounded-full animate-pulse"></div>
               <img 
@@ -199,6 +199,16 @@ function App() {
         {currentScreen === 'hub' && (
           <div className="flex-1 flex flex-col h-full overflow-hidden relative">
             
+            {!isNative && (
+              <button 
+                onClick={() => setForceWebPlay(false)}
+                className="absolute top-4 left-4 z-50 text-gray-400 hover:text-white flex items-center gap-2 bg-[#05070A]/50 p-2 rounded-lg border border-white/10 backdrop-blur-md"
+              >
+                <X size={16} />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Website</span>
+              </button>
+            )}
+
             {/* Tab Content Area */}
             <div className="flex-1 overflow-hidden">
               {renderTabContent()}
@@ -251,13 +261,13 @@ function App() {
             {/* Global Quit Button */}
             <button 
               onClick={quitGame}
-              className="absolute top-4 left-4 z-[99] w-10 h-10 bg-black/50 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+              className="absolute top-4 left-4 z-[99] w-10 h-10 bg-[#05070A]/50 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
             >
               <X size={20} />
             </button>
 
             {activeGame === 'redrole' && (
-              <div className="flex-1 flex flex-col p-6 animate-in fade-in duration-500 pt-16">
+              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-[#05070A] pt-16">
                 <OfflineGame 
                   playerNames={activeGamePlayers} 
                   onEndGame={handleGameEnd} 
@@ -266,7 +276,7 @@ function App() {
             )}
 
             {activeGame === 'sketch' && (
-              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
+              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-[#05070A] pt-16">
                 <SketchGame 
                   playerNames={activeGamePlayers} 
                   onEndGame={handleGameEnd} 
@@ -275,7 +285,7 @@ function App() {
             )}
 
             {activeGame === 'imposter' && (
-              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
+              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-[#05070A] pt-16">
                 <ImposterGame 
                   playerNames={activeGamePlayers} 
                   onEndGame={handleGameEnd} 
@@ -284,7 +294,7 @@ function App() {
             )}
 
             {activeGame === 'taboo' && (
-              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-black pt-16">
+              <div className="flex-1 flex flex-col p-0 animate-in fade-in duration-500 bg-[#05070A] pt-16">
                 <TabooGame 
                   playerNames={activeGamePlayers} 
                   onEndGame={handleGameEnd} 
