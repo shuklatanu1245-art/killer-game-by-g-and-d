@@ -953,6 +953,21 @@ function ContactTab({ contacts }) {
     return <MessageCircle size={24} className="text-[#00E5FF]" />;
   };
 
+  const formatLink = (url) => {
+    if (!url) return "#";
+    const u = url.trim();
+    if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('mailto:') || u.startsWith('tel:')) return u;
+    
+    // Check if it's an email
+    if (u.includes('@') && !u.includes('/')) return `mailto:${u}`;
+    
+    // Check if it's a phone number (mostly digits, spaces, plus, hyphens)
+    if (/^[\d\s\+\-]+$/.test(u)) return `tel:${u.replace(/\s+/g, '')}`;
+    
+    // Default to https
+    return `https://${u}`;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center flex-1 w-full">
       <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -979,7 +994,7 @@ function ContactTab({ contacts }) {
               }
               
               return (
-                <a key={c.id} href={c.url} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <a key={c.id} href={formatLink(c.url)} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
                   {content}
                 </a>
               );
