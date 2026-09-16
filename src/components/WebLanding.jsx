@@ -398,16 +398,21 @@ function PortfolioTab() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json')
-      .then(res => res.json())
-      .then(data => {
-        setImages(data.resources || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Cloudinary fetch error:", err);
-        setLoading(false);
-      });
+    Promise.all([
+      fetch('https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json').then(res => res.ok ? res.json() : {}),
+      fetch('https://res.cloudinary.com/kcfjib2f/video/list/creovate_portfolio.json').then(res => res.ok ? res.json() : {})
+    ])
+    .then(([imgData, vidData]) => {
+      const imgs = (imgData.resources || []).map(r => ({...r, resource_type: 'image'}));
+      const vids = (vidData.resources || []).map(r => ({...r, resource_type: 'video'}));
+      const allMedia = [...imgs, ...vids].sort((a,b) => b.version - a.version);
+      setImages(allMedia);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error("Cloudinary fetch error:", err);
+      setLoading(false);
+    });
   }, []);
 
   return (
@@ -562,20 +567,26 @@ function AdminTab({ services, contacts, onDataChange }) {
 
   // --- Portfolio Managers ---
   const fetchPortfolio = () => {
-    fetch(`https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json?v=${Date.now()}`)
-      .then(res => res.json())
-      .then(data => setPortfolioImages(data.resources || []))
-      .catch(err => console.error(err));
+    Promise.all([
+      fetch(`https://res.cloudinary.com/kcfjib2f/image/list/creovate_portfolio.json?v=${Date.now()}`).then(r => r.ok ? r.json() : {}),
+      fetch(`https://res.cloudinary.com/kcfjib2f/video/list/creovate_portfolio.json?v=${Date.now()}`).then(r => r.ok ? r.json() : {})
+    ])
+    .then(([imgData, vidData]) => {
+      const imgs = (imgData.resources || []).map(r => ({...r, resource_type: 'image'}));
+      const vids = (vidData.resources || []).map(r => ({...r, resource_type: 'video'}));
+      setPortfolioImages([...imgs, ...vids].sort((a,b) => b.version - a.version));
+    })
+    .catch(err => console.error(err));
   };
 
-  const handleDeletePortfolioImage = async (public_id) => {
-    if (!confirm("Delete this portfolio image?")) return;
+  const handleDeletePortfolioImage = async (public_id, resource_type) => {
+    if (!confirm("Delete this portfolio media?")) return;
     setDeletingImage(public_id);
     try {
       const res = await fetch('/api/delete-portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ public_id })
+        body: JSON.stringify({ public_id, resource_type })
       });
       if (res.ok) fetchPortfolio();
       else alert("Failed to delete.");
@@ -593,7 +604,7 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("tags", "creovate_portfolio");
     formData.append("public_id", "portfolio_" + Date.now());
     try {
-      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", { method: "POST", body: formData });
+      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/auto/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (data.secure_url) {
         alert("Uploaded Successfully!");
