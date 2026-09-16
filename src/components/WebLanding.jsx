@@ -70,12 +70,12 @@ export default function WebLanding({ onPlayWeb }) {
         <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange('home')}>
             <div className="flex items-center gap-2">
-              <div className="text-3xl font-black bg-gradient-to-r from-white to-[#8A2BE2] bg-clip-text text-transparent italic tracking-tighter">CV</div>
-              <span className="text-white/30 font-bold px-1">×</span>
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576631/creovate_logo.jpg" alt="Creovate Studio" className="h-8 w-8 object-cover rounded-md" />
+              <span className="text-white/30 font-bold px-1">x</span>
               <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576046/asodey_logo.jpg" alt="Asodey Visuals" className="h-8 w-8 object-cover rounded-md" />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-widest uppercase leading-none">Creovate <span className="text-asodey">× Asodey</span></h1>
+              <h1 className="text-xl font-black tracking-widest uppercase leading-none">Creovate <span className="text-asodey">x Asodey</span></h1>
               <p className="text-[9px] text-gray-400 tracking-[0.2em] uppercase">Studio & Visuals Collab</p>
             </div>
           </div>
@@ -186,10 +186,8 @@ function HomeTab({ onNavigate }) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#8A2BE2] to-asodey filter blur-[100px] opacity-20 rounded-full animate-pulse-slow"></div>
           <div className="relative z-10 flex flex-col items-center justify-center">
             <div className="flex items-center gap-4">
-              <div className="text-[12rem] font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-300 to-[#8A2BE2] drop-shadow-2xl leading-none">
-                CV
-              </div>
-              <span className="text-5xl font-light text-white/30">×</span>
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576631/creovate_logo.jpg" alt="Creovate Logo" className="w-48 h-48 rounded-full object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(138,43,226,0.4)]" />
+              <span className="text-5xl font-light text-white/30">x</span>
               <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576046/asodey_logo.jpg" alt="Asodey Logo" className="w-48 h-48 rounded-3xl object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(255,87,34,0.4)]" />
             </div>
           </div>
