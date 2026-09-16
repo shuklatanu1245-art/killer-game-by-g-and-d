@@ -11,6 +11,7 @@ export default {
         surface: '#0F172A',
         primary: '#00E5FF', // Neon Cyan
         accent: '#FFFFFF', // White
+        asodey: '#FF5722', // Asodey Orange
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

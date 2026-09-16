@@ -63,17 +63,20 @@ export default function WebLanding({ onPlayWeb }) {
       {/* Background Effects */}
       <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#8A2BE2] rounded-full filter blur-[200px] opacity-20 pointer-events-none z-0"></div>
       <div className="fixed bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#00E5FF] rounded-full filter blur-[200px] opacity-10 pointer-events-none z-0"></div>
+      <div className="fixed top-[40%] left-[40%] w-[600px] h-[600px] bg-asodey rounded-full filter blur-[250px] opacity-10 pointer-events-none z-0"></div>
 
       {/* Navbar */}
       <nav className="w-full border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange('home')}>
-            <div className="text-3xl font-black bg-gradient-to-r from-white to-[#8A2BE2] bg-clip-text text-transparent italic tracking-tighter">
-              CV
+            <div className="flex items-center gap-2">
+              <div className="text-3xl font-black bg-gradient-to-r from-white to-[#8A2BE2] bg-clip-text text-transparent italic tracking-tighter">CV</div>
+              <span className="text-white/30 font-bold px-1">×</span>
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576046/asodey_logo.jpg" alt="Asodey Visuals" className="h-8 w-8 object-cover rounded-md" />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-widest uppercase leading-none">Creovate</h1>
-              <p className="text-[10px] text-gray-400 tracking-[0.3em] uppercase">Studio</p>
+              <h1 className="text-xl font-black tracking-widest uppercase leading-none">Creovate <span className="text-asodey">× Asodey</span></h1>
+              <p className="text-[9px] text-gray-400 tracking-[0.2em] uppercase">Studio & Visuals Collab</p>
             </div>
           </div>
           
@@ -120,7 +123,7 @@ export default function WebLanding({ onPlayWeb }) {
           </div>
         </div>
         <p className="text-gray-600 text-[10px] font-bold tracking-widest uppercase border-t border-white/5 pt-6 max-w-md mx-auto">
-          © {new Date().getFullYear()} Creovate Studio. All rights reserved.
+          &copy; {new Date().getFullYear()} Creovate Studio × Asodey Visuals. All rights reserved.
         </p>
       </footer>
     </div>
@@ -150,26 +153,27 @@ function HomeTab({ onNavigate }) {
           <h2 className="text-[#8A2BE2] text-3xl font-black italic tracking-widest mb-4 drop-shadow-[0_0_15px_rgba(138,43,226,0.5)]">
             Welcome to
           </h2>
-          <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-2 leading-none text-white drop-shadow-xl">
-            Creovate<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Studio</span>
+          <h1 className="text-6xl md:text-7xl font-black uppercase tracking-tighter mb-2 leading-tight text-white drop-shadow-xl">
+            Creovate<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Studio</span> <span className="text-gray-500 font-light">×</span><br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-asodey to-yellow-500">Asodey</span> <span className="text-white">Visuals</span>
           </h1>
-          <div className="h-1 w-24 bg-[#8A2BE2] rounded-full mb-8"></div>
+          <div className="h-1 w-32 bg-gradient-to-r from-[#8A2BE2] to-asodey rounded-full mb-8"></div>
           
           <p className="text-2xl text-gray-300 font-bold mb-6">
-            Creative Ideas. <span className="text-[#8A2BE2]">Digital Solutions.</span>
+            Creative Ideas. <span className="text-asodey">Visual Reality.</span>
           </p>
           <p className="text-gray-400 text-lg max-w-lg mb-10 leading-relaxed">
-            We help businesses, brands and creators stand out with stunning designs, powerful websites and <span className="text-[#8A2BE2] font-bold">AI-driven</span> advertisements.
+            We help businesses, brands and creators stand out with stunning designs, powerful websites, and <span className="text-asodey font-bold">pro-level video editing</span>. Turning imagination into reality.
           </p>
           
-          <div className="flex items-center gap-6 text-sm font-black tracking-widest uppercase text-gray-400 mb-10">
+          <div className="flex items-center gap-6 text-sm font-black tracking-widest uppercase text-gray-400 mb-10 flex-wrap">
             <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#8A2BE2]"></div> DESIGN</span>
             <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00E5FF]"></div> WEB</span>
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-400"></div> AI</span>
+            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-asodey"></div> EDITING</span>
+            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-yellow-500"></div> VFX</span>
           </div>
 
           <div className="flex gap-4">
-            <button onClick={() => onNavigate('portfolio')} className="bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:opacity-90 transition-opacity">
+            <button onClick={() => onNavigate('portfolio')} className="bg-gradient-to-r from-[#8A2BE2] to-asodey text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(255,87,34,0.3)]">
               View Our Work
             </button>
             <button onClick={() => onNavigate('services')} className="bg-white/5 border border-white/10 text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-colors">
@@ -179,9 +183,15 @@ function HomeTab({ onNavigate }) {
         </div>
         
         <div className="flex-1 flex justify-center items-center relative hidden md:flex">
-          <div className="absolute inset-0 bg-[#8A2BE2] filter blur-[100px] opacity-20 rounded-full animate-pulse-slow"></div>
-          <div className="text-[20rem] font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-300 to-[#8A2BE2] drop-shadow-2xl relative z-10 leading-none">
-            CV
+          <div className="absolute inset-0 bg-gradient-to-br from-[#8A2BE2] to-asodey filter blur-[100px] opacity-20 rounded-full animate-pulse-slow"></div>
+          <div className="relative z-10 flex flex-col items-center justify-center">
+            <div className="flex items-center gap-4">
+              <div className="text-[12rem] font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-300 to-[#8A2BE2] drop-shadow-2xl leading-none">
+                CV
+              </div>
+              <span className="text-5xl font-light text-white/30">×</span>
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576046/asodey_logo.jpg" alt="Asodey Logo" className="w-48 h-48 rounded-3xl object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(255,87,34,0.4)]" />
+            </div>
           </div>
         </div>
       </div>
