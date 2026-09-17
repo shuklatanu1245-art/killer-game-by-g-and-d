@@ -431,13 +431,21 @@ function PortfolioTab() {
         </div>
       ) : images.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
-          {images.map((img) => (
-            <div key={img.public_id} className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]">
-              <img 
-                src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${img.version}/${img.public_id}.${img.format}`}
-                alt="Portfolio Item"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+          {images.map((media) => (
+            <div key={media.public_id} className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]">
+              {media.resource_type === 'video' ? (
+                <video 
+                  src={`https://res.cloudinary.com/kcfjib2f/video/upload/v${media.version}/${media.public_id}.${media.format}`}
+                  autoPlay muted loop playsInline
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              ) : (
+                <img 
+                  src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${media.version}/${media.public_id}.${media.format}`}
+                  alt="Portfolio Item"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              )}
             </div>
           ))}
         </div>
@@ -445,7 +453,7 @@ function PortfolioTab() {
         <div className="text-center mt-10 p-10 border border-white/10 rounded-3xl bg-[#0A0D14] w-full max-w-md">
           <ImageIcon size={48} className="mx-auto text-gray-500 mb-4" />
           <h3 className="text-xl font-bold text-white mb-2 tracking-widest uppercase">Portfolio is Empty</h3>
-          <p className="text-gray-400 text-sm mb-4">Upload images from the Admin Panel.</p>
+          <p className="text-gray-400 text-sm mb-4">Upload media from the Admin Panel.</p>
           <p className="text-red-400 text-[10px] uppercase font-bold tracking-widest">Note: 'Resource list' must be enabled in Cloudinary Security settings!</p>
         </div>
       )}
@@ -825,20 +833,24 @@ function AdminTab({ services, contacts, onDataChange }) {
         <h3 className="text-xl font-black uppercase tracking-widest mb-6">Manage Portfolio</h3>
         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#00E5FF]/30 rounded-2xl cursor-pointer hover:bg-[#00E5FF]/5 transition-colors mb-8">
           {uploadingPortfolio ? <Loader2 className="animate-spin text-[#00E5FF]" size={32} /> : <Upload className="text-[#00E5FF]" size={32} />}
-          <p className="text-xs text-gray-400 font-bold uppercase mt-2">Upload Image</p>
-          <input type="file" className="hidden" accept="image/*" onChange={handlePortfolioUpload} disabled={uploadingPortfolio} />
+          <p className="text-xs text-gray-400 font-bold uppercase mt-2">Upload Media</p>
+          <input type="file" className="hidden" accept="image/*,video/*" onChange={handlePortfolioUpload} disabled={uploadingPortfolio} />
         </label>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {portfolioImages.map(img => (
-            <div key={img.public_id} className="relative aspect-video rounded-xl overflow-hidden group">
-              <img src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${img.version}/${img.public_id}.${img.format}`} className="w-full h-full object-cover" />
+          {portfolioImages.map(media => (
+            <div key={media.public_id} className="relative aspect-video rounded-xl overflow-hidden group">
+              {media.resource_type === 'video' ? (
+                <video src={`https://res.cloudinary.com/kcfjib2f/video/upload/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
+              ) : (
+                <img src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
+              )}
               <button 
-                onClick={() => handleDeletePortfolioImage(img.public_id)}
-                disabled={deletingImage === img.public_id}
+                onClick={() => handleDeletePortfolioImage(media.public_id, media.resource_type)}
+                disabled={deletingImage === media.public_id}
                 className="absolute inset-0 bg-red-600/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                {deletingImage === img.public_id ? <Loader2 className="animate-spin" /> : <Trash2 size={24} />}
+                {deletingImage === media.public_id ? <Loader2 className="animate-spin" /> : <Trash2 size={24} />}
               </button>
             </div>
           ))}
