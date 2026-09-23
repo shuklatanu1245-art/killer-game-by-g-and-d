@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2, Target, Zap, Award, Trash2, Plus, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
@@ -61,9 +62,9 @@ export default function WebLanding({ onPlayWeb }) {
     <div className="min-h-screen bg-[#05070A] text-white flex flex-col font-sans relative overflow-x-hidden">
       
       {/* Background Effects */}
-      <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#8A2BE2] rounded-full filter blur-[200px] opacity-20 pointer-events-none z-0"></div>
-      <div className="fixed bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#00E5FF] rounded-full filter blur-[200px] opacity-10 pointer-events-none z-0"></div>
-      <div className="fixed top-[40%] left-[40%] w-[600px] h-[600px] bg-asodey rounded-full filter blur-[250px] opacity-10 pointer-events-none z-0"></div>
+      <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#8A2BE2] rounded-full filter blur-[200px] pointer-events-none z-0"></motion.div>
+      <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="fixed bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#00E5FF] rounded-full filter blur-[200px] pointer-events-none z-0"></motion.div>
+      <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.15, 0.05] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="fixed top-[40%] left-[40%] w-[600px] h-[600px] bg-asodey rounded-full filter blur-[250px] pointer-events-none z-0"></motion.div>
 
       {/* Navbar */}
       <nav className="w-full border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
@@ -96,9 +97,18 @@ export default function WebLanding({ onPlayWeb }) {
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-6 py-12 relative z-10 flex flex-col">
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full flex-1 flex flex-col">
-          {renderTab()}
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="w-full flex-1 flex flex-col"
+          >
+            {renderTab()}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Footer */}
@@ -149,7 +159,12 @@ function HomeTab({ onNavigate }) {
   return (
     <div className="flex flex-col flex-1 pt-12">
       <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-24">
-        <div className="flex-1 text-left">
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="flex-1 text-left"
+        >
           <h2 className="text-[#8A2BE2] text-3xl font-black italic tracking-widest mb-4 drop-shadow-[0_0_15px_rgba(138,43,226,0.5)]">
             Welcome to
           </h2>
@@ -180,18 +195,27 @@ function HomeTab({ onNavigate }) {
               Our Services
             </button>
           </div>
-        </div>
+        </motion.div>
         
-        <div className="flex-1 flex justify-center items-center relative hidden md:flex">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.4 }}
+          className="flex-1 flex justify-center items-center relative hidden md:flex"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-[#8A2BE2] to-asodey filter blur-[100px] opacity-20 rounded-full animate-pulse-slow"></div>
-          <div className="relative z-10 flex flex-col items-center justify-center">
+          <motion.div 
+            animate={{ y: [-15, 15, -15] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            className="relative z-10 flex flex-col items-center justify-center"
+          >
             <div className="flex items-center gap-4">
               <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576631/creovate_logo.jpg" alt="Creovate Logo" className="w-48 h-48 rounded-full object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(138,43,226,0.4)]" />
               <span className="text-5xl font-light text-white/30">x</span>
               <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576046/asodey_logo.jpg" alt="Asodey Logo" className="w-48 h-48 rounded-3xl object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(255,87,34,0.4)]" />
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
       <div className="w-full bg-[#0A0D14] rounded-3xl p-10 border border-white/5 relative overflow-hidden">
@@ -235,10 +259,14 @@ function ServicesTab({ services, loading, onServiceClick }) {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
         {services.map((s, i) => (
-          <div 
+          <motion.div 
             key={i} 
+            whileHover={{ scale: 1.05, y: -5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.1 }}
             onClick={() => onServiceClick(s.title)}
-            className={`p-8 rounded-2xl border ${s.border_color}/50 bg-[#0A0D14] flex flex-col items-center text-center hover:scale-105 transition-all duration-300 shadow-xl relative overflow-hidden group cursor-pointer`}
+            className={`p-8 rounded-2xl border ${s.border_color}/50 bg-[#0A0D14] flex flex-col items-center text-center shadow-xl relative overflow-hidden group cursor-pointer`}
           >
             <div className={`absolute inset-0 ${s.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
             <div className={`${s.color} mb-6 relative z-10 drop-shadow-lg`}>{getIconComponent(s.icon)}</div>
@@ -250,7 +278,7 @@ function ServicesTab({ services, loading, onServiceClick }) {
                 See Pricing &rarr;
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -431,8 +459,15 @@ function PortfolioTab() {
         </div>
       ) : images.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
-          {images.map((media) => (
-            <div key={media.public_id} className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]">
+          {images.map((media, idx) => (
+            <motion.div 
+              key={media.public_id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: idx * 0.05 }}
+              whileHover={{ scale: 1.02 }}
+              className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]"
+            >
               {media.resource_type === 'video' ? (
                 <video 
                   src={`https://res.cloudinary.com/kcfjib2f/video/upload/v${media.version}/${media.public_id}.${media.format}`}
@@ -446,7 +481,7 @@ function PortfolioTab() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       ) : (
