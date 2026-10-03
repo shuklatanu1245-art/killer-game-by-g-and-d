@@ -292,7 +292,7 @@ function HomeTab({ onNavigate }) {
 
 function ServicesTab({ services, loading }) {
   const [orderModal, setOrderModal] = useState({ isOpen: false, serviceTitle: null });
-  const [orderForm, setOrderForm] = useState({ name: "", email: "", details: "" });
+  const [orderForm, setOrderForm] = useState({ name: "", email: "", phone: "", details: "" });
   const [submitting, setSubmitting] = useState(false);
 
   const handleOrderSubmit = async (e) => {
@@ -300,6 +300,8 @@ function ServicesTab({ services, loading }) {
     setSubmitting(true);
     
     try {
+      const fullDetails = orderForm.phone ? `Phone: ${orderForm.phone}\n\n${orderForm.details}` : orderForm.details;
+      
       const res = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -309,14 +311,14 @@ function ServicesTab({ services, loading }) {
           plan_title: orderModal.serviceTitle,
           plan_name: 'Standard Service',
           price: 'N/A',
-          details: orderForm.details
+          details: fullDetails
         })
       });
       
       if (res.ok) {
         alert("Booking request sent successfully! We will contact you soon.");
         setOrderModal({ isOpen: false, serviceTitle: null });
-        setOrderForm({ name: "", email: "", details: "" });
+        setOrderForm({ name: "", email: "", phone: "", details: "" });
       } else {
         alert("Failed to send booking request.");
       }
@@ -378,6 +380,7 @@ function ServicesTab({ services, loading }) {
             <form className="space-y-4" onSubmit={handleOrderSubmit}>
               <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Your Name</label><input required type="text" value={orderForm.name} onChange={e => setOrderForm({...orderForm, name: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" /></div>
               <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Email / Instagram</label><input required type="text" value={orderForm.email} onChange={e => setOrderForm({...orderForm, email: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" /></div>
+              <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Phone Number (Optional)</label><input type="tel" value={orderForm.phone} onChange={e => setOrderForm({...orderForm, phone: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" /></div>
               <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Project Details</label><textarea required rows="3" value={orderForm.details} onChange={e => setOrderForm({...orderForm, details: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none resize-none"></textarea></div>
               <button type="submit" disabled={submitting} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-4 rounded-xl mt-4 hover:bg-[#00E5FF]/80 transition-colors">
                 {submitting ? "Sending..." : "Confirm Booking"}
