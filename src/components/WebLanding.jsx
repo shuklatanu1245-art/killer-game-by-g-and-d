@@ -839,51 +839,6 @@ function AdminTab({ services, contacts, onDataChange }) {
         </div>
       )}
 
-      {/* --- Plan Modal --- */}
-      {planModal.isOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <button onClick={() => setPlanModal({isOpen: false})} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20}/></button>
-            <h3 className="text-xl font-black uppercase tracking-widest mb-6">{planModal.mode === 'ADD' ? 'Add Plan' : 'Edit Plan'}</h3>
-            
-            <form onSubmit={submitPlan} className="space-y-4">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Plan Name</label>
-                  <input required type="text" value={planModal.data.name} onChange={e=>setPlanModal(p=>({...p, data:{...p.data, name: e.target.value}}))} placeholder="e.g. Basic" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Price</label>
-                  <input required type="text" value={planModal.data.price} onChange={e=>setPlanModal(p=>({...p, data:{...p.data, price: e.target.value}}))} placeholder="e.g. 499" className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white" />
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2 mb-4">
-                <input type="checkbox" id="popular" checked={planModal.data.is_popular} onChange={e=>setPlanModal(p=>({...p, data:{...p.data, is_popular: e.target.checked}}))} className="w-4 h-4 rounded border-white/10" />
-                <label htmlFor="popular" className="text-xs font-bold text-[#8A2BE2] uppercase tracking-widest">Mark as 'Most Popular'</label>
-              </div>
-
-              <div className="border-t border-white/10 pt-4 mt-4">
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Plan Features</label>
-                {planModal.data.features.map((feat, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
-                    <input type="text" value={feat} onChange={e => updateFeatureInput(index, e.target.value)} placeholder={`Feature ${index + 1}`} className="flex-1 bg-[#05070A] border border-white/10 rounded-lg py-2 px-3 text-sm text-white" />
-                    <button type="button" onClick={() => removeFeatureInput(index)} className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg"><Trash2 size={16}/></button>
-                  </div>
-                ))}
-                <button type="button" onClick={addFeatureInput} className="w-full border border-dashed border-white/20 text-gray-400 text-xs font-bold uppercase py-2 rounded-lg mt-2 hover:bg-white/5 flex items-center justify-center gap-2">
-                  <Plus size={14}/> Add Feature
-                </button>
-              </div>
-
-              <button type="submit" disabled={isSavingPlan} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-3 rounded-xl mt-6">
-                {isSavingPlan ? "Saving..." : "Save Plan"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
       {contactModal.isOpen && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative">
