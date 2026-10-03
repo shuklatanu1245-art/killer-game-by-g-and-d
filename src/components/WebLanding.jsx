@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
-  const [pricingFilter, setPricingFilter] = useState('all');
-  const [dynamicServices, setDynamicServices] = useState([]);
+    const [dynamicServices, setDynamicServices] = useState([]);
   const [dynamicContacts, setDynamicContacts] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
@@ -29,9 +28,7 @@ export default function WebLanding({ onPlayWeb }) {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    if (tab !== 'pricing') {
-      setPricingFilter('all');
-    }
+
   };
 
   const renderTab = () => {
@@ -39,12 +36,7 @@ export default function WebLanding({ onPlayWeb }) {
       case 'home':
         return <HomeTab onNavigate={handleTabChange} />;
       case 'services':
-        return <ServicesTab services={dynamicServices} loading={loadingData} onServiceClick={(title) => {
-          setPricingFilter(title);
-          setActiveTab('pricing');
-        }} />;
-      case 'pricing':
-        return <PricingTab services={dynamicServices} loading={loadingData} filter={pricingFilter} setFilter={setPricingFilter} />;
+        return <ServicesTab services={dynamicServices} loading={loadingData} />;
       case 'portfolio':
         return <PortfolioTab />;
       case 'games':
@@ -82,7 +74,7 @@ export default function WebLanding({ onPlayWeb }) {
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-2 md:gap-6 text-xs md:text-sm font-bold tracking-widest uppercase">
-            {['home', 'services', 'pricing', 'portfolio', 'games', 'contact'].map((tab) => (
+            {['home', 'services', 'portfolio', 'games', 'contact'].map((tab) => (
               <button 
                 key={tab}
                 onClick={() => handleTabChange(tab)}
@@ -240,62 +232,68 @@ function HomeTab({ onNavigate }) {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-function ServicesTab({ services, loading, onServiceClick }) {
-  if (loading) return <div className="text-center py-20"><Loader2 className="animate-spin mx-auto text-[#8A2BE2]" size={40} /></div>;
-  if (!services || services.length === 0) return <div className="text-center py-20 text-gray-500">No services available. Init DB from Admin Panel.</div>;
+      {/* NEW: Our Process Section */}
+      <div className="w-full bg-[#05070A] rounded-3xl p-10 border border-white/5 relative overflow-hidden mt-12">
+        <h2 className="text-3xl font-black uppercase tracking-widest mb-12 text-center">How We <span className="text-[#8A2BE2]">Work</span></h2>
+        <div className="flex flex-col md:flex-row justify-center items-start gap-8 relative z-10">
+          <div className="flex-1 flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-full bg-[#8A2BE2]/20 flex items-center justify-center text-2xl font-black text-[#8A2BE2] mb-4">1</div>
+            <h3 className="text-xl font-bold uppercase tracking-wider mb-2">Discuss</h3>
+            <p className="text-gray-400 text-sm">We understand your brand, goals, and vision.</p>
+          </div>
+          <div className="hidden md:block w-16 h-[2px] bg-white/10 mt-8"></div>
+          <div className="flex-1 flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-full bg-[#00E5FF]/20 flex items-center justify-center text-2xl font-black text-[#00E5FF] mb-4">2</div>
+            <h3 className="text-xl font-bold uppercase tracking-wider mb-2">Create</h3>
+            <p className="text-gray-400 text-sm">Our experts design and edit your custom assets.</p>
+          </div>
+          <div className="hidden md:block w-16 h-[2px] bg-white/10 mt-8"></div>
+          <div className="flex-1 flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-full bg-asodey/20 flex items-center justify-center text-2xl font-black text-asodey mb-4">3</div>
+            <h3 className="text-xl font-bold uppercase tracking-wider mb-2">Deliver</h3>
+            <p className="text-gray-400 text-sm">You receive premium, ready-to-use visual content.</p>
+          </div>
+        </div>
+      </div>
 
-  return (
-    <div className="flex flex-col items-center justify-center flex-1">
-      <h2 className="text-4xl font-black uppercase tracking-widest mb-4 text-center">
-        Our <span className="text-[#8A2BE2]">Services</span>
-      </h2>
-      <p className="text-gray-400 font-bold tracking-widest text-sm uppercase mb-12 text-center max-w-lg">
-        Click on any service to view its pricing.
-      </p>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-        {services.map((s, i) => (
-          <motion.div 
-            key={i} 
-            whileHover={{ scale: 1.05, y: -5 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.1 }}
-            onClick={() => onServiceClick(s.title)}
-            className={`p-8 rounded-2xl border ${s.border_color}/50 bg-[#0A0D14] flex flex-col items-center text-center shadow-xl relative overflow-hidden group cursor-pointer`}
-          >
-            <div className={`absolute inset-0 ${s.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-            <div className={`${s.color} mb-6 relative z-10 drop-shadow-lg`}>{getIconComponent(s.icon)}</div>
-            <h3 className="text-xl font-black uppercase tracking-wider mb-4 relative z-10">{s.title}</h3>
-            <p className="text-gray-400 text-sm relative z-10 flex-1">{s.description}</p>
-            
-            <div className="mt-8 relative z-10 w-full">
-              <button className={`w-full py-3 rounded-xl border border-white/10 group-hover:border-white/30 text-xs font-black uppercase tracking-widest ${s.color} bg-black/50 transition-all`}>
-                See Pricing &rarr;
-              </button>
-            </div>
-          </motion.div>
-        ))}
+      {/* NEW: Stats Section */}
+      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+        <div className="bg-[#0A0D14] border border-white/5 p-6 rounded-2xl text-center">
+          <h4 className="text-4xl font-black text-white mb-2">50+</h4>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Happy Clients</p>
+        </div>
+        <div className="bg-[#0A0D14] border border-white/5 p-6 rounded-2xl text-center">
+          <h4 className="text-4xl font-black text-[#00E5FF] mb-2">100%</h4>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Satisfaction</p>
+        </div>
+        <div className="bg-[#0A0D14] border border-white/5 p-6 rounded-2xl text-center">
+          <h4 className="text-4xl font-black text-[#8A2BE2] mb-2">24h</h4>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Fast Delivery</p>
+        </div>
+        <div className="bg-[#0A0D14] border border-white/5 p-6 rounded-2xl text-center">
+          <h4 className="text-4xl font-black text-asodey mb-2">Pro</h4>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Quality</p>
+        </div>
+      </div>
+
+      {/* NEW: Final CTA Banner */}
+      <div className="w-full bg-gradient-to-r from-[#8A2BE2]/20 to-[#00E5FF]/20 rounded-3xl p-12 border border-white/10 text-center mt-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/kcfjib2f/image/upload/v1789576631/creovate_logo.jpg')] opacity-5 bg-cover bg-center"></div>
+        <h2 className="text-4xl font-black uppercase tracking-widest mb-4 relative z-10">Ready to Elevate Your Brand?</h2>
+        <p className="text-gray-300 font-bold mb-8 relative z-10 max-w-xl mx-auto">Stop settling for average visuals. Let our team of expert designers and editors bring your vision to life.</p>
+        <button onClick={() => onNavigate('services')} className="relative z-10 bg-white text-black px-10 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-gray-200 transition-colors shadow-2xl">
+          Book a Service Now
+        </button>
       </div>
     </div>
   );
 }
 
-function PricingTab({ services, loading, filter, setFilter }) {
-  const [orderModal, setOrderModal] = useState({ isOpen: false, plan: null, sectionTitle: null });
+function ServicesTab({ services, loading }) {
+  const [orderModal, setOrderModal] = useState({ isOpen: false, serviceTitle: null });
   const [orderForm, setOrderForm] = useState({ name: "", email: "", details: "" });
   const [submitting, setSubmitting] = useState(false);
-
-  if (loading) return <div className="text-center py-20"><Loader2 className="animate-spin mx-auto text-[#00E5FF]" size={40} /></div>;
-  if (!services || services.length === 0) return <div className="text-center py-20 text-gray-500">No pricing available. Init DB from Admin Panel.</div>;
-
-  const displayedSections = filter === 'all' 
-    ? services 
-    : services.filter(s => s.title === filter);
 
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
@@ -308,62 +306,73 @@ function PricingTab({ services, loading, filter, setFilter }) {
         body: JSON.stringify({
           name: orderForm.name,
           email: orderForm.email,
-          plan_title: orderModal.sectionTitle,
-          plan_name: orderModal.plan.name,
-          price: orderModal.plan.price,
+          plan_title: orderModal.serviceTitle,
+          plan_name: 'Standard Service',
+          price: 'N/A',
           details: orderForm.details
         })
       });
       
       if (res.ok) {
-        alert("Order placed successfully! We will contact you soon.");
-        setOrderModal({ isOpen: false, plan: null, sectionTitle: null });
+        alert("Booking request sent successfully! We will contact you soon.");
+        setOrderModal({ isOpen: false, serviceTitle: null });
         setOrderForm({ name: "", email: "", details: "" });
       } else {
-        alert("Failed to place order.");
+        alert("Failed to send booking request.");
       }
     } catch (err) {
-      alert("Error placing order.");
+      alert("Error sending request.");
     }
     setSubmitting(false);
   };
 
-  return (
-    <div className="flex flex-col items-center flex-1 w-full relative">
-      <h2 className="text-4xl font-black uppercase tracking-widest mb-4 text-center">
-        Price <span className="text-[#8A2BE2]">Chart</span>
-      </h2>
-      <p className="text-gray-400 font-bold tracking-widest text-sm uppercase mb-12">Creative Designs. Modern Websites. AI-Powered Ads.</p>
-      
-      {filter !== 'all' && (
-        <button 
-          onClick={() => setFilter('all')}
-          className="mb-10 text-xs font-black tracking-widest uppercase border border-white/20 px-6 py-3 rounded-full hover:bg-white/10 transition-colors"
-        >
-          &larr; View All Pricing
-        </button>
-      )}
+  if (loading) return <div className="text-center py-20"><Loader2 className="animate-spin mx-auto text-[#8A2BE2]" size={40} /></div>;
+  if (!services || services.length === 0) return <div className="text-center py-20 text-gray-500">No services available. Init DB from Admin Panel.</div>;
 
-      <div className="w-full space-y-12">
-        {displayedSections.map((section, idx) => (
-          <PricingSection 
-            key={idx} 
-            {...section} 
-            onOrder={(plan) => setOrderModal({ isOpen: true, plan, sectionTitle: section.title })}
-          />
+  return (
+    <div className="flex flex-col items-center justify-center flex-1 w-full">
+      <h2 className="text-4xl font-black uppercase tracking-widest mb-4 text-center">
+        Our <span className="text-[#8A2BE2]">Services</span>
+      </h2>
+      <p className="text-gray-400 font-bold tracking-widest text-sm uppercase mb-12 text-center max-w-lg">
+        Premium designs and edits for your brand.
+      </p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+        {services.map((s, i) => (
+          <motion.div 
+            key={i} 
+            whileHover={{ scale: 1.05, y: -5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.1 }}
+            className={`p-8 rounded-2xl border ${s.border_color}/50 bg-[#0A0D14] flex flex-col items-center text-center shadow-xl relative overflow-hidden group`}
+          >
+            <div className={`absolute inset-0 ${s.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+            <div className={`${s.color} mb-6 relative z-10 drop-shadow-lg`}>{getIconComponent(s.icon)}</div>
+            <h3 className="text-xl font-black uppercase tracking-wider mb-4 relative z-10">{s.title}</h3>
+            <p className="text-gray-400 text-sm relative z-10 flex-1">{s.description}</p>
+            
+            <div className="mt-8 relative z-10 w-full">
+              <button onClick={() => setOrderModal({ isOpen: true, serviceTitle: s.title })} className={`w-full py-3 rounded-xl border border-white/10 group-hover:border-white/30 text-xs font-black uppercase tracking-widest ${s.color} bg-black/50 transition-all`}>
+                Book Now &rarr;
+              </button>
+            </div>
+          </motion.div>
         ))}
       </div>
 
+      {/* Booking Modal */}
       {orderModal.isOpen && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
             <button 
-              onClick={() => setOrderModal({ isOpen: false, plan: null, sectionTitle: null })} 
+              onClick={() => setOrderModal({ isOpen: false, serviceTitle: null })} 
               className="absolute top-4 right-4 text-gray-500 hover:text-white"
             >✕</button>
-            <h3 className="text-2xl font-black uppercase tracking-widest mb-2">Place Order</h3>
+            <h3 className="text-2xl font-black uppercase tracking-widest mb-2">Book Service</h3>
             <p className="text-[#00E5FF] font-bold text-xs uppercase tracking-widest mb-6">
-              {orderModal.sectionTitle} - {orderModal.plan.name} (₹{orderModal.plan.price})
+              {orderModal.serviceTitle}
             </p>
             
             <form className="space-y-4" onSubmit={handleOrderSubmit}>
@@ -371,52 +380,12 @@ function PricingTab({ services, loading, filter, setFilter }) {
               <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Email / Instagram</label><input required type="text" value={orderForm.email} onChange={e => setOrderForm({...orderForm, email: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none" /></div>
               <div><label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Project Details</label><textarea required rows="3" value={orderForm.details} onChange={e => setOrderForm({...orderForm, details: e.target.value})} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white focus:border-[#00E5FF] outline-none resize-none"></textarea></div>
               <button type="submit" disabled={submitting} className="w-full bg-[#00E5FF] text-black font-black uppercase tracking-widest py-4 rounded-xl mt-4 hover:bg-[#00E5FF]/80 transition-colors">
-                {submitting ? "Submitting..." : "Confirm Order"}
+                {submitting ? "Sending..." : "Confirm Booking"}
               </button>
             </form>
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function PricingSection({ title, icon, color, border_color, plans, onOrder }) {
-  const pList = plans || [];
-  return (
-    <div className={`w-full border ${border_color}/30 rounded-3xl p-6 bg-[#05070A] shadow-xl`}>
-      <div className="flex flex-col md:flex-row items-center justify-between mb-8 pb-4 border-b border-white/5">
-        <div className="flex items-center gap-4">
-          <div className={`${color} bg-white/5 p-4 rounded-2xl`}>{getIconComponent(icon)}</div>
-          <h3 className={`text-2xl font-black uppercase tracking-wider ${color}`}>{title}</h3>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {pList.map((p, i) => (
-          <div key={i} className={`rounded-2xl border ${p.is_popular ? border_color : 'border-white/10'} p-6 bg-[#0A0D14] flex flex-col relative hover:-translate-y-2 transition-transform duration-300 shadow-lg`}>
-            {p.is_popular && (
-              <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-black border ${border_color} ${color}`}>
-                Most Popular
-              </div>
-            )}
-            <h4 className={`text-center font-bold uppercase tracking-widest text-sm mb-4 ${p.is_popular ? color : 'text-gray-400'}`}>{p.name}</h4>
-            <div className="text-center mb-6">
-              <span className={`text-4xl font-black ${p.is_popular ? 'text-white' : 'text-gray-300'}`}>₹{p.price}</span>
-            </div>
-            <div className="flex-1 space-y-3 mb-8">
-              {p.features && p.features.map((f, j) => (
-                <div key={j} className="flex items-center gap-3 text-sm text-gray-400">
-                  <CheckCircle2 size={16} className={color} /> {f}
-                </div>
-              ))}
-            </div>
-            <button onClick={() => onOrder(p)} className={`w-full py-3 rounded-xl font-black tracking-widest uppercase text-xs transition-colors border ${p.is_popular ? `bg-[#8A2BE2] text-white border-[#8A2BE2] hover:bg-[#8A2BE2]/80` : 'border-white/20 text-white hover:bg-white/10'}`}>
-              Order Now
-            </button>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -538,12 +507,10 @@ function AdminTab({ services, contacts, onDataChange }) {
 
   // Modals state
   const [serviceModal, setServiceModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '' } });
-  const [planModal, setPlanModal] = useState({ isOpen: false, mode: 'ADD', service_id: null, data: { id: null, name: '', price: '', features: [''], is_popular: false } });
-  const [contactModal, setContactModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '' } });
+    const [contactModal, setContactModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '' } });
   const [uploadingServiceImg, setUploadingServiceImg] = useState(false);
   
-  const [isSavingPlan, setIsSavingPlan] = useState(false);
-  const [isSavingContact, setIsSavingContact] = useState(false);
+    const [isSavingContact, setIsSavingContact] = useState(false);
 
   const submitContact = async (e) => {
     e.preventDefault();
@@ -704,52 +671,6 @@ function AdminTab({ services, contacts, onDataChange }) {
     } catch(err) {}
   };
 
-  // --- Plan Modal Handlers ---
-  const addFeatureInput = () => {
-    setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: [...prev.data.features, ''] } }));
-  };
-  
-  const updateFeatureInput = (index, value) => {
-    const newFeatures = [...planModal.data.features];
-    newFeatures[index] = value;
-    setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: newFeatures } }));
-  };
-
-  const removeFeatureInput = (index) => {
-    const newFeatures = planModal.data.features.filter((_, i) => i !== index);
-    setPlanModal(prev => ({ ...prev, data: { ...prev.data, features: newFeatures } }));
-  };
-
-  const submitPlan = async (e) => {
-    e.preventDefault();
-    setIsSavingPlan(true);
-    const { id, name, price, features, is_popular } = planModal.data;
-    const cleanFeatures = features.filter(f => f.trim() !== '');
-    const payload = { id, service_id: planModal.service_id, name, price, features: cleanFeatures, is_popular };
-    const action = planModal.mode === 'ADD' ? 'ADD_PLAN' : 'EDIT_PLAN';
-    try {
-      const res = await fetch('/api/manage-pricing', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, payload })
-      });
-      if (!res.ok) throw new Error("Server error");
-      onDataChange();
-      setPlanModal({ isOpen: false, mode: 'ADD', service_id: null, data: { id: null, name: '', price: '', features: [''], is_popular: false } });
-    } catch(err) { alert("Error saving plan. Please try again."); }
-    setIsSavingPlan(false);
-  };
-
-  const handleDeletePlan = async (id) => {
-    if(!confirm("Delete this plan?")) return;
-    try {
-      await fetch('/api/manage-pricing', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'DELETE_PLAN', payload: { id } })
-      });
-      onDataChange();
-    } catch(err) {}
-  };
-
   if (!isLoggedIn) {
     return (
       <div className="flex flex-col items-center justify-center flex-1">
@@ -778,7 +699,7 @@ function AdminTab({ services, contacts, onDataChange }) {
           {orders.map(o => (
              <div key={o.id} className="border border-white/5 bg-black/50 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                <div><p className="font-bold text-[#00E5FF]">{o.name}</p><p className="text-xs text-gray-400">{o.email}</p></div>
-               <div className="sm:text-right flex-1"><p className="font-bold text-[#8A2BE2]">{o.plan_title}</p><p className="text-xs text-gray-400">{o.plan_name} (₹{o.price})</p></div>
+               <div className="sm:text-right flex-1"><p className="font-bold text-[#8A2BE2]">{o.plan_title}</p><p className="text-xs text-gray-400">Service Request</p></div>
                <button onClick={() => handleDeleteOrder(o.id)} className="bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-green-500 hover:text-black transition-colors whitespace-nowrap">
                  Mark as Done
                </button>
@@ -812,25 +733,12 @@ function AdminTab({ services, contacts, onDataChange }) {
                   <h4 className="text-lg font-bold text-[#00E5FF] uppercase tracking-widest">{s.title}</h4>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setPlanModal({ isOpen: true, mode: 'ADD', service_id: s.id, data: { id: null, name: '', price: '', features: [''], is_popular: false } })} className="text-xs font-bold bg-green-500/20 text-green-400 px-3 py-1 rounded-md">Add Plan</button>
+                  
                   <button onClick={() => setServiceModal({ isOpen: true, mode: 'EDIT', data: { id: s.id, title: s.title, description: s.description, icon: s.icon } })} className="text-xs font-bold bg-blue-500/20 text-blue-400 px-3 py-1 rounded-md">Edit</button>
                   <button onClick={() => handleDeleteService(s.id)} className="text-xs font-bold bg-red-500/20 text-red-400 px-3 py-1 rounded-md">Delete</button>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {s.plans && s.plans.map(p => (
-                  <div key={p.id} className="border border-white/5 p-4 rounded-xl bg-[#0A0D14] relative group">
-                    <div className="flex justify-between items-start mb-2">
-                      <p className="font-bold uppercase tracking-widest text-xs">{p.name}</p>
-                      <div className="flex gap-2 transition-opacity">
-                        <button onClick={() => setPlanModal({ isOpen: true, mode: 'EDIT', service_id: s.id, data: { id: p.id, name: p.name, price: p.price, features: p.features || [''], is_popular: p.is_popular } })} className="text-blue-400 text-[10px] font-bold bg-blue-500/20 px-2 py-1 rounded">EDIT</button>
-                        <button onClick={() => handleDeletePlan(p.id)} className="text-red-400 bg-red-500/20 px-2 py-1 rounded"><Trash2 size={12}/></button>
-                      </div>
-                    </div>
-                    <p className="text-xl font-black text-gray-300">₹{p.price}</p>
-                  </div>
-                ))}
-              </div>
+
             </div>
           ))}
         </div>
