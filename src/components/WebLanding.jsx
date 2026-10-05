@@ -647,12 +647,14 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("public_id", "portfolio_" + Date.now());
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/auto/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (data.secure_url) {
-        alert("Uploaded Successfully!");
-        fetchPortfolio();
-      }
-    } catch (err) { alert("Error uploading to Cloudinary"); }
+        const data = await res.json();
+        if (data.secure_url) {
+          alert("Uploaded Successfully!");
+          fetchPortfolio();
+        } else {
+          alert("Cloudinary Error: " + (data.error?.message || "Unknown error"));
+        }
+      } catch (err) { alert("Error uploading to Cloudinary: " + err.message); }
     setUploadingPortfolio(false);
     e.target.value = "";
   };
