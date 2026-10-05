@@ -518,7 +518,7 @@ function GamesTab({ onPlayWeb }) {
           <span className="text-[10px] bg-[#00E5FF]/20 text-[#00E5FF] px-2 py-1 rounded font-bold tracking-widest mb-8">277 MB</span>
           
           <div className="w-full flex flex-col gap-3 mt-auto">
-            <a href="/Mini Mall Tycoon v.1.1.apk" download="Mini Mall Tycoon v.1.1.apk" className="w-full bg-[#00E5FF]/20 border border-[#00E5FF]/50 text-[#00E5FF] py-4 rounded-xl font-black tracking-widest text-xs uppercase flex items-center justify-center gap-2 transition-all hover:bg-[#00E5FF] hover:text-black group">
+            <a href="https://www.mediafire.com/file/nt7icoxcejutlkv/MiniMallTycoon_v1.1.apk/file" target="_blank" rel="noreferrer" className="w-full bg-[#00E5FF]/20 border border-[#00E5FF]/50 text-[#00E5FF] py-4 rounded-xl font-black tracking-widest text-xs uppercase flex items-center justify-center gap-2 transition-all hover:bg-[#00E5FF] hover:text-black group">
               <Download size={18} className="group-hover:animate-bounce" /> Download APK
             </a>
           </div>
