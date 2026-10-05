@@ -470,31 +470,60 @@ function PortfolioTab() {
 
 function GamesTab({ onPlayWeb }) {
   return (
-    <div className="flex flex-col items-center justify-center flex-1">
-      <div className="glass-panel p-10 max-w-lg w-full text-center relative z-10 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-[#0A0D14]/80">
-        <div className="mx-auto w-32 h-32 mb-8 relative">
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#8A2BE2] to-[#00E5FF] rounded-[2rem] blur-xl opacity-50 animate-pulse"></div>
-          <img src="/logo.jpg" alt="Creovate Games Logo" className="w-full h-full object-cover rounded-[2rem] border-2 border-white/20 relative z-10 shadow-2xl"/>
-        </div>
-        <h1 className="text-4xl font-black mb-2 tracking-widest uppercase bg-gradient-to-r from-white via-gray-200 to-gray-500 bg-clip-text text-transparent">
-          Creovate Games
-        </h1>
-        <p className="text-gray-400 font-bold tracking-widest text-xs uppercase mb-10">The Ultimate Offline Party Hub</p>
-        
-        <div className="flex flex-col gap-4">
-          <div>
-            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">For Android Devices</p>
-            <a href="/CreovateGames.apk" download="CreovateGames.apk" className="w-full glass-btn-primary py-4 rounded-xl font-black tracking-widest text-sm uppercase flex items-center justify-center gap-3 transition-all hover:scale-[1.02] group">
-              <Download size={20} className="group-hover:animate-bounce" /> Download APK
-            </a>
+    <div className="flex flex-col items-center justify-center flex-1 w-full max-w-5xl mx-auto px-4">
+      <h2 className="text-4xl font-black uppercase tracking-widest mb-4 text-center">
+        Our <span className="text-[#00E5FF]">Games</span>
+      </h2>
+      <p className="text-gray-400 font-bold tracking-widest text-sm uppercase mb-12 text-center max-w-lg">
+        Download and play our exclusive creations.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+        {/* REDROLE GAME CARD */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="glass-panel p-8 rounded-3xl text-center relative border border-white/10 shadow-[0_0_30px_rgba(138,43,226,0.3)] bg-[#0A0D14]/80 flex flex-col items-center"
+        >
+          <div className="w-24 h-24 mb-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#8A2BE2] to-asodey rounded-2xl blur-lg opacity-50"></div>
+            <img src="/logo.jpg" alt="RedRole" className="w-full h-full object-cover rounded-2xl border border-white/20 relative z-10"/>
           </div>
-          <div className="mt-2">
-            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">For iPhone / iOS Devices</p>
-            <button onClick={onPlayWeb} className="w-full bg-white/5 border border-white/10 py-4 rounded-xl font-black tracking-widest text-sm uppercase flex items-center justify-center gap-3 transition-all hover:bg-white/10 hover:border-white/20 group text-white">
-              <Smartphone size={20} className="text-[#00E5FF] group-hover:scale-110 transition-transform" /> Play in Browser
+          <h3 className="text-2xl font-black mb-2 tracking-widest uppercase text-white">RedRole</h3>
+          <p className="text-gray-400 font-bold tracking-widest text-[10px] uppercase mb-8">The Ultimate Offline Party Hub</p>
+          
+          <div className="w-full flex flex-col gap-3 mt-auto">
+            <a href="/CreovateGames.apk" download="CreovateGames.apk" className="w-full bg-[#8A2BE2]/20 border border-[#8A2BE2]/50 text-[#8A2BE2] py-4 rounded-xl font-black tracking-widest text-xs uppercase flex items-center justify-center gap-2 transition-all hover:bg-[#8A2BE2] hover:text-white group">
+              <Download size={18} className="group-hover:animate-bounce" /> Android APK
+            </a>
+            <button onClick={onPlayWeb} className="w-full bg-white/5 border border-white/10 text-white py-4 rounded-xl font-black tracking-widest text-xs uppercase flex items-center justify-center gap-2 transition-all hover:bg-white/10">
+              <Smartphone size={18} className="text-[#00E5FF]" /> Play in Browser (iOS)
             </button>
           </div>
-        </div>
+        </motion.div>
+
+        {/* MINI MALL TYCOON GAME CARD */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="glass-panel p-8 rounded-3xl text-center relative border border-white/10 shadow-[0_0_30px_rgba(0,229,255,0.3)] bg-[#0A0D14]/80 flex flex-col items-center"
+        >
+          <div className="w-24 h-24 mb-6 relative flex items-center justify-center bg-black/50 rounded-2xl border border-white/10 shadow-2xl">
+            <Gamepad2 size={40} className="text-[#00E5FF]"/>
+          </div>
+          <h3 className="text-2xl font-black mb-2 tracking-widest uppercase text-white">Mini Mall Tycoon</h3>
+          <p className="text-gray-400 font-bold tracking-widest text-[10px] uppercase mb-2">Build & Manage Your Empire</p>
+          <span className="text-[10px] bg-[#00E5FF]/20 text-[#00E5FF] px-2 py-1 rounded font-bold tracking-widest mb-8">277 MB</span>
+          
+          <div className="w-full flex flex-col gap-3 mt-auto">
+            <a href="/Mini Mall Tycoon v.1.1.apk" download="Mini Mall Tycoon v.1.1.apk" className="w-full bg-[#00E5FF]/20 border border-[#00E5FF]/50 text-[#00E5FF] py-4 rounded-xl font-black tracking-widest text-xs uppercase flex items-center justify-center gap-2 transition-all hover:bg-[#00E5FF] hover:text-black group">
+              <Download size={18} className="group-hover:animate-bounce" /> Download APK
+            </a>
+          </div>
+        </motion.div>
+
       </div>
     </div>
   );
