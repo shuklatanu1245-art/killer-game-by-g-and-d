@@ -443,7 +443,7 @@ function PortfolioTab() {
               {media.resource_type === 'video' ? (
                 <video 
                   src={`https://res.cloudinary.com/kcfjib2f/video/upload/v${media.version}/${media.public_id}.${media.format}`}
-                  autoPlay muted loop playsInline
+                  autoPlay muted loop playsInline controls
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
