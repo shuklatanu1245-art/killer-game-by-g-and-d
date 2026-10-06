@@ -573,13 +573,22 @@ function AdminTab({ services, contacts, onDataChange }) {
   };
 
   const handleLogin = (e) => {
-    e.preventDefault();
-    if (e.target.email.value === "admin@creovate.in" && e.target.password.value === "Creovate@123") {
-      setIsLoggedIn(true);
-      fetchOrders();
-      fetchPortfolio();
-    } else { alert("Invalid Email or Password!"); }
-  };
+      e.preventDefault();
+      if (e.target.email.value === "admin@creovate.in" && e.target.password.value === "Creovate@123") {
+        setIsLoggedIn(true);
+        localStorage.setItem('creovate_admin_logged_in', 'true');
+        fetchOrders();
+        fetchPortfolio();
+      } else { alert("Invalid Email or Password!"); }
+    };
+
+    useEffect(() => {
+      if (localStorage.getItem('creovate_admin_logged_in') === 'true') {
+        setIsLoggedIn(true);
+        fetchOrders();
+        fetchPortfolio();
+      }
+    }, []);
 
   const fetchOrders = async () => {
     setLoadingOrders(true);
