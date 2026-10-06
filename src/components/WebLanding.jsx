@@ -655,7 +655,7 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("tags", "creovate_portfolio");
     formData.append("public_id", "portfolio_" + Date.now());
     try {
-      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/auto/upload", { method: "POST", body: formData });
+      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f//upload", { method: "POST", body: formData });
         const data = await res.json();
         if (data.secure_url) {
           alert("Uploaded Successfully!");
