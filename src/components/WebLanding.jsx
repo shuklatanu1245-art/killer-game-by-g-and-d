@@ -450,9 +450,14 @@ function PortfolioTab() {
                 <img 
                   src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${media.version}/${media.public_id}.${media.format}`}
                   alt="Portfolio Item"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              )}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                )}
+                {media.public_id.includes("__TITLE__") && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <p className="text-white font-bold tracking-widest text-sm uppercase text-center">{media.public_id.split("__TITLE__")[1].replace(/_/g, " ")}</p>
+                  </div>
+                )}
             </motion.div>
           ))}
         </div>
@@ -536,6 +541,7 @@ function AdminTab({ services, contacts, onDataChange }) {
   const [portfolioImages, setPortfolioImages] = useState([]);
   const [deletingImage, setDeletingImage] = useState(null);
   const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
+  const [portfolioTitle, setPortfolioTitle] = useState("");
 
   // Modals state
   const [serviceModal, setServiceModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '' } });
@@ -653,7 +659,8 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("file", file);
     formData.append("upload_preset", "ml_default");
     formData.append("tags", "creovate_portfolio");
-    formData.append("public_id", "portfolio_" + Date.now());
+    const safeTitle = portfolioTitle.trim() ? "__TITLE__" + portfolioTitle.trim().replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
+      formData.append("public_id", "portfolio_" + Date.now() + safeTitle);
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f//upload", { method: "POST", body: formData });
         const data = await res.json();
@@ -665,8 +672,9 @@ function AdminTab({ services, contacts, onDataChange }) {
         }
       } catch (err) { alert("Error uploading to Cloudinary: " + err.message); }
     setUploadingPortfolio(false);
-    e.target.value = "";
-  };
+    setPortfolioTitle("");
+      e.target.value = "";
+    };
 
   // --- Service Modal Handlers ---
   const handleServiceImageUpload = async (e) => {
@@ -830,7 +838,12 @@ function AdminTab({ services, contacts, onDataChange }) {
                 <video src={`https://res.cloudinary.com/kcfjib2f/video/upload/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
               ) : (
                 <img src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
-              )}
+                )}
+                {media.public_id.includes("__TITLE__") && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-1 text-center pointer-events-none">
+                    <p className="text-white font-bold text-[10px] uppercase truncate">{media.public_id.split("__TITLE__")[1].replace(/_/g, " ")}</p>
+                  </div>
+                )}
               <button 
                 onClick={() => handleDeletePortfolioImage(media.public_id, media.resource_type)}
                 disabled={deletingImage === media.public_id}
