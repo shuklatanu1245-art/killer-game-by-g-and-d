@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2, Target, Zap, Award, Trash2, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PORTFOLIO_CATEGORIES } from '../portfolioConfig';
 
 export default function WebLanding({ onPlayWeb }) {
   const [activeTab, setActiveTab] = useState('home');
@@ -395,6 +396,10 @@ function ServicesTab({ services, loading }) {
 }
 
 function PortfolioTab() {
+  const [activeCat, setActiveCat] = useState("All");
+  const [activeSubcat, setActiveSubcat] = useState("All");
+  const [activeNiche, setActiveNiche] = useState("All");
+
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -406,7 +411,7 @@ function PortfolioTab() {
     .then(([imgData, vidData]) => {
       const imgs = (imgData.resources || []).map(r => ({...r, resource_type: 'image'}));
       const vids = (vidData.resources || []).map(r => ({...r, resource_type: 'video'}));
-      const allMedia = [...imgs, ...vids].sort((a,b) => b.version - a.version);
+      let allMedia = [...imgs, ...vids].sort((a,b) => b.version - a.version);
       setImages(allMedia);
       setLoading(false);
     })
@@ -544,6 +549,10 @@ function AdminTab({ services, contacts, onDataChange }) {
   const [deletingImage, setDeletingImage] = useState(null);
   const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
   const [portfolioTitle, setPortfolioTitle] = useState("");
+  const [portfolioCat, setPortfolioCat] = useState(PORTFOLIO_CATEGORIES[0].name);
+  const [portfolioSubcat, setPortfolioSubcat] = useState(PORTFOLIO_CATEGORIES[0].subcategories[0]?.name || "");
+  const [portfolioNiche, setPortfolioNiche] = useState(PORTFOLIO_CATEGORIES[0].subcategories[0]?.niches[0] || "");
+
 
   // Modals state
   const [serviceModal, setServiceModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '', image_url: '' } });
