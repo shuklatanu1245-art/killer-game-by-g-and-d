@@ -7,7 +7,10 @@ const parseMediaMetadata = (public_id) => {
   const titleMatch = public_id.match(/__TITLE__([a-zA-Z0-9_]+)/);
   const title = titleMatch ? titleMatch[1].replace(/_/g, ' ') : '';
   const urlMatch = public_id.match(/__URL__([a-zA-Z0-9_PCT:/.-]+)/);
-  const link = urlMatch ? decodeURIComponent(urlMatch[1].replace(/PCT/g, '%')) : null;
+  let link = urlMatch ? decodeURIComponent(urlMatch[1].replace(/PCT/g, '%')) : null;
+  if (link && !link.startsWith('http://') && !link.startsWith('https://')) {
+    link = 'https://' + link;
+  }
   const isLinkOnly = public_id.includes('__LINKONLY__');
   return { title, link, isLinkOnly };
 };
