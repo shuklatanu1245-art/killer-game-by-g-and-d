@@ -782,21 +782,40 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("file", file);
     formData.append("upload_preset", "ml_default");
     formData.append("tags", "creovate_services");
-    formData.append("public_id", "service_" + Date.now());
+    formData.append("public_id", "service_icon_" + Date.now());
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (data.secure_url) {
         setServiceModal(prev => ({ ...prev, data: { ...prev.data, icon: data.secure_url } }));
       }
-    } catch (err) { alert("Error uploading"); }
+    } catch (err) { alert("Error uploading icon"); }
     setUploadingServiceImg(false);
+  };
+
+  const handleServiceBgUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingServiceBg(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ml_default");
+    formData.append("tags", "creovate_services_bg");
+    formData.append("public_id", "service_bg_" + Date.now());
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f/image/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.secure_url) {
+        setServiceModal(prev => ({ ...prev, data: { ...prev.data, image_url: data.secure_url } }));
+      }
+    } catch (err) { alert("Error uploading background"); }
+    setUploadingServiceBg(false);
   };
 
   const submitService = async (e) => {
     e.preventDefault();
     const { id, title, description, icon } = serviceModal.data;
-    const payload = { id, title, description, icon: icon || 'Star', color: 'text-white', bg: 'bg-white/10', border_color: 'border-white' };
+    const payload = { id, title, description, icon: icon || 'Star', image_url: serviceModal.data.image_url || '', color: 'text-white', bg: 'bg-white/10', border_color: 'border-white' };
     const action = serviceModal.mode === 'ADD' ? 'ADD_SERVICE' : 'EDIT_SERVICE';
     try {
       await fetch('/api/manage-pricing', {
@@ -1025,18 +1044,34 @@ function AdminTab({ services, contacts, onDataChange }) {
             <h3 className="text-xl font-black uppercase tracking-widest mb-6">{serviceModal.mode === 'ADD' ? 'Add New Service' : 'Edit Service'}</h3>
             
             <form onSubmit={submitService} className="space-y-4">
-              <div className="flex flex-col items-center mb-4">
-                {serviceModal.data.icon && serviceModal.data.icon.startsWith('http') ? (
-                  <img src={serviceModal.data.icon} className="w-24 h-24 object-cover rounded-xl border border-white/20 mb-3" />
-                ) : (
-                  <div className="w-24 h-24 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center mb-3">
-                    <ImageIcon size={32} className="text-gray-500"/>
-                  </div>
-                )}
-                <label className="text-xs font-bold text-[#00E5FF] cursor-pointer bg-[#00E5FF]/10 px-4 py-2 rounded-lg">
-                  {uploadingServiceImg ? 'Uploading...' : 'Upload Image'}
-                  <input type="file" className="hidden" accept="image/*" onChange={handleServiceImageUpload} disabled={uploadingServiceImg || uploadingServiceBg} />
-                </label>
+              <div className="flex gap-4 mb-4 justify-center">
+                <div className="flex flex-col items-center">
+                  {serviceModal.data.icon && serviceModal.data.icon.startsWith('http') ? (
+                    <img src={serviceModal.data.icon} className="w-20 h-20 object-cover rounded-xl border border-white/20 mb-2" />
+                  ) : (
+                    <div className="w-20 h-20 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center mb-2">
+                      <ImageIcon size={24} className="text-gray-500"/>
+                    </div>
+                  )}
+                  <label className="text-[10px] font-bold text-[#00E5FF] cursor-pointer bg-[#00E5FF]/10 px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    {uploadingServiceImg ? 'Uploading...' : 'Upload Icon'}
+                    <input type="file" className="hidden" accept="image/*" onChange={handleServiceImageUpload} disabled={uploadingServiceImg || uploadingServiceBg} />
+                  </label>
+                </div>
+                
+                <div className="flex flex-col items-center">
+                  {serviceModal.data.image_url ? (
+                    <img src={serviceModal.data.image_url} className="w-32 h-20 object-cover rounded-xl border border-white/20 mb-2" />
+                  ) : (
+                    <div className="w-32 h-20 bg-white/5 border border-white/20 rounded-xl flex items-center justify-center mb-2">
+                      <ImageIcon size={24} className="text-gray-500"/>
+                    </div>
+                  )}
+                  <label className="text-[10px] font-bold text-[#8A2BE2] cursor-pointer bg-[#8A2BE2]/10 px-3 py-1.5 rounded-lg whitespace-nowrap">
+                    {uploadingServiceBg ? 'Uploading...' : 'Upload Background'}
+                    <input type="file" className="hidden" accept="image/*" onChange={handleServiceBgUpload} disabled={uploadingServiceImg || uploadingServiceBg} />
+                  </label>
+                </div>
               </div>
 
               <div>
