@@ -350,7 +350,8 @@ function ServicesTab({ services, loading }) {
             transition={{ duration: 0.4, delay: i * 0.1 }}
             className={`p-8 rounded-2xl border ${s.border_color}/50 bg-[#0A0D14] flex flex-col items-center text-center shadow-xl relative overflow-hidden group`}
           >
-            <div className={`absolute inset-0 ${s.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+            <div className={`absolute inset-0 ${s.bg} ${s.image_url ? 'opacity-90' : 'opacity-0'} group-hover:opacity-100 transition-opacity duration-300`}></div>
+              {s.image_url && <div className="absolute inset-0 bg-cover bg-center opacity-30 group-hover:opacity-60 transition-opacity duration-300" style={{ backgroundImage: `url(${s.image_url})` }}></div>}
             <div className={`${s.color} mb-6 relative z-10 drop-shadow-lg`}>{getIconComponent(s.icon)}</div>
             <h3 className="text-xl font-black uppercase tracking-wider mb-4 relative z-10">{s.title}</h3>
             <p className="text-gray-400 text-sm relative z-10 flex-1">{s.description}</p>
@@ -544,7 +545,8 @@ function AdminTab({ services, contacts, onDataChange }) {
   const [portfolioTitle, setPortfolioTitle] = useState("");
 
   // Modals state
-  const [serviceModal, setServiceModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '' } });
+  const [serviceModal, setServiceModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, title: '', description: '', icon: '', image_url: '' } });
+    const [uploadingServiceBg, setUploadingServiceBg] = useState(false);
     const [contactModal, setContactModal] = useState({ isOpen: false, mode: 'ADD', data: { id: null, platform: '', handle: '', url: '' } });
   const [uploadingServiceImg, setUploadingServiceImg] = useState(false);
   
@@ -785,7 +787,7 @@ function AdminTab({ services, contacts, onDataChange }) {
                 </div>
                 <div className="flex gap-2">
                   
-                  <button onClick={() => setServiceModal({ isOpen: true, mode: 'EDIT', data: { id: s.id, title: s.title, description: s.description, icon: s.icon } })} className="text-xs font-bold bg-blue-500/20 text-blue-400 px-3 py-1 rounded-md">Edit</button>
+                  <button onClick={() => setServiceModal({ isOpen: true, mode: 'EDIT', data: { id: s.id, title: s.title, description: s.description, icon: s.icon, image_url: s.image_url } })} className="text-xs font-bold bg-blue-500/20 text-blue-400 px-3 py-1 rounded-md">Edit</button>
                   <button onClick={() => handleDeleteService(s.id)} className="text-xs font-bold bg-red-500/20 text-red-400 px-3 py-1 rounded-md">Delete</button>
                 </div>
               </div>
@@ -874,7 +876,7 @@ function AdminTab({ services, contacts, onDataChange }) {
                 )}
                 <label className="text-xs font-bold text-[#00E5FF] cursor-pointer bg-[#00E5FF]/10 px-4 py-2 rounded-lg">
                   {uploadingServiceImg ? 'Uploading...' : 'Upload Image'}
-                  <input type="file" className="hidden" accept="image/*" onChange={handleServiceImageUpload} disabled={uploadingServiceImg} />
+                  <input type="file" className="hidden" accept="image/*" onChange={handleServiceImageUpload} disabled={uploadingServiceImg || uploadingServiceBg} />
                 </label>
               </div>
 
@@ -886,7 +888,7 @@ function AdminTab({ services, contacts, onDataChange }) {
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Description</label>
                 <textarea required rows="3" value={serviceModal.data.description} onChange={e=>setServiceModal(p=>({...p, data:{...p.data, description: e.target.value}}))} className="w-full bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white resize-none"></textarea>
               </div>
-              <button type="submit" disabled={uploadingServiceImg} className="w-full bg-[#8A2BE2] text-white font-black uppercase tracking-widest py-3 rounded-xl mt-4">Save Service</button>
+              <button type="submit" disabled={uploadingServiceImg || uploadingServiceBg} className="w-full bg-[#8A2BE2] text-white font-black uppercase tracking-widest py-3 rounded-xl mt-4">Save Service</button>
             </form>
           </div>
         </div>
