@@ -714,7 +714,10 @@ function AdminTab({ services, contacts, onDataChange }) {
     formData.append("upload_preset", "ml_default");
     formData.append("tags", "creovate_portfolio");
     const safeTitle = portfolioTitle.trim() ? "__TITLE__" + portfolioTitle.trim().replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
-      formData.append("public_id", "portfolio_" + Date.now() + safeTitle);
+      const catStr = portfolioCat ? "__CAT__" + portfolioCat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
+      const subcatStr = portfolioSubcat ? "__SUBCAT__" + portfolioSubcat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
+      const nicheStr = portfolioNiche ? "__NICHE__" + portfolioNiche.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
+      formData.append("public_id", "portfolio_" + Date.now() + safeTitle + catStr + subcatStr + nicheStr);
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f//upload", { method: "POST", body: formData });
         const data = await res.json();
