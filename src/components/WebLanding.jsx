@@ -488,25 +488,45 @@ function PortfolioTab() {
               whileHover={{ scale: 1.02 }}
               className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]"
             >
-              {media.resource_type === 'video' ? (
-                <video 
-                  src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`}
-                  controls preload="metadata" playsInline
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              ) : (
-                <img 
-                  src={`https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_800,c_limit/v${media.version}/${media.public_id}.${media.format}`}
-                  alt="Portfolio Item"
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                )}
-                {media.public_id.includes("__TITLE__") && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <p className="text-white font-bold tracking-widest text-sm uppercase text-center">{media.public_id.split("__TITLE__")[1].replace(/_/g, " ")}</p>
-                  </div>
-                )}
+              {(() => {
+                const { title, link, isLinkOnly } = parseMediaMetadata(media.public_id);
+                const InnerContent = () => (
+                  <>
+                    {isLinkOnly ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-[#05070A] group-hover:bg-[#0A0D14] transition-colors">
+                        <Globe className="text-[#00E5FF] mb-4 group-hover:scale-110 transition-transform" size={48} />
+                        <h4 className="text-white font-bold">{title || "Visit Website"}</h4>
+                        <p className="text-[#00E5FF] text-xs font-bold uppercase mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Click to Open</p>
+                      </div>
+                    ) : media.resource_type === 'video' ? (
+                      <video 
+                        src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`}
+                        controls preload="metadata" playsInline
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <img 
+                        src={`https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_800,c_limit/v${media.version}/${media.public_id}.${media.format}`}
+                        alt="Portfolio Item" loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    )}
+                    {title && !isLinkOnly && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3 backdrop-blur-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                        <p className="text-white font-bold tracking-widest text-sm uppercase text-center">{title}</p>
+                      </div>
+                    )}
+                  </>
+                );
+
+                return link ? (
+                  <a href={link} target="_blank" rel="noreferrer" className="block w-full h-full">
+                    <InnerContent />
+                  </a>
+                ) : (
+                  <InnerContent />
+                );
+              })()}
             </motion.div>
           ))}
         </div>
@@ -591,6 +611,7 @@ function AdminTab({ services, contacts, onDataChange }) {
   const [deletingImage, setDeletingImage] = useState(null);
   const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
   const [portfolioTitle, setPortfolioTitle] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
   const [portfolioCat, setPortfolioCat] = useState(PORTFOLIO_CATEGORIES[0].name);
   const [portfolioSubcat, setPortfolioSubcat] = useState(PORTFOLIO_CATEGORIES[0].subcategories[0]?.name || "");
   const [portfolioNiche, setPortfolioNiche] = useState(PORTFOLIO_CATEGORIES[0].subcategories[0]?.niches[0] || "");
@@ -705,19 +726,27 @@ function AdminTab({ services, contacts, onDataChange }) {
     setDeletingImage(null);
   };
 
-  const handlePortfolioUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handlePortfolioUpload = async (e, isLinkOnly = false) => {
+    let file;
+    if (!isLinkOnly) {
+      file = e?.target?.files[0];
+      if (!file) return;
+    } else {
+      if (!portfolioUrl) { alert("Please enter a URL first!"); return; }
+      file = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+    }
     setUploadingPortfolio(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "ml_default");
     formData.append("tags", "creovate_portfolio");
     const safeTitle = portfolioTitle.trim() ? "__TITLE__" + portfolioTitle.trim().replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
-      const catStr = portfolioCat ? "__CAT__" + portfolioCat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
-      const subcatStr = portfolioSubcat ? "__SUBCAT__" + portfolioSubcat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
-      const nicheStr = portfolioNiche ? "__NICHE__" + portfolioNiche.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
-      formData.append("public_id", "portfolio_" + Date.now() + safeTitle + catStr + subcatStr + nicheStr);
+    const catStr = portfolioCat ? "__CAT__" + portfolioCat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
+    const subcatStr = portfolioSubcat ? "__SUBCAT__" + portfolioSubcat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
+    const nicheStr = portfolioNiche ? "__NICHE__" + portfolioNiche.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_") : "";
+    const urlStr = portfolioUrl.trim() ? "__URL__" + encodeURIComponent(portfolioUrl.trim()).replace(/%/g, "PCT") : "";
+    const linkOnlyStr = isLinkOnly ? "__LINKONLY__" : "";
+    formData.append("public_id", "portfolio_" + Date.now() + safeTitle + catStr + subcatStr + nicheStr + urlStr + linkOnlyStr);
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/kcfjib2f//upload", { method: "POST", body: formData });
         const data = await res.json();
@@ -917,18 +946,38 @@ function AdminTab({ services, contacts, onDataChange }) {
             </div>
             
             <div className="flex flex-col md:flex-row gap-4">
-              <input 
-                type="text" 
-                placeholder="Enter Title (Optional)" 
-                value={portfolioTitle}
-                onChange={e => setPortfolioTitle(e.target.value)}
-                className="flex-1 bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white font-bold"
-              />
-              <label className="bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white font-black px-6 py-3 rounded-xl cursor-pointer flex items-center justify-center gap-2 hover:opacity-80 transition-opacity whitespace-nowrap">
-                {uploadingPortfolio ? <Loader2 className="animate-spin" size={20} /> : <Upload size={20} />}
-                {uploadingPortfolio ? "UPLOADING..." : "UPLOAD MEDIA"}
-                <input type="file" className="hidden" accept="image/*,video/*" onChange={handlePortfolioUpload} disabled={uploadingPortfolio} />
-              </label>
+              <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col md:flex-row gap-4 w-full">
+                <input 
+                  type="text" 
+                  placeholder="Enter Title (Optional)" 
+                  value={portfolioTitle}
+                  onChange={e => setPortfolioTitle(e.target.value)}
+                  className="flex-1 bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white font-bold"
+                />
+                <input 
+                  type="text" 
+                  placeholder="Website URL / Link (Optional)" 
+                  value={portfolioUrl}
+                  onChange={e => setPortfolioUrl(e.target.value)}
+                  className="flex-1 bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white font-bold"
+                />
+              </div>
+              <div className="flex flex-col md:flex-row gap-4 w-full justify-end">
+                <button 
+                  onClick={() => handlePortfolioUpload(null, true)}
+                  disabled={uploadingPortfolio}
+                  className="bg-white/10 text-white font-black px-6 py-3 rounded-xl hover:bg-white/20 transition-colors whitespace-nowrap"
+                >
+                  {uploadingPortfolio ? "SAVING..." : "SAVE LINK ONLY"}
+                </button>
+                <label className="bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white font-black px-6 py-3 rounded-xl cursor-pointer flex items-center justify-center gap-2 hover:opacity-80 transition-opacity whitespace-nowrap">
+                  {uploadingPortfolio ? <Loader2 className="animate-spin" size={20} /> : <Upload size={20} />}
+                  {uploadingPortfolio ? "UPLOADING..." : "UPLOAD MEDIA"}
+                  <input type="file" className="hidden" accept="image/*,video/*" onChange={e => handlePortfolioUpload(e, false)} disabled={uploadingPortfolio} />
+                </label>
+              </div>
+            </div>
             </div>
           </div>
 
