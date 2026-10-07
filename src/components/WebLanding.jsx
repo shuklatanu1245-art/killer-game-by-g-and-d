@@ -428,7 +428,34 @@ function PortfolioTab() {
       </h2>
       <p className="text-gray-400 font-bold tracking-widest text-sm uppercase mb-12 text-center max-w-lg">
         Explore our recent work.
-      </p>
+        </p>
+        
+        <div className="w-full max-w-6xl mb-8 flex flex-col items-center space-y-4">
+          <div className="flex flex-wrap justify-center gap-2">
+            <button onClick={() => { setActiveCat("All"); setActiveSubcat("All"); setActiveNiche("All"); }} className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider ${activeCat === "All" ? 'bg-[#00E5FF] text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>All</button>
+            {PORTFOLIO_CATEGORIES.map(c => (
+              <button key={c.name} onClick={() => { setActiveCat(c.name); setActiveSubcat("All"); setActiveNiche("All"); }} className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider ${activeCat === c.name ? 'bg-[#00E5FF] text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>{c.name}</button>
+            ))}
+          </div>
+          
+          {activeCat !== "All" && PORTFOLIO_CATEGORIES.find(c => c.name === activeCat)?.subcategories.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2">
+              <button onClick={() => { setActiveSubcat("All"); setActiveNiche("All"); }} className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${activeSubcat === "All" ? 'bg-[#8A2BE2] text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>All {activeCat}</button>
+              {PORTFOLIO_CATEGORIES.find(c => c.name === activeCat).subcategories.map(s => (
+                <button key={s.name} onClick={() => { setActiveSubcat(s.name); setActiveNiche("All"); }} className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider ${activeSubcat === s.name ? 'bg-[#8A2BE2] text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>{s.name}</button>
+              ))}
+            </div>
+          )}
+          
+          {activeSubcat !== "All" && PORTFOLIO_CATEGORIES.find(c => c.name === activeCat)?.subcategories.find(s => s.name === activeSubcat)?.niches.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 max-w-4xl">
+              <button onClick={() => setActiveNiche("All")} className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${activeNiche === "All" ? 'border-white text-white bg-white/10' : 'border-white/10 text-gray-500 hover:bg-white/5'}`}>All Niches</button>
+              {PORTFOLIO_CATEGORIES.find(c => c.name === activeCat).subcategories.find(s => s.name === activeSubcat).niches.map(n => (
+                <button key={n} onClick={() => setActiveNiche(n)} className={`px-3 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${activeNiche === n ? 'border-white text-white bg-white/10' : 'border-white/10 text-gray-500 hover:bg-white/5'}`}>{n}</button>
+              ))}
+            </div>
+          )}
+        </div>
       
       {loading ? (
         <div className="flex items-center gap-3 text-[#00E5FF] mt-10">
@@ -437,7 +464,22 @@ function PortfolioTab() {
         </div>
       ) : images.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
-          {images.map((media, idx) => (
+          {(images.filter(m => {
+              if(activeCat === "All") return true;
+              const catSafe = activeCat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_");
+              if(!m.public_id.includes("__CAT__" + catSafe)) return false;
+              
+              if(activeSubcat !== "All") {
+                const subSafe = activeSubcat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_");
+                if(!m.public_id.includes("__SUBCAT__" + subSafe)) return false;
+              }
+              
+              if(activeNiche !== "All") {
+                const nicheSafe = activeNiche.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_");
+                if(!m.public_id.includes("__NICHE__" + nicheSafe)) return false;
+              }
+              return true;
+            })).map((media, idx) => (
             <motion.div 
               key={media.public_id}
               initial={{ opacity: 0, scale: 0.9 }}
