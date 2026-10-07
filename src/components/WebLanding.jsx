@@ -63,9 +63,9 @@ export default function WebLanding({ onPlayWeb }) {
         <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange('home')}>
             <div className="flex items-center gap-2">
-              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576631/creovate_logo.jpg" alt="Creovate Studio" className="h-8 w-8 object-cover rounded-md" />
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_400/v1789576631/creovate_logo.jpg" alt="Creovate Studio" className="h-8 w-8 object-cover rounded-md" />
               <span className="text-white/30 font-bold px-1">x</span>
-              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576046/asodey_logo.jpg" alt="Asodey Visuals" className="h-8 w-8 object-cover rounded-md" />
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_400/v1789576046/asodey_logo.jpg" alt="Asodey Visuals" className="h-8 w-8 object-cover rounded-md" />
             </div>
             <div>
               <h1 className="text-xl font-black tracking-widest uppercase leading-none">Creovate <span className="text-asodey">x Asodey</span></h1>
@@ -202,9 +202,9 @@ function HomeTab({ onNavigate }) {
             className="relative z-10 flex flex-col items-center justify-center"
           >
             <div className="flex items-center gap-4">
-              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576631/creovate_logo.jpg" alt="Creovate Logo" className="w-48 h-48 rounded-full object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(138,43,226,0.4)]" />
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_400/v1789576631/creovate_logo.jpg" alt="Creovate Logo" className="w-48 h-48 rounded-full object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(138,43,226,0.4)]" />
               <span className="text-5xl font-light text-white/30">x</span>
-              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/v1789576046/asodey_logo.jpg" alt="Asodey Logo" className="w-48 h-48 rounded-3xl object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(255,87,34,0.4)]" />
+              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_400/v1789576046/asodey_logo.jpg" alt="Asodey Logo" className="w-48 h-48 rounded-3xl object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(255,87,34,0.4)]" />
             </div>
           </motion.div>
         </motion.div>
@@ -279,7 +279,7 @@ function HomeTab({ onNavigate }) {
 
       {/* NEW: Final CTA Banner */}
       <div className="w-full bg-gradient-to-r from-[#8A2BE2]/20 to-[#00E5FF]/20 rounded-3xl p-12 border border-white/10 text-center mt-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/kcfjib2f/image/upload/v1789576631/creovate_logo.jpg')] opacity-5 bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_400/v1789576631/creovate_logo.jpg')] opacity-5 bg-cover bg-center"></div>
         <h2 className="text-4xl font-black uppercase tracking-widest mb-4 relative z-10">Ready to Elevate Your Brand?</h2>
         <p className="text-gray-300 font-bold mb-8 relative z-10 max-w-xl mx-auto">Stop settling for average visuals. Let our team of expert designers and editors bring your vision to life.</p>
         <button onClick={() => onNavigate('services')} className="relative z-10 bg-white text-black px-10 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-gray-200 transition-colors shadow-2xl">
@@ -443,14 +443,15 @@ function PortfolioTab() {
             >
               {media.resource_type === 'video' ? (
                 <video 
-                  src={`https://res.cloudinary.com/kcfjib2f/video/upload/v${media.version}/${media.public_id}.${media.format}`}
+                  src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`}
                   autoPlay muted loop playsInline controls
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
                 <img 
-                  src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${media.version}/${media.public_id}.${media.format}`}
+                  src={`https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_800,c_limit/v${media.version}/${media.public_id}.${media.format}`}
                   alt="Portfolio Item"
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 )}
@@ -837,9 +838,9 @@ function AdminTab({ services, contacts, onDataChange }) {
           {portfolioImages.map(media => (
             <div key={media.public_id} className="relative aspect-video rounded-xl overflow-hidden group">
               {media.resource_type === 'video' ? (
-                <video src={`https://res.cloudinary.com/kcfjib2f/video/upload/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
+                <video src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
               ) : (
-                <img src={`https://res.cloudinary.com/kcfjib2f/image/upload/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
+                <img src={`https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_800,c_limit/v${media.version}/${media.public_id}.${media.format}`} loading="lazy" className="w-full h-full object-cover" />
                 )}
                 {media.public_id.includes("__TITLE__") && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-1 text-center pointer-events-none">
