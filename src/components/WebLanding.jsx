@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Gamepad2, Users, Star, Smartphone, Image as ImageIcon, Layout, Code, Video, MessageCircle, Send, ShieldCheck, Mail, Lock, ChevronRight, CheckCircle2, Upload, Loader2, Target, Zap, Award, Trash2, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Globe } from 'lucide-react';
+
+const parseMediaMetadata = (public_id) => {
+  const titleMatch = public_id.match(/__TITLE__([a-zA-Z0-9_]+)/);
+  const title = titleMatch ? titleMatch[1].replace(/_/g, ' ') : '';
+  const urlMatch = public_id.match(/__URL__([a-zA-Z0-9_PCT:/.-]+)/);
+  const link = urlMatch ? decodeURIComponent(urlMatch[1].replace(/PCT/g, '%')) : null;
+  const isLinkOnly = public_id.includes('__LINKONLY__');
+  return { title, link, isLinkOnly };
+};
+
 import { PORTFOLIO_CATEGORIES } from '../portfolioConfig';
 
 export default function WebLanding({ onPlayWeb }) {
