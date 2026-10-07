@@ -837,11 +837,55 @@ function AdminTab({ services, contacts, onDataChange }) {
       {/* Portfolio Uploader / Manager */}
       <div className="bg-[#0A0D14] border border-white/10 p-8 rounded-3xl">
         <h3 className="text-xl font-black uppercase tracking-widest mb-6">Manage Portfolio</h3>
-        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#00E5FF]/30 rounded-2xl cursor-pointer hover:bg-[#00E5FF]/5 transition-colors mb-8">
-          {uploadingPortfolio ? <Loader2 className="animate-spin text-[#00E5FF]" size={32} /> : <Upload className="text-[#00E5FF]" size={32} />}
-          <p className="text-xs text-gray-400 font-bold uppercase mt-2">Upload Media</p>
-          <input type="file" className="hidden" accept="image/*,video/*" onChange={handlePortfolioUpload} disabled={uploadingPortfolio} />
-        </label>
+        <div className="flex flex-col gap-4 mb-8">
+            <div className="flex flex-col md:flex-row gap-4">
+              <select value={portfolioCat} onChange={(e) => {
+                setPortfolioCat(e.target.value);
+                const catObj = PORTFOLIO_CATEGORIES.find(c => c.name === e.target.value);
+                if (catObj && catObj.subcategories.length > 0) {
+                  setPortfolioSubcat(catObj.subcategories[0].name);
+                  setPortfolioNiche(catObj.subcategories[0].niches[0] || "");
+                } else {
+                  setPortfolioSubcat("");
+                  setPortfolioNiche("");
+                }
+              }} className="flex-1 bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white font-bold">
+                {PORTFOLIO_CATEGORIES.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+              </select>
+
+              {PORTFOLIO_CATEGORIES.find(c => c.name === portfolioCat)?.subcategories.length > 0 && (
+                <select value={portfolioSubcat} onChange={(e) => {
+                  setPortfolioSubcat(e.target.value);
+                  const catObj = PORTFOLIO_CATEGORIES.find(c => c.name === portfolioCat);
+                  const subObj = catObj.subcategories.find(s => s.name === e.target.value);
+                  setPortfolioNiche(subObj?.niches[0] || "");
+                }} className="flex-1 bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white font-bold">
+                  {PORTFOLIO_CATEGORIES.find(c => c.name === portfolioCat).subcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                </select>
+              )}
+              
+              {PORTFOLIO_CATEGORIES.find(c => c.name === portfolioCat)?.subcategories.find(s => s.name === portfolioSubcat)?.niches.length > 0 && (
+                <select value={portfolioNiche} onChange={e => setPortfolioNiche(e.target.value)} className="flex-1 bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white font-bold">
+                  {PORTFOLIO_CATEGORIES.find(c => c.name === portfolioCat).subcategories.find(s => s.name === portfolioSubcat).niches.map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              )}
+            </div>
+            
+            <div className="flex flex-col md:flex-row gap-4">
+              <input 
+                type="text" 
+                placeholder="Enter Title (Optional)" 
+                value={portfolioTitle}
+                onChange={e => setPortfolioTitle(e.target.value)}
+                className="flex-1 bg-[#05070A] border border-white/10 rounded-xl py-3 px-4 text-white font-bold"
+              />
+              <label className="bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white font-black px-6 py-3 rounded-xl cursor-pointer flex items-center justify-center gap-2 hover:opacity-80 transition-opacity whitespace-nowrap">
+                {uploadingPortfolio ? <Loader2 className="animate-spin" size={20} /> : <Upload size={20} />}
+                {uploadingPortfolio ? "UPLOADING..." : "UPLOAD MEDIA"}
+                <input type="file" className="hidden" accept="image/*,video/*" onChange={handlePortfolioUpload} disabled={uploadingPortfolio} />
+              </label>
+            </div>
+          </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {portfolioImages.map(media => (
