@@ -444,7 +444,7 @@ function PortfolioTab() {
               {media.resource_type === 'video' ? (
                 <video 
                   src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`}
-                  autoPlay muted loop playsInline controls
+                  controls preload="metadata" playsInline
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
@@ -838,7 +838,7 @@ function AdminTab({ services, contacts, onDataChange }) {
           {portfolioImages.map(media => (
             <div key={media.public_id} className="relative aspect-video rounded-xl overflow-hidden group">
               {media.resource_type === 'video' ? (
-                <video src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
+                <video controls preload="metadata" src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`} className="w-full h-full object-cover" />
               ) : (
                 <img src={`https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_800,c_limit/v${media.version}/${media.public_id}.${media.format}`} loading="lazy" className="w-full h-full object-cover" />
                 )}
