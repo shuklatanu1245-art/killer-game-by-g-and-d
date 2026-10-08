@@ -71,7 +71,7 @@ export default function WebLanding({ onPlayWeb }) {
       {/* Background Effects */}
       <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#8A2BE2] rounded-full filter blur-[200px] pointer-events-none z-0"></motion.div>
       <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="fixed bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#00E5FF] rounded-full filter blur-[200px] pointer-events-none z-0"></motion.div>
-      <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.15, 0.05] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="fixed top-[40%] left-[40%] w-[600px] h-[600px] bg-asodey rounded-full filter blur-[250px] pointer-events-none z-0"></motion.div>
+      <motion.div animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.15, 0.05] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="fixed top-[40%] left-[40%] w-[600px] h-[600px] bg-[#FF00FF] rounded-full filter blur-[250px] pointer-events-none z-0"></motion.div>
 
       {/* Navbar */}
       <nav className="w-full border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
@@ -79,12 +79,10 @@ export default function WebLanding({ onPlayWeb }) {
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange('home')}>
             <div className="flex items-center gap-2">
               <img src="/logo.jpg" alt="Creovate Studio" className="h-8 w-8 object-cover rounded-md" />
-              <span className="text-white/30 font-bold px-1">x</span>
-              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_400/v1789576046/asodey_logo.jpg" alt="Asodey Visuals" className="h-8 w-8 object-cover rounded-md" />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-widest uppercase leading-none">Creovate <span className="text-asodey">x Asodey</span></h1>
-              <p className="text-[9px] text-gray-400 tracking-[0.2em] uppercase">Studio & Visuals Collab</p>
+              <h1 className="text-xl font-black tracking-widest uppercase leading-none">Creovate <span className="text-[#8A2BE2]">Studio</span></h1>
+              <p className="text-[9px] text-gray-400 tracking-[0.2em] uppercase">Creative Agency</p>
             </div>
           </div>
           
@@ -140,7 +138,7 @@ export default function WebLanding({ onPlayWeb }) {
           </div>
         </div>
         <p className="text-gray-600 text-[10px] font-bold tracking-widest uppercase border-t border-white/5 pt-6 max-w-md mx-auto">
-          &copy; {new Date().getFullYear()} Creovate Studio × Asodey Visuals. All rights reserved.
+          &copy; {new Date().getFullYear()} Creovate Studio. All rights reserved.
         </p>
       </footer>
     </div>
@@ -176,26 +174,26 @@ function HomeTab({ onNavigate }) {
             Welcome to
           </h2>
           <h1 className="text-6xl md:text-7xl font-black uppercase tracking-tighter mb-2 leading-tight text-white drop-shadow-xl">
-            Creovate<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Studio</span> <span className="text-gray-500 font-light">×</span><br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-asodey to-yellow-500">Asodey</span> <span className="text-white">Visuals</span>
+            Creovate<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF]">Studio</span>
           </h1>
-          <div className="h-1 w-32 bg-gradient-to-r from-[#8A2BE2] to-asodey rounded-full mb-8"></div>
+          <div className="h-1 w-32 bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] rounded-full mb-8"></div>
           
           <p className="text-2xl text-gray-300 font-bold mb-6">
-            Creative Ideas. <span className="text-asodey">Visual Reality.</span>
+            Creative Ideas. <span className="text-[#00E5FF]">Visual Reality.</span>
           </p>
           <p className="text-gray-400 text-lg max-w-lg mb-10 leading-relaxed">
-            We help businesses, brands and creators stand out with stunning designs, powerful websites, and <span className="text-asodey font-bold">pro-level video editing</span>. Turning imagination into reality.
+            We help businesses, brands and creators stand out with stunning designs, powerful websites, and <span className="text-[#00E5FF] font-bold">pro-level video editing</span>. Turning imagination into reality.
           </p>
           
           <div className="flex items-center gap-6 text-sm font-black tracking-widest uppercase text-gray-400 mb-10 flex-wrap">
             <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#8A2BE2]"></div> DESIGN</span>
             <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#00E5FF]"></div> WEB</span>
-            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-asodey"></div> EDITING</span>
+            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#FF00FF]"></div> EDITING</span>
             <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-yellow-500"></div> VFX</span>
           </div>
 
           <div className="flex gap-4">
-            <button onClick={() => onNavigate('portfolio')} className="bg-gradient-to-r from-[#8A2BE2] to-asodey text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(255,87,34,0.3)]">
+            <button onClick={() => onNavigate('portfolio')} className="bg-gradient-to-r from-[#8A2BE2] to-[#00E5FF] text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(255,87,34,0.3)]">
               View Our Work
             </button>
             <button onClick={() => onNavigate('services')} className="bg-white/5 border border-white/10 text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-colors">
@@ -210,17 +208,13 @@ function HomeTab({ onNavigate }) {
           transition={{ duration: 0.7, delay: 0.4 }}
           className="flex-1 flex justify-center items-center relative hidden md:flex"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#8A2BE2] to-asodey filter blur-[100px] opacity-20 rounded-full animate-pulse-slow"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#8A2BE2] to-[#00E5FF] filter blur-[100px] opacity-20 rounded-full animate-pulse-slow"></div>
           <motion.div 
             animate={{ y: [-15, 15, -15] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             className="relative z-10 flex flex-col items-center justify-center"
           >
-            <div className="flex items-center gap-4">
-              <img src="/logo.jpg" alt="Creovate Logo" className="w-48 h-48 rounded-full object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(138,43,226,0.4)]" />
-              <span className="text-5xl font-light text-white/30">x</span>
-              <img src="https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_400/v1789576046/asodey_logo.jpg" alt="Asodey Logo" className="w-48 h-48 rounded-3xl object-cover shadow-2xl drop-shadow-[0_0_30px_rgba(255,87,34,0.4)]" />
-            </div>
+            <img src="/creovate_poster.png" alt="Creovate Poster" className="w-full max-w-sm rounded-3xl object-cover shadow-2xl drop-shadow-[0_0_40px_rgba(138,43,226,0.5)] border border-white/10" />
           </motion.div>
         </motion.div>
       </div>
@@ -265,7 +259,7 @@ function HomeTab({ onNavigate }) {
           </div>
           <div className="hidden md:block w-16 h-[2px] bg-white/10 mt-8"></div>
           <div className="flex-1 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-asodey/20 flex items-center justify-center text-2xl font-black text-asodey mb-4">3</div>
+            <div className="w-16 h-16 rounded-full bg-[#FF00FF]/20 flex items-center justify-center text-2xl font-black text-[#00E5FF] mb-4">3</div>
             <h3 className="text-xl font-bold uppercase tracking-wider mb-2">Deliver</h3>
             <p className="text-gray-400 text-sm">You receive premium, ready-to-use visual content.</p>
           </div>
@@ -287,7 +281,7 @@ function HomeTab({ onNavigate }) {
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Fast Delivery</p>
         </div>
         <div className="bg-[#0A0D14] border border-white/5 p-6 rounded-2xl text-center">
-          <h4 className="text-4xl font-black text-asodey mb-2">Pro</h4>
+          <h4 className="text-4xl font-black text-[#00E5FF] mb-2">Pro</h4>
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Quality</p>
         </div>
       </div>
@@ -387,7 +381,7 @@ function ServicesTab({ services, loading }) {
             <button 
               onClick={() => setOrderModal({ isOpen: false, serviceTitle: null })} 
               className="absolute top-4 right-4 text-gray-500 hover:text-white"
-            >✕</button>
+            >?</button>
             <h3 className="text-2xl font-black uppercase tracking-widest mb-2">Book Service</h3>
             <p className="text-[#00E5FF] font-bold text-xs uppercase tracking-widest mb-6">
               {orderModal.serviceTitle}
@@ -575,7 +569,7 @@ function GamesTab({ onPlayWeb }) {
           className="glass-panel p-8 rounded-3xl text-center relative border border-white/10 shadow-[0_0_30px_rgba(138,43,226,0.3)] bg-[#0A0D14]/80 flex flex-col items-center"
         >
           <div className="w-24 h-24 mb-6 relative">
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#8A2BE2] to-asodey rounded-2xl blur-lg opacity-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#8A2BE2] to-[#00E5FF] rounded-2xl blur-lg opacity-50"></div>
             <img src="/logo.jpg" alt="RedRole" className="w-full h-full object-cover rounded-2xl border border-white/20 relative z-10"/>
           </div>
           <h3 className="text-2xl font-black mb-2 tracking-widest uppercase text-white">RedRole</h3>
@@ -1195,3 +1189,4 @@ function ContactTab({ contacts }) {
     </div>
   );
 }
+
