@@ -155,7 +155,7 @@ function getIconComponent(iconName) {
     case 'ImageIcon': return <ImageIcon size={40} />;
     case 'Layout': return <Layout size={40} />;
     case 'Code': return <Code size={40} />;
-    case 'Video': return <Video size={40} />;
+    case 'Video': return <video size={40} />;
     default: return <Star size={40} />;
   }
 }
@@ -471,7 +471,7 @@ function PortfolioTab() {
           <span className="font-bold tracking-widest uppercase">Loading Portfolio...</span>
         </div>
       ) : images.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+        <div className="columns-1 sm:columns-2 md:columns-3 gap-6 w-full space-y-6">
           {(images.filter(m => {
               if(activeCat === "All") return true;
               const catSafe = activeCat.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g, "_");
@@ -494,14 +494,14 @@ function PortfolioTab() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: idx * 0.05 }}
               whileHover={{ scale: 1.02 }}
-              className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14]"
+              className="relative rounded-2xl overflow-hidden border border-white/10 group bg-[#0A0D14] break-inside-avoid"
             >
               {(() => {
                 const { title, link, isLinkOnly } = parseMediaMetadata(media.public_id);
                 const InnerContent = () => (
                   <>
                     {isLinkOnly ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-[#05070A] group-hover:bg-[#0A0D14] transition-colors">
+                      <div className="w-full aspect-video flex flex-col items-center justify-center p-6 bg-[#05070A] group-hover:bg-[#0A0D14] transition-colors">
                         <Globe className="text-[#00E5FF] mb-4 group-hover:scale-110 transition-transform" size={48} />
                         <h4 className="text-white font-bold">{title || "Visit Website"}</h4>
                         <p className="text-[#00E5FF] text-xs font-bold uppercase mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Click to Open</p>
@@ -510,13 +510,13 @@ function PortfolioTab() {
                       <video 
                         src={`https://res.cloudinary.com/kcfjib2f/video/upload/q_auto:eco,f_auto,w_600,c_limit,vc_auto/v${media.version}/${media.public_id}.${media.format}`}
                         controls preload="metadata" playsInline
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <img 
                         src={`https://res.cloudinary.com/kcfjib2f/image/upload/q_auto,f_auto,w_800,c_limit/v${media.version}/${media.public_id}.${media.format}`}
                         alt="Portfolio Item" loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
                       />
                     )}
                     {title && !isLinkOnly && (
@@ -1189,4 +1189,5 @@ function ContactTab({ contacts }) {
     </div>
   );
 }
+
 
